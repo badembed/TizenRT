@@ -45,16 +45,16 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdbool.h>
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <nuttx/spi/spi.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/spi/spi.h>
 #include <arch/board/board.h>
 
 #include "stm32f429i-disco.h"
@@ -530,7 +530,7 @@ static uint16_t stm32_ili93414ws_recvword(void)
    * enough during a pixel is transmitted.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Backup the content of the current cr1 register only 1 times */
 
@@ -557,7 +557,7 @@ static uint16_t stm32_ili93414ws_recvword(void)
 
   /* The spi device is in disabled state so it is safe to enable interrupts */
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   /* Waits until the RX buffer is filled with the received data word signalized
    * by the spi hardware through the RXNE flag.
@@ -802,7 +802,7 @@ static void stm32_ili93414ws_spiconfig(FAR struct ili9341_lcd_s *lcd)
   uint16_t   setbitscr2 = 0;
 
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Disable spi */
 
@@ -832,7 +832,7 @@ static void stm32_ili93414ws_spiconfig(FAR struct ili9341_lcd_s *lcd)
 
   stm32_ili93414ws_modifycr2(setbitscr2, clrbitscr2);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -950,7 +950,7 @@ static void stm32_ili93414ws_deselect(FAR struct ili9341_lcd_s *lcd)
   irqstate_t   flags;
   FAR struct ili93414ws_lcd_s *priv = (FAR struct ili93414ws_lcd_s *)lcd;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Restore cr1 and cr2 register to be sure they will be usable
    * by default spi interface structure. (This is an important workarround as
@@ -967,7 +967,7 @@ static void stm32_ili93414ws_deselect(FAR struct ili9341_lcd_s *lcd)
 
   stm32_ili93414ws_spienable();
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   /* de-select ili9341 and relinquish the spi bus. */
 

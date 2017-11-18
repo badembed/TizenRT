@@ -40,9 +40,9 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/usb/usbhost.h>
-#include <nuttx/usb/usbhost_trace.h>
+#include <tinyara/config.h>
+#include <tinyara/usb/usbhost.h>
+#include <tinyara/usb/usbhost_trace.h>
 #include <stdint.h>
 
 #include "chip.h"

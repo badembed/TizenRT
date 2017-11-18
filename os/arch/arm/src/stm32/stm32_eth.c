@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 #if defined(CONFIG_NET) && defined(CONFIG_STM32_ETHMAC)
 
 #include <stdint.h>
@@ -50,17 +50,17 @@
 
 #include <arpa/inet.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/irq.h>
-#include <nuttx/wdog.h>
-#include <nuttx/wqueue.h>
-#include <nuttx/net/phy.h>
-#include <nuttx/net/mii.h>
-#include <nuttx/net/arp.h>
-#include <nuttx/net/netdev.h>
+#include <tinyara/arch.h>
+#include <tinyara/irq.h>
+#include <tinyara/wdog.h>
+#include <tinyara/wqueue.h>
+#include <tinyara/net/phy.h>
+#include <tinyara/net/mii.h>
+#include <tinyara/net/arp.h>
+#include <tinyara/net/netdev.h>
 
 #if defined(CONFIG_NET_PKT)
-#  include <nuttx/net/pkt.h>
+#  include <tinyara/net/pkt.h>
 #endif
 
 #include "up_internal.h"
@@ -2397,7 +2397,7 @@ static int stm32_ifdown(struct net_driver_s *dev)
 
   /* Disable the Ethernet interrupt */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   up_disable_irq(STM32_IRQ_ETH);
 
   /* Cancel the TX poll timer and TX timeout timers */
@@ -2415,7 +2415,7 @@ static int stm32_ifdown(struct net_driver_s *dev)
   /* Mark the device "down" */
 
   priv->ifup = false;
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 

@@ -37,7 +37,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -47,9 +47,9 @@
 #include <assert.h>
 #include <debug.h>
 
-#include <nuttx/usb/usbdev.h>
-#include <nuttx/usb/usbhost.h>
-#include <nuttx/usb/usbdev_trace.h>
+#include <tinyara/usb/usbdev.h>
+#include <tinyara/usb/usbhost.h>
+#include <tinyara/usb/usbdev_trace.h>
 
 #include "up_arch.h"
 #include "stm32.h"

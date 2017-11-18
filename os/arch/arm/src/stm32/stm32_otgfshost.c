@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -49,16 +49,16 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/kmalloc.h>
-#include <nuttx/clock.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/usb/usb.h>
-#include <nuttx/usb/usbhost.h>
-#include <nuttx/usb/usbhost_devaddr.h>
-#include <nuttx/usb/usbhost_trace.h>
+#include <tinyara/arch.h>
+#include <tinyara/kmalloc.h>
+#include <tinyara/clock.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/usb/usb.h>
+#include <tinyara/usb/usbhost.h>
+#include <tinyara/usb/usbhost_devaddr.h>
+#include <tinyara/usb/usbhost_trace.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "chip.h"             /* Includes default GPIO settings */
 #include <arch/board/board.h> /* May redefine GPIO settings */
@@ -1002,7 +1002,7 @@ static void stm32_chan_halt(FAR struct stm32_usbhost_s *priv, int chidx,
 static int stm32_chan_waitsetup(FAR struct stm32_usbhost_s *priv,
                                 FAR struct stm32_chan_s *chan)
 {
-  irqstate_t flags = enter_critical_section();
+  irqstate_t flags = irqsave();
   int        ret   = -ENODEV;
 
   /* Is the device still connected? */
@@ -1021,7 +1021,7 @@ static int stm32_chan_waitsetup(FAR struct stm32_usbhost_s *priv,
       ret            = OK;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return ret;
 }
 
@@ -1044,7 +1044,7 @@ static int stm32_chan_asynchsetup(FAR struct stm32_usbhost_s *priv,
                                   FAR struct stm32_chan_s *chan,
                                   usbhost_asynch_t callback, FAR void *arg)
 {
-  irqstate_t flags = enter_critical_section();
+  irqstate_t flags = irqsave();
   int        ret   = -ENODEV;
 
   /* Is the device still connected? */
@@ -1061,7 +1061,7 @@ static int stm32_chan_asynchsetup(FAR struct stm32_usbhost_s *priv,
       ret            = OK;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return ret;
 }
 #endif
@@ -1089,7 +1089,7 @@ static int stm32_chan_wait(FAR struct stm32_usbhost_s *priv,
    * while we wait.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Loop, testing for an end of transfer condition.  The channel 'result'
    * was set to EBUSY and 'waiter' was set to true before the transfer; 'waiter'
@@ -1117,7 +1117,7 @@ static int stm32_chan_wait(FAR struct stm32_usbhost_s *priv,
   /* The transfer is complete re-enable interrupts and return the result */
 
   ret = -(int)chan->result;
-  leave_critical_section(flags);
+  irqrestore(flags);
   return ret;
 }
 
@@ -3773,7 +3773,7 @@ static void stm32_txfe_enable(FAR struct stm32_usbhost_s *priv, int chidx)
    * (it would be sufficent just to disable the GINT interrupt).
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Should we enable the periodic or non-peridic Tx FIFO empty interrupts */
 
@@ -3795,7 +3795,7 @@ static void stm32_txfe_enable(FAR struct stm32_usbhost_s *priv, int chidx)
   /* Enable interrupts */
 
   stm32_putreg(STM32_OTGFS_GINTMSK, regval);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -3836,7 +3836,7 @@ static int stm32_wait(FAR struct usbhost_connection_s *conn,
 
   /* Loop until a change in connection state is detected */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   for (; ; )
     {
       /* Is there a change in the connection state of the single root hub
@@ -3855,7 +3855,7 @@ static int stm32_wait(FAR struct usbhost_connection_s *conn,
           /* And return the root hub port */
 
           *hport = connport;
-          leave_critical_section(flags);
+          irqrestore(flags);
 
           uinfo("RHport Connected: %s\n", connport->connected ? "YES" : "NO");
           return OK;
@@ -3872,7 +3872,7 @@ static int stm32_wait(FAR struct usbhost_connection_s *conn,
           priv->hport = NULL;
 
           *hport = connport;
-          leave_critical_section(flags);
+          irqrestore(flags);
 
           uinfo("Hub port Connected: %s\n", connport->connected ? "YES" : "NO");
           return OK;
@@ -4738,7 +4738,7 @@ static int stm32_cancel(FAR struct usbhost_driver_s *drvr, usbhost_ep_t ep)
    * completion of the transfer being cancelled.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Halt the channel */
 
@@ -4786,7 +4786,7 @@ static int stm32_cancel(FAR struct usbhost_driver_s *drvr, usbhost_ep_t ep)
     }
 #endif
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 
@@ -4828,7 +4828,7 @@ static int stm32_connect(FAR struct usbhost_driver_s *drvr,
 
   /* Report the connection event */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   priv->hport = hport;
   if (priv->pscwait)
     {
@@ -4836,7 +4836,7 @@ static int stm32_connect(FAR struct usbhost_driver_s *drvr,
       stm32_givesem(&priv->pscsem);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 #endif

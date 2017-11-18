@@ -40,8 +40,8 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/progmem.h>
+#include <tinyara/config.h>
+#include <tinyara/progmem.h>
 
 #include "chip.h"
 #include "chip/stm32_flash.h"

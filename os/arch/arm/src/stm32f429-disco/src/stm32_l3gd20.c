@@ -37,13 +37,13 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/spi/spi.h>
-#include <nuttx/sensors/l3gd20.h>
+#include <tinyara/spi/spi.h>
+#include <tinyara/sensors/l3gd20.h>
 
 #include "stm32.h"
 #include "stm32_spi.h"

@@ -41,7 +41,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -52,12 +52,12 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/irq.h>
-#include <nuttx/kmalloc.h>
-#include <nuttx/clock.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/drivers/1wire.h>
+#include <tinyara/arch.h>
+#include <tinyara/irq.h>
+#include <tinyara/kmalloc.h>
+#include <tinyara/clock.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/drivers/1wire.h>
 
 #include <arch/board/board.h>
 
@@ -798,10 +798,10 @@ static int stm32_1wire_process(struct stm32_1wire_priv_s *priv,
 
           /* Atomic */
 
-          irqs = enter_critical_section();
+          irqs = irqsave();
           priv->msgs = &msgs[indx];
           stm32_1wire_send(priv, RESET_TX);
-          leave_critical_section(irqs);
+          irqrestore(irqs);
 
           /* Wait */
 
@@ -818,12 +818,12 @@ static int stm32_1wire_process(struct stm32_1wire_priv_s *priv,
 
           /* Atomic */
 
-          irqs = enter_critical_section();
+          irqs = irqsave();
           priv->msgs = &msgs[indx];
           priv->byte = priv->msgs->buffer;
           priv->bit = 0;
           stm32_1wire_send(priv, (*priv->byte & (1 << priv->bit)) ? WRITE_TX1 : WRITE_TX0);
-          leave_critical_section(irqs);
+          irqrestore(irqs);
 
           /* Wait */
 
@@ -840,12 +840,12 @@ static int stm32_1wire_process(struct stm32_1wire_priv_s *priv,
 
           /* Atomic */
 
-          irqs = enter_critical_section();
+          irqs = irqsave();
           priv->msgs = &msgs[indx];
           priv->byte = priv->msgs->buffer;
           priv->bit = 0;
           stm32_1wire_send(priv, READ_TX);
-          leave_critical_section(irqs);
+          irqrestore(irqs);
 
           /* Wait */
 
@@ -863,10 +863,10 @@ static int stm32_1wire_process(struct stm32_1wire_priv_s *priv,
 
   /* Atomic */
 
-  irqs = enter_critical_section();
+  irqs = irqsave();
   priv->msgs = NULL;
   ret = priv->result;
-  leave_critical_section(irqs);
+  irqrestore(irqs);
 
   /* Release the port for re-use by other clients */
 
@@ -1216,7 +1216,7 @@ FAR struct onewire_dev_s *stm32_1wireinitialize(int port)
    * power-up hardware and configure GPIOs.
    */
 
-  irqs = enter_critical_section();
+  irqs = irqsave();
 
   if (priv->refs++ == 0)
     {
@@ -1224,7 +1224,7 @@ FAR struct onewire_dev_s *stm32_1wireinitialize(int port)
       stm32_1wire_init(priv);
     }
 
-  leave_critical_section(irqs);
+  irqrestore(irqs);
   return (struct onewire_dev_s *)inst;
 }
 
@@ -1257,16 +1257,16 @@ int stm32_1wireuninitialize(FAR struct onewire_dev_s *dev)
       return ERROR;
     }
 
-  irqs = enter_critical_section();
+  irqs = irqsave();
 
   if (--priv->refs)
     {
-      leave_critical_section(irqs);
+      irqrestore(irqs);
       kmm_free(priv);
       return OK;
     }
 
-  leave_critical_section(irqs);
+  irqrestore(irqs);
 
   /* Disable power and other HW resource (GPIO's) */
 

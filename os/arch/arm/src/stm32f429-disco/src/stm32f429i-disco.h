@@ -41,12 +41,12 @@
  * Included Files
  ****************************************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/compiler.h>
+#include <tinyara/config.h>
+#include <tinyara/compiler.h>
 #include <stdint.h>
 
 #ifdef CONFIG_STM32F429I_DISCO_ILI9341
-#include <nuttx/lcd/ili9341.h>
+#include <tinyara/lcd/ili9341.h>
 #endif
 
 /****************************************************************************************************

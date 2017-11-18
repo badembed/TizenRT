@@ -37,26 +37,26 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <syslog.h>
 #include <errno.h>
 
-#include <nuttx/board.h>
-#include <nuttx/kmalloc.h>
+#include <tinyara/board.h>
+#include <tinyara/kmalloc.h>
 
 #ifdef CONFIG_STM32_SPI4
-#  include <nuttx/mmcsd.h>
+#  include <tinyara/mmcsd.h>
 #endif
 
 #ifdef CONFIG_MTD_SST25XX
-#  include <nuttx/mtd/mtd.h>
+#  include <tinyara/mtd/mtd.h>
 #endif
 
 #ifdef CONFIG_USBMONITOR
-#  include <nuttx/usb/usbmonitor.h>
+#  include <tinyara/usb/usbmonitor.h>
 #endif
 
 #ifndef CONFIG_STM32F429I_DISCO_FLASH_MINOR
@@ -65,7 +65,7 @@
 
 #ifdef CONFIG_STM32F429I_DISCO_FLASH_CONFIG_PART
 #ifdef CONFIG_PLATFORM_CONFIGDATA
-#  include <nuttx/mtd/configdata.h>
+#  include <tinyara/mtd/configdata.h>
 #endif
 #endif
 

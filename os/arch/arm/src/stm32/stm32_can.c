@@ -40,7 +40,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -51,9 +51,9 @@
 #include <debug.h>
 
 #include <arch/board/board.h>
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <nuttx/can/can.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/can/can.h>
 
 #include "up_internal.h"
 #include "up_arch.h"
@@ -589,7 +589,7 @@ static void stm32can_reset(FAR struct can_dev_s *dev)
    * and to prevent any concurrent access to the AHB1RSTR register.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Reset the CAN */
 
@@ -599,7 +599,7 @@ static void stm32can_reset(FAR struct can_dev_s *dev)
 
   regval &= ~regbit;
   putreg32(regval, STM32_RCC_APB1RSTR);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************

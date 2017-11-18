@@ -40,9 +40,9 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 #include <stdbool.h>
-#include <nuttx/video/fb.h>
+#include <tinyara/video/fb.h>
 
 #ifdef CONFIG_STM32_LTDC
 /****************************************************************************

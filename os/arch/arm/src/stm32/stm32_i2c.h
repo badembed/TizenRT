@@ -40,8 +40,8 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/i2c/i2c_master.h>
+#include <tinyara/config.h>
+#include <tinyara/i2c.h>
 
 #include "chip.h"
 #if defined(CONFIG_STM32_STM32F30XX) || defined(CONFIG_STM32_STM32F37XX) || \

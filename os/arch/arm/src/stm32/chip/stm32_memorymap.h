@@ -40,7 +40,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 #include "chip.h"
 
 #if defined(CONFIG_STM32_STM32L15XX)

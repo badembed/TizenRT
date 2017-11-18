@@ -40,7 +40,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 #include "chip.h"
 #include "stm32_pwr.h"
 #include "itm_syslog.h"

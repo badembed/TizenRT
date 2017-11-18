@@ -39,7 +39,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdio.h>
@@ -47,8 +47,8 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/drivers/pwm.h>
+#include <tinyara/arch.h>
+#include <tinyara/drivers/pwm.h>
 #include <arch/board/board.h>
 
 #include "up_internal.h"
@@ -2515,7 +2515,7 @@ static int pwm_stop(FAR struct pwm_lowerhalf_s *dev)
    * to prevent any concurrent access to the reset register.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Stopped so frequency is zero */
 
@@ -2536,7 +2536,7 @@ static int pwm_stop(FAR struct pwm_lowerhalf_s *dev)
 
   regval &= ~resetbit;
   putreg32(regval, regaddr);
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   pwminfo("regaddr: %08x resetbit: %08x\n", regaddr, resetbit);
   pwm_dumpregs(priv, "After stop");

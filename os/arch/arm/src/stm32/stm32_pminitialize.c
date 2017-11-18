@@ -37,9 +37,9 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
-#include <nuttx/power/pm.h>
+#include <tinyara/pm/pm.h>
 
 #include "up_internal.h"
 #include "stm32_pm.h"

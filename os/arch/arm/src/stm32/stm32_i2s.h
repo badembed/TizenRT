@@ -40,8 +40,8 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/audio/i2s.h>
+#include <tinyara/config.h>
+#include <tinyara/audio/i2s.h>
 
 #include "chip.h"
 #include "chip/stm32_i2s.h"

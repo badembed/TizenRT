@@ -38,14 +38,14 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/spi/spi.h>
+#include <tinyara/spi/spi.h>
 #include <arch/board/board.h>
 
 #include "up_arch.h"

@@ -37,15 +37,15 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/board.h>
-#include <nuttx/lcd/ili9341.h>
-#include <nuttx/video/fb.h>
+#include <tinyara/arch.h>
+#include <tinyara/board.h>
+#include <tinyara/lcd/ili9341.h>
+#include <tinyara/video/fb.h>
 
 #include <arch/chip/ltdc.h>
 #include <arch/board/board.h>

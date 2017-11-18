@@ -37,15 +37,15 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdbool.h>
 #include <time.h>
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/irq.h>
 
 #include <arch/board/board.h>
 

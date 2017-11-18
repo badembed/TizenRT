@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -47,15 +47,15 @@
 #include <debug.h>
 #include <errno.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/wdog.h>
-#include <nuttx/clock.h>
-#include <nuttx/sdio.h>
-#include <nuttx/wqueue.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/mmcsd.h>
+#include <tinyara/arch.h>
+#include <tinyara/wdog.h>
+#include <tinyara/clock.h>
+#include <tinyara/sdio.h>
+#include <tinyara/wqueue.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/mmcsd.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 #include <arch/board/board.h>
 
 #include "chip.h"
@@ -664,7 +664,7 @@ static void stm32_configwaitints(struct stm32_dev_s *priv, uint32_t waitmask,
   /* Save all of the data and set the new interrupt mask in one, atomic
    * operation.
    */
-  flags = enter_critical_section();
+  flags = irqsave();
 
 #ifdef CONFIG_MMCSD_SDIOWAIT_WRCOMPLETE
   if ((waitmask & SDIOWAIT_WRCOMPLETE) != 0)
@@ -699,7 +699,7 @@ static void stm32_configwaitints(struct stm32_dev_s *priv, uint32_t waitmask,
   priv->xfrflags   = 0;
 #endif
   putreg32(priv->xfrmask | priv->waitmask, STM32_SDIO_MASK);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -720,10 +720,10 @@ static void stm32_configwaitints(struct stm32_dev_s *priv, uint32_t waitmask,
 static void stm32_configxfrints(struct stm32_dev_s *priv, uint32_t xfrmask)
 {
   irqstate_t flags;
-  flags = enter_critical_section();
+  flags = irqsave();
   priv->xfrmask = xfrmask;
   putreg32(priv->xfrmask | priv->waitmask, STM32_SDIO_MASK);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -1587,7 +1587,7 @@ static void stm32_reset(FAR struct sdio_dev_s *dev)
 
   /* Disable clocking */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   putreg32(0, SDIO_CLKCR_CLKEN_BB);
   stm32_setpwrctrl(SDIO_POWER_PWRCTRL_OFF);
 
@@ -1623,7 +1623,7 @@ static void stm32_reset(FAR struct sdio_dev_s *dev)
 
   stm32_setclkcr(STM32_CLCKCR_INIT | SDIO_CLKCR_CLKEN);
   stm32_setpwrctrl(SDIO_POWER_PWRCTRL_ON);
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   mcinfo("CLCKR: %08x POWER: %08x\n",
          getreg32(STM32_SDIO_CLKCR), getreg32(STM32_SDIO_POWER));
@@ -2469,7 +2469,7 @@ static sdio_eventset_t stm32_eventwait(FAR struct sdio_dev_s *dev,
    * be non-zero (and, hopefully, the semaphore count will also be non-zero.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   DEBUGASSERT(priv->waitevents != 0 || priv->wkupevent != 0);
 
   /* Check if the timeout event is specified in the event set */
@@ -2552,7 +2552,7 @@ static sdio_eventset_t stm32_eventwait(FAR struct sdio_dev_s *dev,
 #endif
 
 errout:
-  leave_critical_section(flags);
+  irqrestore(flags);
   stm32_dumpsamples(priv);
   return wkupevent;
 }
@@ -3036,7 +3036,7 @@ void sdio_mediachange(FAR struct sdio_dev_s *dev, bool cardinslot)
 
   /* Update card status */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   cdstatus = priv->cdstatus;
   if (cardinslot)
     {
@@ -3047,7 +3047,7 @@ void sdio_mediachange(FAR struct sdio_dev_s *dev, bool cardinslot)
       priv->cdstatus &= ~SDIO_STATUS_PRESENT;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   mcinfo("cdstatus OLD: %02x NEW: %02x\n", cdstatus, priv->cdstatus);
 
@@ -3082,7 +3082,7 @@ void sdio_wrprotect(FAR struct sdio_dev_s *dev, bool wrprotect)
 
   /* Update card status */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   if (wrprotect)
     {
       priv->cdstatus |= SDIO_STATUS_WRPROTECTED;
@@ -3093,6 +3093,6 @@ void sdio_wrprotect(FAR struct sdio_dev_s *dev, bool wrprotect)
     }
 
   mcinfo("cdstatus: %02x\n", priv->cdstatus);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 #endif /* CONFIG_STM32_SDIO */

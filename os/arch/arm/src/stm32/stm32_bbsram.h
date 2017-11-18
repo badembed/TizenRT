@@ -52,8 +52,8 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/fs/ioctl.h>
+#include <tinyara/config.h>
+#include <tinyara/fs/ioctl.h>
 
 /****************************************************************************
  * Pre-processor Definitions

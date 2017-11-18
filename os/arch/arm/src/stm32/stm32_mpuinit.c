@@ -37,11 +37,11 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <assert.h>
 
-#include <nuttx/userspace.h>
+#include <tinyara/userspace.h>
 
 #include "mpu.h"
 #include "stm32_mpuinit.h"

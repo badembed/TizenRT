@@ -37,15 +37,15 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/arch.h>
+#include <tinyara/config.h>
+#include <tinyara/arch.h>
 
 #include <stdint.h>
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/timers/watchdog.h>
+#include <tinyara/irq.h>
+#include <tinyara/timers/watchdog.h>
 #include <arch/board/board.h>
 
 #include "up_arch.h"
@@ -638,7 +638,7 @@ static xcpt_t stm32_capture(FAR struct watchdog_lowerhalf_s *lower,
 
   /* Get the old handler return value */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   oldhandler = priv->handler;
 
   /* Save the new handler */
@@ -667,7 +667,7 @@ static xcpt_t stm32_capture(FAR struct watchdog_lowerhalf_s *lower,
       up_disable_irq(STM32_IRQ_WWDG);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return oldhandler;
 }
 

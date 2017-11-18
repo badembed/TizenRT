@@ -43,7 +43,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 
@@ -54,7 +54,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <time.h>
-#include <nuttx/fs/fs.h>
+#include <tinyara/fs/fs.h>
 
 #include <crc32.h>
 

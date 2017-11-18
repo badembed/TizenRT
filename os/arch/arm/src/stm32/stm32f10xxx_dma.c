@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -45,8 +45,8 @@
 #include <debug.h>
 #include <errno.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
 
 #include "up_arch.h"
 #include "up_internal.h"
@@ -714,13 +714,13 @@ void stm32_dmasample(DMA_HANDLE handle, struct stm32_dmaregs_s *regs)
   struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
   irqstate_t flags;
 
-  flags       = enter_critical_section();
+  flags       = irqsave();
   regs->isr   = dmabase_getreg(dmach, STM32_DMA_ISR_OFFSET);
   regs->ccr   = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
   regs->cndtr = dmachan_getreg(dmach, STM32_DMACHAN_CNDTR_OFFSET);
   regs->cpar  = dmachan_getreg(dmach, STM32_DMACHAN_CPAR_OFFSET);
   regs->cmar  = dmachan_getreg(dmach, STM32_DMACHAN_CMAR_OFFSET);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 #endif
 

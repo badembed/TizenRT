@@ -39,7 +39,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 
@@ -47,8 +47,8 @@
 #include <string.h>
 #include <errno.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/timers/timer.h>
+#include <tinyara/irq.h>
+#include <tinyara/timers/timer.h>
 
 #include <arch/board/board.h>
 
@@ -425,7 +425,7 @@ static void stm32_setcallback(FAR struct timer_lowerhalf_s *lower,
 {
   FAR struct stm32_lowerhalf_s *priv = (FAR struct stm32_lowerhalf_s *)lower;
 
-  irqstate_t flags = enter_critical_section();
+  irqstate_t flags = irqsave();
 
   /* Save the new callback */
 
@@ -443,7 +443,7 @@ static void stm32_setcallback(FAR struct timer_lowerhalf_s *lower,
       STM32_TIM_SETISR(priv->tim, NULL, NULL, 0);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************

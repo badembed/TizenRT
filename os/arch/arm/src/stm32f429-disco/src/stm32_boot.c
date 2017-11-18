@@ -37,11 +37,11 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <debug.h>
 
-#include <nuttx/board.h>
+#include <tinyara/board.h>
 #include <arch/board/board.h>
 
 #include "up_arch.h"
@@ -68,7 +68,7 @@
 
 #if defined(CONFIG_NXWIDGETS) && !defined(CONFIG_NXWIDGET_SERVERINIT)
 #   define HAVE_NXSTART
-#   include <nuttx/nx/nx.h>
+#   include <tinyara/nx/nx.h>
 #endif
 
 /* Should we initialize the touchscreen for the NxWM (CONFIG_NXWM=y)?  This
@@ -88,7 +88,7 @@
 #  elif defined(CONFIG_INPUT_STMPE811)
 #    if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVINIT)
 #      define HAVE_TCINIT
-#      include <nuttx/input/touchscreen.h>
+#      include <tinyara/input/touchscreen.h>
 #    endif
 #  else
 #    if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVINIT) && defined(CONFIG_BUILD_PROTECTED)

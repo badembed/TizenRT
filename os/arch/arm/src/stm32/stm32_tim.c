@@ -42,9 +42,9 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/arch.h>
-#include <nuttx/irq.h>
+#include <tinyara/config.h>
+#include <tinyara/arch.h>
+#include <tinyara/irq.h>
 
 #include <sys/types.h>
 #include <stdint.h>

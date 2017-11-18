@@ -37,16 +37,16 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/arch.h>
+#include <tinyara/config.h>
+#include <tinyara/arch.h>
 
 #include <stdint.h>
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/clock.h>
-#include <nuttx/timers/watchdog.h>
+#include <tinyara/irq.h>
+#include <tinyara/clock.h>
+#include <tinyara/timers/watchdog.h>
 #include <arch/board/board.h>
 
 #include "up_arch.h"
@@ -351,11 +351,11 @@ static int stm32_start(FAR struct watchdog_lowerhalf_s *lower)
        * bits, the watchdog is automatically enabled at power-on.
        */
 
-      flags           = enter_critical_section();
+      flags           = irqsave();
       stm32_putreg(IWDG_KR_KEY_START, STM32_IWDG_KR);
       priv->lastreset = clock_systimer();
       priv->started   = true;
-      leave_critical_section(flags);
+      irqrestore(flags);
     }
 
   return OK;
@@ -410,10 +410,10 @@ static int stm32_keepalive(FAR struct watchdog_lowerhalf_s *lower)
 
   /* Reload the IWDG timer */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   stm32_putreg(IWDG_KR_KEY_RELOAD, STM32_IWDG_KR);
   priv->lastreset = clock_systimer();
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   return OK;
 }

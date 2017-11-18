@@ -39,9 +39,9 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
+#include <tinyara/config.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
 
 #include <stdint.h>
 #include <stdbool.h>

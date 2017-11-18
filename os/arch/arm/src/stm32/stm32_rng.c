@@ -44,11 +44,11 @@
 #include <debug.h>
 #include <errno.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/fs/fs.h>
-#include <nuttx/drivers/drivers.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/fs/fs.h>
+#include <tinyara/drivers/drivers.h>
 
 #include "up_arch.h"
 #include "chip/stm32_rng.h"

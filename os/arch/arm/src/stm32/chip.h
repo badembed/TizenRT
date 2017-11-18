@@ -40,7 +40,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 /* Include the chip capabilities file */
 

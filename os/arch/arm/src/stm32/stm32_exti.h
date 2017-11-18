@@ -40,9 +40,9 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "chip.h"
 #include "chip/stm32_exti.h"

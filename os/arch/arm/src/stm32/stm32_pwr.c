@@ -40,14 +40,14 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/irq.h>
 
 #include "up_arch.h"
 #include "stm32_pwr.h"
@@ -183,7 +183,7 @@ void stm32_pwr_enablebkp(bool writable)
   bool waswritable;
   bool wait = false;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Get the current state of the STM32 PWR control register */
 
@@ -219,7 +219,7 @@ void stm32_pwr_enablebkp(bool writable)
       wait = true;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   if (wait)
     {

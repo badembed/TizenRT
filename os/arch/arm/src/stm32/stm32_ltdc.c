@@ -41,17 +41,17 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/kmalloc.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/video/fb.h>
+#include <tinyara/irq.h>
+#include <tinyara/kmalloc.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/video/fb.h>
 
 #include <arch/chip/ltdc.h>
 #include <arch/chip/dma2d.h>
@@ -1185,7 +1185,7 @@ static int stm32_ltdc_waitforirq(void)
 
   irqstate_t flags;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Only waits if last enabled interrupt is currently not handled */
 
@@ -1207,7 +1207,7 @@ static int stm32_ltdc_waitforirq(void)
         }
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return ret;
 }
 
@@ -1241,14 +1241,14 @@ static int stm32_ltdc_reload(uint8_t value, bool waitvblank)
        * the application causes shadow register reload.
        */
 
-      flags = enter_critical_section();
+      flags = irqsave();
 
       ASSERT(priv->handled == true);
 
       /* Reset the handled flag */
 
       priv->handled = false;
-      leave_critical_section(flags);
+      irqrestore(flags);
     }
 
   /* Reloads the shadow register.
@@ -1880,7 +1880,7 @@ static void stm32_ltdc_lclut(FAR struct stm32_layer_s *layer,
 
   stm32_ltdc_reload(LTDC_SRCR_IMR, false);
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Update the clut registers */
 
@@ -1913,7 +1913,7 @@ static void stm32_ltdc_lclut(FAR struct stm32_layer_s *layer,
       putreg32(regval, stm32_clutwr_layer_t[layer->state.lid]);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   /* Enable clut */
 

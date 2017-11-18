@@ -40,7 +40,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 #include "chip.h"
 
 /* These definitions are valid only if the MCU supports a segment LCD */

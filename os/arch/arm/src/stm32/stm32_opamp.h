@@ -40,7 +40,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include "chip.h"
 
@@ -52,7 +52,7 @@
 #  include "chip/stm32f33xxx_opamp.h"
 #endif
 
-#include <nuttx/analog/opamp.h>
+#include <tinyara/analog/opamp.h>
 
 /************************************************************************************
  * Pre-processor definitions

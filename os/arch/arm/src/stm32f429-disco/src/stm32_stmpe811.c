@@ -37,19 +37,19 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <debug.h>
 #include <errno.h>
 
-#include <nuttx/board.h>
-#include <nuttx/i2c/i2c_master.h>
-#include <nuttx/input/touchscreen.h>
-#include <nuttx/input/stmpe811.h>
+#include <tinyara/board.h>
+#include <tinyara/i2c.h>
+#include <tinyara/input/touchscreen.h>
+#include <tinyara/input/stmpe811.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "stm32.h"
 #include "stm32f429i-disco.h"
@@ -238,7 +238,7 @@ static void stmpe811_enable(FAR struct stmpe811_config_s *state, bool enable)
    * interrupts disabled during the reconfiguration.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   if (enable)
     {
       /* Configure the EXTI interrupt using the SAVED handler */
@@ -254,7 +254,7 @@ static void stmpe811_enable(FAR struct stmpe811_config_s *state, bool enable)
                               NULL, NULL);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 static void stmpe811_clear(FAR struct stmpe811_config_s *state)

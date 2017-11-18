@@ -40,7 +40,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <string.h>
@@ -48,10 +48,10 @@
 #include <debug.h>
 #include <semaphore.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/kmalloc.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/video/fb.h>
+#include <tinyara/irq.h>
+#include <tinyara/kmalloc.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/video/fb.h>
 
 #include <arch/chip/dma2d.h>
 #include <arch/board/board.h>
@@ -546,7 +546,7 @@ static int stm32_dma2d_loadclut(uintptr_t pfcreg)
   uint32_t   regval;
   irqstate_t flags;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   ret = stm32_dma2d_waitforirq();
   if (ret == OK)
@@ -566,7 +566,7 @@ static int stm32_dma2d_loadclut(uintptr_t pfcreg)
       reginfo("configured regval=%08x\n", getreg32(pfcreg));
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 #endif
@@ -589,7 +589,7 @@ static int stm32_dma2d_start(void)
   int        ret;
   irqstate_t flags;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   ret = stm32_dma2d_waitforirq();
   if (ret == OK)
@@ -609,7 +609,7 @@ static int stm32_dma2d_start(void)
       ret = stm32_dma2d_waitforirq();
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return ret;
 }
 

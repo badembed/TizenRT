@@ -57,7 +57,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -70,17 +70,17 @@
 #include <queue.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/spi/spi.h>
+#include <tinyara/arch.h>
+#include <tinyara/spi/spi.h>
 
 #include <arch/board/board.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/kmalloc.h>
-#include <nuttx/wdog.h>
-#include <nuttx/wqueue.h>
-#include <nuttx/audio/audio.h>
-#include <nuttx/audio/i2s.h>
+#include <tinyara/arch.h>
+#include <tinyara/kmalloc.h>
+#include <tinyara/wdog.h>
+#include <tinyara/wqueue.h>
+#include <tinyara/audio/audio.h>
+#include <tinyara/audio/i2s.h>
 
 #include "up_internal.h"
 #include "up_arch.h"
@@ -704,14 +704,14 @@ static struct stm32_buffer_s *i2s_buf_allocate(struct stm32_i2s_s *priv)
 
   /* Get the buffer from the head of the free list */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   bfcontainer = priv->freelist;
   ASSERT(bfcontainer);
 
   /* Unlink the buffer from the freelist */
 
   priv->freelist = bfcontainer->flink;
-  leave_critical_section(flags);
+  irqrestore(flags);
   return bfcontainer;
 }
 
@@ -739,10 +739,10 @@ static void i2s_buf_free(struct stm32_i2s_s *priv, struct stm32_buffer_s *bfcont
 
   /* Put the buffer container back on the free list */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   bfcontainer->flink  = priv->freelist;
   priv->freelist = bfcontainer;
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   /* Wake up any threads waiting for a buffer container */
 
@@ -1170,9 +1170,9 @@ static void i2s_rx_worker(void *arg)
        * disabled.
        */
 
-      flags = enter_critical_section();
+      flags = irqsave();
       (void)i2s_rxdma_setup(priv);
-      leave_critical_section(flags);
+      irqrestore(flags);
     }
 
   /* Process each buffer in the rx.done queue */
@@ -1184,9 +1184,9 @@ static void i2s_rx_worker(void *arg)
        * also modified from the interrupt level.
        */
 
-      flags = enter_critical_section();
+      flags = irqsave();
       bfcontainer = (struct stm32_buffer_s *)sq_remfirst(&priv->rx.done);
-      leave_critical_section(flags);
+      irqrestore(flags);
 
       DEBUGASSERT(bfcontainer && bfcontainer->apb && bfcontainer->callback);
       apb = bfcontainer->apb;
@@ -1562,9 +1562,9 @@ static void i2s_tx_worker(void *arg)
        * disabled.
        */
 
-      flags = enter_critical_section();
+      flags = irqsave();
       (void)i2s_txdma_setup(priv);
-      leave_critical_section(flags);
+      irqrestore(flags);
     }
 
   /* Process each buffer in the tx.done queue */
@@ -1576,9 +1576,9 @@ static void i2s_tx_worker(void *arg)
        * also modified from the interrupt level.
        */
 
-      flags = enter_critical_section();
+      flags = irqsave();
       bfcontainer = (struct stm32_buffer_s *)sq_remfirst(&priv->tx.done);
-      leave_critical_section(flags);
+      irqrestore(flags);
 
       /* Perform the TX transfer done callback */
 
@@ -1922,7 +1922,7 @@ static int stm32_i2s_receive(struct i2s_dev_s *dev, struct ap_buffer_s *apb,
 
   /* Add the buffer container to the end of the RX pending queue */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   sq_addlast((sq_entry_t *)bfcontainer, &priv->rx.pend);
 
   /* Then start the next transfer.  If there is already a transfer in progess,
@@ -1931,7 +1931,7 @@ static int stm32_i2s_receive(struct i2s_dev_s *dev, struct ap_buffer_s *apb,
 
   ret = i2s_rxdma_setup(priv);
   DEBUGASSERT(ret == OK);
-  leave_critical_section(flags);
+  irqrestore(flags);
   i2s_exclsem_give(priv);
   return OK;
 
@@ -2128,7 +2128,7 @@ static int stm32_i2s_send(struct i2s_dev_s *dev, struct ap_buffer_s *apb,
 
   /* Add the buffer container to the end of the TX pending queue */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   sq_addlast((sq_entry_t *)bfcontainer, &priv->tx.pend);
 
   /* Then start the next transfer.  If there is already a transfer in progess,
@@ -2137,7 +2137,7 @@ static int stm32_i2s_send(struct i2s_dev_s *dev, struct ap_buffer_s *apb,
 
   ret = i2s_txdma_setup(priv);
   DEBUGASSERT(ret == OK);
-  leave_critical_section(flags);
+  irqrestore(flags);
   i2s_exclsem_give(priv);
   return OK;
 
@@ -2606,7 +2606,7 @@ FAR struct i2s_dev_s *stm32_i2sdev_initialize(int port)
 
   i2s_buf_initialize(priv);
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
 #ifdef CONFIG_STM32_I2S2
   if (port == 2)
@@ -2639,7 +2639,7 @@ FAR struct i2s_dev_s *stm32_i2sdev_initialize(int port)
       goto errout_with_alloc;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   i2s_dump_regs(priv, "After initialization");
 
   /* Success exit */

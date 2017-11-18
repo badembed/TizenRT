@@ -38,14 +38,14 @@
  ****************************************************************************/
 
 #include <arch/board/board.h>
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/board.h>
-#include <nuttx/power/pm.h>
+#include <tinyara/arch.h>
+#include <tinyara/board.h>
+#include <tinyara/pm/pm.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "chip.h"
 #include "stm32_pm.h"
@@ -97,7 +97,7 @@ static void up_idlepm(void)
 
   if (newstate != oldstate)
     {
-      flags = enter_critical_section();
+      flags = irqsave();
 
       /* Perform board-specific, state-dependent logic here */
 
@@ -141,7 +141,7 @@ static void up_idlepm(void)
           break;
         }
 
-      leave_critical_section(flags);
+      irqrestore(flags);
     }
 }
 #else

@@ -40,8 +40,8 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/video/fb.h>
+#include <tinyara/config.h>
+#include <tinyara/video/fb.h>
 #include <arch/chip/ltdc.h>
 
 #ifdef CONFIG_STM32_DMA2D

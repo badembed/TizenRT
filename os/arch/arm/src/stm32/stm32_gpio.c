@@ -39,7 +39,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -47,7 +47,7 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "up_arch.h"
 
@@ -323,7 +323,7 @@ int stm32_configgpio(uint32_t cfgset)
    * exclusive access to all of the GPIO configuration registers.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Decode the mode and configuration */
 
@@ -363,7 +363,7 @@ int stm32_configgpio(uint32_t cfgset)
         {
           /* Its an alternate function pin... we can return early */
 
-          leave_critical_section(flags);
+          irqrestore(flags);
           return OK;
         }
     }
@@ -390,7 +390,7 @@ int stm32_configgpio(uint32_t cfgset)
         {
           /* Neither... we can return early */
 
-          leave_critical_section(flags);
+          irqrestore(flags);
           return OK;
         }
     }
@@ -417,7 +417,7 @@ int stm32_configgpio(uint32_t cfgset)
   regval |= (1 << pin);
   putreg32(regval, regaddr);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 #endif
@@ -486,7 +486,7 @@ int stm32_configgpio(uint32_t cfgset)
    * exclusive access to all of the GPIO configuration registers.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Now apply the configuration to the mode register */
 
@@ -649,7 +649,7 @@ int stm32_configgpio(uint32_t cfgset)
       putreg32(regval, regaddr);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 #endif

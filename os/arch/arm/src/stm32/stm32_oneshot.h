@@ -40,12 +40,12 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <time.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "stm32_tim.h"
 

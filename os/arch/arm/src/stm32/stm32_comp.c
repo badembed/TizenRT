@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <errno.h>
@@ -45,8 +45,8 @@
 #include <debug.h>
 
 #include <arch/board/board.h>
-#include <nuttx/analog/comp.h>
-#include <nuttx/analog/ioctl.h>
+#include <tinyara/analog/comp.h>
+#include <tinyara/analog/ioctl.h>
 
 #include "chip.h"
 #include "stm32_gpio.h"

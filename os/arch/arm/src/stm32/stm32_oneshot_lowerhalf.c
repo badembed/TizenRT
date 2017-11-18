@@ -37,16 +37,16 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <time.h>
 #include <assert.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/kmalloc.h>
-#include <nuttx/timers/oneshot.h>
+#include <tinyara/irq.h>
+#include <tinyara/kmalloc.h>
+#include <tinyara/timers/oneshot.h>
 
 #include "stm32_oneshot.h"
 
@@ -222,12 +222,12 @@ static int stm32_start(FAR struct oneshot_lowerhalf_s *lower,
 
   /* Save the callback information and start the timer */
 
-  flags          = enter_critical_section();
+  flags          = irqsave();
   priv->callback = callback;
   priv->arg      = arg;
   ret            = stm32_oneshot_start(&priv->oneshot,
                                        stm32_oneshot_handler, priv, ts);
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   if (ret < 0)
     {
@@ -273,11 +273,11 @@ static int stm32_cancel(FAR struct oneshot_lowerhalf_s *lower,
 
   /* Cancel the timer */
 
-  flags          = enter_critical_section();
+  flags          = irqsave();
   ret            = stm32_oneshot_cancel(&priv->oneshot, ts);
   priv->callback = NULL;
   priv->arg      = NULL;
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   if (ret < 0)
     {

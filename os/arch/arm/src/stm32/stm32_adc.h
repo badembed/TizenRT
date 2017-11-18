@@ -42,7 +42,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include "chip.h"
 
@@ -56,7 +56,7 @@
 #  include "chip/stm32_adc.h"
 #endif
 
-#include <nuttx/analog/adc.h>
+#include <tinyara/analog/adc.h>
 
 /************************************************************************************
  * Pre-processor Definitions

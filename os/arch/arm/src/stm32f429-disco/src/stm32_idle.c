@@ -40,16 +40,16 @@
  ****************************************************************************/
 
 #include <arch/board/board.h>
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/board.h>
-#include <nuttx/clock.h>
-#include <nuttx/power/pm.h>
+#include <tinyara/arch.h>
+#include <tinyara/board.h>
+#include <tinyara/clock.h>
+#include <tinyara/pm/pm.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "up_internal.h"
 #include "stm32_pm.h"
@@ -127,7 +127,7 @@ static void stm32_idlepm(void)
     {
       sinfo("newstate= %d oldstate=%d\n", newstate, oldstate);
 
-      flags = enter_critical_section();
+      flags = irqsave();
 
       /* Force the global state change */
 
@@ -216,7 +216,7 @@ static void stm32_idlepm(void)
       oldstate = newstate;
 
 errout:
-      leave_critical_section(flags);
+      irqrestore(flags);
     }
 }
 #else

@@ -41,7 +41,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -56,10 +56,10 @@
 #include <unistd.h>
 
 #include <arch/board/board.h>
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <nuttx/analog/adc.h>
-#include <nuttx/analog/ioctl.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/analog/adc.h>
+#include <tinyara/analog/ioctl.h>
 
 #include "up_internal.h"
 #include "up_arch.h"
@@ -805,7 +805,7 @@ static void sdadc_reset(FAR struct adc_dev_s *dev)
 
   /* TODO: why critical ? */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Enable SDADC reset state */
 
@@ -907,7 +907,7 @@ static void sdadc_reset(FAR struct adc_dev_s *dev)
 
   sdadc_enable(priv, false);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   ainfo("CR1:  0x%08x CR2:  0x%08x\n",
         sdadc_getreg(priv, STM32_SDADC_CR1_OFFSET),

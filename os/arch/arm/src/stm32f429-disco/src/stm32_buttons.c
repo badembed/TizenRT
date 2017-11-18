@@ -37,13 +37,13 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <errno.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/board.h>
+#include <tinyara/arch.h>
+#include <tinyara/board.h>
 #include <arch/board/board.h>
 
 #include "stm32f429i-disco.h"

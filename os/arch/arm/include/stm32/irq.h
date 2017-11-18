@@ -44,8 +44,8 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/irq.h>
+#include <tinyara/config.h>
+#include <tinyara/irq.h>
 #include <arch/stm32/chip.h>
 
 /************************************************************************************

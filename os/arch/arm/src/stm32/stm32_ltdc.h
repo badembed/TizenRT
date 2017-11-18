@@ -41,13 +41,13 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdbool.h>
 #include <semaphore.h>
 
-#include <nuttx/video/fb.h>
-#include <nuttx/nx/nxglib.h>
+#include <tinyara/video/fb.h>
+#include <tinyara/nx/nxglib.h>
 
 #include <arch/chip/ltdc.h>
 

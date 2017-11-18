@@ -40,12 +40,12 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include "chip.h"
 #include "chip/stm32_dac.h"
 
-#include <nuttx/analog/dac.h>
+#include <tinyara/analog/dac.h>
 
 /************************************************************************************
  * Pre-processor definitions

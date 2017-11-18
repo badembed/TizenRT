@@ -37,13 +37,13 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <assert.h>
 #include <debug.h>
 
-#include <nuttx/init.h>
+#include <tinyara/init.h>
 #include <arch/board/board.h>
 
 #include "up_arch.h"
@@ -262,7 +262,7 @@ void __start(void)
    * certain that there are no issues with the state of global variables.
    */
 
-  for (dest = _START_BSS; dest < _END_BSS; )
+  for (dest = &_sbss; dest < &_ebss; )
     {
       *dest++ = 0;
     }
@@ -275,7 +275,7 @@ void __start(void)
    * end of all of the other read-only data (.text, .rodata) at _eronly.
    */
 
-  for (src = _DATA_INIT, dest = _START_DATA; dest < _END_DATA; )
+  for (src = &_eronly, dest = &_sdata; dest < &_edata;)
     {
       *dest++ = *src++;
     }

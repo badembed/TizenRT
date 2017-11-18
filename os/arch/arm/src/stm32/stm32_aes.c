@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -47,9 +47,9 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/crypto/crypto.h>
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
+#include <tinyara/crypto/crypto.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
 #include <arch/board/board.h>
 
 #include "up_internal.h"
@@ -276,7 +276,7 @@ int up_aesreset(void)
   irqstate_t flags;
   uint32_t regval;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   regval = getreg32(STM32_RCC_AHBRSTR);
   regval |= RCC_AHBRSTR_AESRST;
@@ -284,7 +284,7 @@ int up_aesreset(void)
   regval &= ~RCC_AHBRSTR_AESRST;
   putreg32(regval, STM32_RCC_AHBRSTR);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   return OK;
 }

@@ -41,7 +41,7 @@
  * is suppressed and the platform specific code is expected to provide the
  * following custom functions.
  *
- *   void arm_timer_initialize(void): Initializes the timer facilities.
+ *   void up_timer_initialize(void): Initializes the timer facilities.
  *     Called early in the initialization sequence (by up_intialize()).
  *   int up_timer_gettime(FAR struct timespec *ts):  Returns the current
  *     time from the platform specific time source.
@@ -77,14 +77,14 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
 #include <assert.h>
 
-#include <nuttx/arch.h>
+#include <tinyara/arch.h>
 #include <debug.h>
 
 #include "up_arch.h"
@@ -370,7 +370,7 @@ static int stm32_tickless_handler(int irq, void *context, void *arg)
  ****************************************************************************/
 
 /****************************************************************************
- * Name: arm_timer_initialize
+ * Name: up_timer_initialize
  *
  * Description:
  *   Initializes all platform-specific timer facilities.  This function is
@@ -394,7 +394,7 @@ static int stm32_tickless_handler(int irq, void *context, void *arg)
  *
  ****************************************************************************/
 
-void arm_timer_initialize(void)
+void up_timer_initialize(void)
 {
   switch (CONFIG_STM32_TICKLESS_TIMER)
     {
@@ -569,7 +569,7 @@ void arm_timer_initialize(void)
  *
  * Description:
  *   Return the elapsed time since power-up (or, more correctly, since
- *   arm_timer_initialize() was called).  This function is functionally
+ *   up_timer_initialize() was called).  This function is functionally
  *   equivalent to:
  *
  *      int clock_gettime(clockid_t clockid, FAR struct timespec *ts);
@@ -617,7 +617,7 @@ int up_timer_gettime(FAR struct timespec *ts)
    * be lost.
    */
 
-  flags    = enter_critical_section();
+  flags    = irqsave();
 
   overflow = g_tickless.overflow;
   counter  = STM32_TIM_GETCOUNTER(g_tickless.tch);
@@ -644,7 +644,7 @@ int up_timer_gettime(FAR struct timespec *ts)
       g_tickless.overflow = overflow;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   tmrinfo("counter=%lu (%lu) overflow=%lu, pending=%i\n",
          (unsigned long)counter,  (unsigned long)verify,
@@ -752,7 +752,7 @@ int up_timer_cancel(FAR struct timespec *ts)
 
   /* Was the timer running? */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   if (!g_tickless.pending)
     {
       /* No.. Just return zero timer remaining and successful cancellation.
@@ -766,7 +766,7 @@ int up_timer_cancel(FAR struct timespec *ts)
           ts->tv_nsec = 0;
         }
 
-      leave_critical_section(flags);
+      irqrestore(flags);
       return OK;
     }
 
@@ -784,7 +784,7 @@ int up_timer_cancel(FAR struct timespec *ts)
   period = g_tickless.period;
 
   g_tickless.pending = false;
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   /* Did the caller provide us with a location to return the time
    * remaining?
@@ -879,7 +879,7 @@ int up_timer_start(FAR const struct timespec *ts)
 
   /* Was an interval already running? */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   if (g_tickless.pending)
     {
       /* Yes.. then cancel it */
@@ -925,7 +925,7 @@ int up_timer_start(FAR const struct timespec *ts)
   stm32_tickless_enableint(g_tickless.channel);
 
   g_tickless.pending = true;
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 #endif /* CONFIG_SCHED_TICKLESS */

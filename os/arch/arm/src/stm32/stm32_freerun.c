@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -45,8 +45,8 @@
 #include <assert.h>
 #include <errno.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/clock.h>
+#include <tinyara/irq.h>
+#include <tinyara/clock.h>
 
 #include "stm32_freerun.h"
 
@@ -208,7 +208,7 @@ int stm32_freerun_counter(struct stm32_freerun_s *freerun,
    * be lost.
    */
 
-  flags    = enter_critical_section();
+  flags    = irqsave();
 
   overflow = freerun->overflow;
   counter  = STM32_TIM_GETCOUNTER(freerun->tch);
@@ -235,7 +235,7 @@ int stm32_freerun_counter(struct stm32_freerun_s *freerun,
       freerun->overflow = overflow;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   tmrinfo("counter=%lu (%lu) overflow=%lu, pending=%i\n",
          (unsigned long)counter,  (unsigned long)verify,

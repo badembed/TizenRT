@@ -41,9 +41,9 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
-#include <nuttx/mm/mm.h>
+#include <tinyara/mm/mm.h>
 
 /****************************************************************************
  * Pre-processor Definitions

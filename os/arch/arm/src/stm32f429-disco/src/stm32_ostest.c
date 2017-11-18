@@ -37,14 +37,14 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 #include <arch/board/board.h>
 
 #include "up_arch.h"
@@ -92,13 +92,13 @@ void arch_getfpu(FAR uint32_t *fpusave)
 
   /* Take a snapshot of the thread context right now */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   up_saveusercontext(g_saveregs);
 
   /* Return only the floating register values */
 
   memcpy(fpusave, &g_saveregs[REG_S0], (4*SW_FPU_REGS));
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /* Given two arrays of size CONFIG_EXAMPLES_OSTEST_FPUSIZE this function

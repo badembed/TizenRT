@@ -38,7 +38,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -51,8 +51,8 @@
 #include <debug.h>
 
 #include <arch/board/board.h>
-#include <nuttx/irq.h>
-#include <nuttx/analog/dac.h>
+#include <tinyara/irq.h>
+#include <tinyara/analog/dac.h>
 
 #include "up_internal.h"
 #include "up_arch.h"
@@ -905,11 +905,11 @@ static void dac_reset(FAR struct dac_dev_s *dev)
    * functional.
    */
 
-  flags   = enter_critical_section();
+  flags   = irqsave();
 
 #warning "Missing logic"
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -1498,7 +1498,7 @@ static int dac_blockinit(void)
 
   /* Put the entire DAC block in reset state */
 
-  flags   = enter_critical_section();
+  flags   = irqsave();
   regval  = getreg32(STM32_RCC_APB1RSTR);
 #if STM32_NDAC < 2
   regval |= RCC_APB1RSTR_DACRST;
@@ -1525,7 +1525,7 @@ static int dac_blockinit(void)
 #endif
 #endif
   putreg32(regval, STM32_RCC_APB1RSTR);
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   /* Mark the DAC block as initialized */
 

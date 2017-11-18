@@ -38,16 +38,16 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <assert.h>
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/irq.h>
-#include <nuttx/sensors/qencoder.h>
+#include <tinyara/arch.h>
+#include <tinyara/irq.h>
+#include <tinyara/sensors/qencoder.h>
 
 #include <arch/board/board.h>
 
@@ -965,7 +965,7 @@ static int stm32_shutdown(FAR struct qe_lowerhalf_s *lower)
 
   /* Disable the update/global interrupt at the NVIC */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   up_disable_irq(priv->config->irq);
 
   /* Detach the interrupt handler */
@@ -1035,7 +1035,7 @@ static int stm32_shutdown(FAR struct qe_lowerhalf_s *lower)
 
   regval &= ~resetbit;
   putreg32(regval, regaddr);
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   sninfo("regaddr: %08x resetbit: %08x\n", regaddr, resetbit);
   stm32_dumpregs(priv, "After stop");
@@ -1126,10 +1126,10 @@ static int stm32_reset(FAR struct qe_lowerhalf_s *lower)
    * (if possible)
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   stm32_putreg32(priv, STM32_GTIM_CNT_OFFSET, 0);
   priv->position = 0;
-  leave_critical_section(flags);
+  irqrestore(flags);
 #else
   sninfo("Resetting position to zero\n");
   DEBUGASSERT(lower && priv->inuse);

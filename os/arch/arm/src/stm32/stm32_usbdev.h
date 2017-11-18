@@ -40,8 +40,8 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
-#include <nuttx/usb/usbdev.h>
+#include <tinyara/config.h>
+#include <tinyara/usb/usbdev.h>
 #include <stdint.h>
 
 #include "chip.h"

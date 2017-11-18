@@ -40,12 +40,12 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include "chip.h"
 #include "chip/stm32_can.h"
 
-#include <nuttx/can/can.h>
+#include <tinyara/can/can.h>
 
 /************************************************************************************
  * Pre-processor Definitions

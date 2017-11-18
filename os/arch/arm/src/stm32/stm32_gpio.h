@@ -42,14 +42,14 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #ifndef __ASSEMBLY__
 #  include <stdint.h>
 #  include <stdbool.h>
 #endif
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "chip.h"
 

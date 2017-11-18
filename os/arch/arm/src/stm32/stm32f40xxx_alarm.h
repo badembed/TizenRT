@@ -40,7 +40,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 #include <time.h>
 
 #ifdef CONFIG_RTC_ALARM

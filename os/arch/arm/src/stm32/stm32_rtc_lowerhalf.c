@@ -39,15 +39,15 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/timers/rtc.h>
+#include <tinyara/arch.h>
+#include <tinyara/timers/rtc.h>
 
 #include "up_arch.h"
 
@@ -749,7 +749,7 @@ static int stm32_rdalarm(FAR struct rtc_lowerhalf_s *lower,
  * Description:
  *   Instantiate the RTC lower half driver for the STM32.  General usage:
  *
- *     #include <nuttx/timers/rtc.h>
+ *     #include <tinyara/timers/rtc.h>
  *     #include "stm32_rtc.h>
  *
  *     struct rtc_lowerhalf_s *lower;

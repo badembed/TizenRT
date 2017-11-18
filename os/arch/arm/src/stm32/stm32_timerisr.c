@@ -37,12 +37,12 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <time.h>
 #include <debug.h>
-#include <nuttx/arch.h>
+#include <tinyara/arch.h>
 #include <arch/board/board.h>
 
 #include "nvic.h"
@@ -111,7 +111,7 @@ static int stm32_timerisr(int irq, uint32_t *regs, void *arg)
  ****************************************************************************/
 
 /****************************************************************************
- * Function:  arm_timer_initialize
+ * Function:  up_timer_initialize
  *
  * Description:
  *   This function is called during start-up to initialize
@@ -119,7 +119,7 @@ static int stm32_timerisr(int irq, uint32_t *regs, void *arg)
  *
  ****************************************************************************/
 
-void arm_timer_initialize(void)
+void up_timer_initialize(void)
 {
   uint32_t regval;
 

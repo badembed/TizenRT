@@ -37,7 +37,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -48,10 +48,10 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <nuttx/serial/serial.h>
-#include <nuttx/power/pm.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/serial/serial.h>
+#include <tinyara/pm/pm.h>
 
 #ifdef CONFIG_SERIAL_TERMIOS
 #  include <termios.h>
@@ -1082,11 +1082,11 @@ static void up_restoreusartint(struct up_dev_s *priv, uint16_t ie)
 {
   irqstate_t flags;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   up_setusartint(priv, ie);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -1097,7 +1097,7 @@ static void up_disableusartint(struct up_dev_s *priv, uint16_t *ie)
 {
   irqstate_t flags;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   if (ie)
     {
@@ -1137,7 +1137,7 @@ static void up_disableusartint(struct up_dev_s *priv, uint16_t *ie)
 
   up_setusartint(priv, 0);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -2073,7 +2073,7 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
         irqstate_t flags;
         uint32_t tx_break;
 
-        flags = enter_critical_section();
+        flags = irqsave();
 
         /* Disable any further tx activity */
 
@@ -2086,7 +2086,7 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
         tx_break = GPIO_OUTPUT | (~(GPIO_MODE_MASK|GPIO_OUTPUT_SET) & priv->tx_gpio);
         stm32_configgpio(tx_break);
 
-        leave_critical_section(flags);
+        irqrestore(flags);
       }
       break;
 
@@ -2094,7 +2094,7 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
       {
         irqstate_t flags;
 
-        flags = enter_critical_section();
+        flags = irqsave();
 
         /* Configure TX back to U(S)ART */
 
@@ -2106,7 +2106,7 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
 
         up_txint(dev, true);
 
-        leave_critical_section(flags);
+        irqrestore(flags);
       }
       break;
 #  else
@@ -2115,10 +2115,10 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
         uint32_t cr1;
         irqstate_t flags;
 
-        flags = enter_critical_section();
+        flags = irqsave();
         cr1   = up_serialin(priv, STM32_USART_CR1_OFFSET);
         up_serialout(priv, STM32_USART_CR1_OFFSET, cr1 | USART_CR1_SBK);
-        leave_critical_section(flags);
+        irqrestore(flags);
       }
       break;
 
@@ -2127,10 +2127,10 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
         uint32_t cr1;
         irqstate_t flags;
 
-        flags = enter_critical_section();
+        flags = irqsave();
         cr1   = up_serialin(priv, STM32_USART_CR1_OFFSET);
         up_serialout(priv, STM32_USART_CR1_OFFSET, cr1 & ~USART_CR1_SBK);
-        leave_critical_section(flags);
+        irqrestore(flags);
       }
       break;
 #  endif
@@ -2205,7 +2205,7 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
    * "           "      USART_SR_ORE    Overrun Error Detected
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   ie = priv->ie;
   if (enable)
     {
@@ -2229,7 +2229,7 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
   /* Then set the new interrupt state */
 
   up_restoreusartint(priv, ie);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 #endif
 
@@ -2450,7 +2450,7 @@ static void up_txint(struct uart_dev_s *dev, bool enable)
    * USART_CR3_CTSIE    USART_SR_CTS    CTS flag                     (not used)
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   if (enable)
     {
       /* Set to receive an interrupt when the TX data register is empty */
@@ -2492,7 +2492,7 @@ static void up_txint(struct uart_dev_s *dev, bool enable)
       up_restoreusartint(priv, priv->ie & ~USART_CR1_TXEIE);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -2774,7 +2774,7 @@ void stm32_serial_dma_poll(void)
 {
     irqstate_t flags;
 
-    flags = enter_critical_section();
+    flags = irqsave();
 
 #ifdef CONFIG_USART1_RXDMA
   if (g_usart1priv.rxdma != NULL)
@@ -2832,7 +2832,7 @@ void stm32_serial_dma_poll(void)
     }
 #endif
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 #endif
 

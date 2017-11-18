@@ -41,7 +41,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -51,13 +51,13 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/kmalloc.h>
-#include <nuttx/usb/usb.h>
-#include <nuttx/usb/usbdev.h>
-#include <nuttx/usb/usbdev_trace.h>
+#include <tinyara/arch.h>
+#include <tinyara/kmalloc.h>
+#include <tinyara/usb/usb.h>
+#include <tinyara/usb/usbdev.h>
+#include <tinyara/usb/usbdev_trace.h>
 
-#include <nuttx/irq.h>
+#include <tinyara/irq.h>
 
 #include "up_arch.h"
 #include "stm32.h"
@@ -1254,9 +1254,9 @@ static void stm32_reqcomplete(struct stm32_ep_s *privep, int16_t result)
 
   /* Remove the completed request at the head of the endpoint request list */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   privreq = stm32_rqdequeue(privep);
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   if (privreq)
     {
@@ -2728,7 +2728,7 @@ stm32_epreserve(struct stm32_usbdev_s *priv, uint8_t epset)
   irqstate_t flags;
   int epndx = 0;
 
-  flags = enter_critical_section();
+  flags = irqsave();
   epset &= priv->epavail;
   if (epset)
     {
@@ -2753,7 +2753,7 @@ stm32_epreserve(struct stm32_usbdev_s *priv, uint8_t epset)
         }
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return privep;
 }
 
@@ -2764,9 +2764,9 @@ stm32_epreserve(struct stm32_usbdev_s *priv, uint8_t epset)
 static inline void
 stm32_epunreserve(struct stm32_usbdev_s *priv, struct stm32_ep_s *privep)
 {
-  irqstate_t flags = enter_critical_section();
+  irqstate_t flags = irqsave();
   priv->epavail   |= STM32_ENDP_BIT(USB_EPNO(privep->ep.eplog));
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -2789,7 +2789,7 @@ static int stm32_epallocpma(struct stm32_usbdev_s *priv)
   int bufno = ERROR;
   int bufndx;
 
-  flags = enter_critical_section();
+  flags = irqsave();
   for (bufndx = 2; bufndx < STM32_NBUFFERS; bufndx++)
     {
       /* Check if this buffer is available */
@@ -2808,7 +2808,7 @@ static int stm32_epallocpma(struct stm32_usbdev_s *priv)
         }
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return bufno;
 }
 
@@ -2819,9 +2819,9 @@ static int stm32_epallocpma(struct stm32_usbdev_s *priv)
 static inline void
 stm32_epfreepma(struct stm32_usbdev_s *priv, struct stm32_ep_s *privep)
 {
-  irqstate_t flags = enter_critical_section();
+  irqstate_t flags = irqsave();
   priv->epavail   |= STM32_ENDP_BIT(privep->bufno);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -2951,7 +2951,7 @@ static int stm32_epdisable(struct usbdev_ep_s *ep)
 
   /* Cancel any ongoing activity */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   stm32_cancelrequests(privep);
 
   /* Disable TX; disable RX */
@@ -2960,7 +2960,7 @@ static int stm32_epdisable(struct usbdev_ep_s *ep)
   stm32_seteprxstatus(epno, USB_EPR_STATRX_DIS);
   stm32_seteptxstatus(epno, USB_EPR_STATTX_DIS);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 
@@ -3052,7 +3052,7 @@ static int stm32_epsubmit(struct usbdev_ep_s *ep, struct usbdev_req_s *req)
   epno        = USB_EPNO(ep->eplog);
   req->result = -EINPROGRESS;
   req->xfrd   = 0;
-  flags       = enter_critical_section();
+  flags       = irqsave();
 
   /* If we are stalled, then drop all requests on the floor */
 
@@ -3125,7 +3125,7 @@ static int stm32_epsubmit(struct usbdev_ep_s *ep, struct usbdev_req_s *req)
         }
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return ret;
 }
 
@@ -3147,9 +3147,9 @@ static int stm32_epcancel(struct usbdev_ep_s *ep, struct usbdev_req_s *req)
 #endif
   usbtrace(TRACE_EPCANCEL, USB_EPNO(ep->eplog));
 
-  flags = enter_critical_section();
+  flags = irqsave();
   stm32_cancelrequests(privep);
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 
@@ -3179,7 +3179,7 @@ static int stm32_epstall(struct usbdev_ep_s *ep, bool resume)
 
   /* STALL or RESUME the endpoint */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   usbtrace(resume ? TRACE_EPRESUME : TRACE_EPSTALL, USB_EPNO(ep->eplog));
 
   /* Get status of the endpoint; stall the request if the endpoint is
@@ -3287,7 +3287,7 @@ static int stm32_epstall(struct usbdev_ep_s *ep, bool resume)
         }
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 
@@ -3449,7 +3449,7 @@ static int stm32_wakeup(struct usbdev_s *dev)
    * by the ESOF interrupt.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   stm32_initresume(priv);
   priv->rsmstate = RSMSTATE_STARTED;
 
@@ -3461,7 +3461,7 @@ static int stm32_wakeup(struct usbdev_s *dev)
 
   stm32_setimask(priv, USB_CNTR_ESOFM, USB_CNTR_WKUPM | USB_CNTR_SUSPM);
   stm32_putreg(~USB_ISTR_ESOF, STM32_USB_ISTR);
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 
@@ -3793,7 +3793,7 @@ void up_usbuninitialize(void)
   struct stm32_usbdev_s *priv = &g_usbdev;
   irqstate_t flags;
 
-  flags = enter_critical_section();
+  flags = irqsave();
   usbtrace(TRACE_DEVUNINIT, 0);
 
   /* Disable and detach the USB IRQs */
@@ -3812,7 +3812,7 @@ void up_usbuninitialize(void)
   /* Put the hardware in an inactive state */
 
   stm32_hwshutdown(priv);
-  leave_critical_section(flags);
+  irqrestore(flags);
 }
 
 /****************************************************************************
@@ -3926,7 +3926,7 @@ int usbdev_unregister(struct usbdevclass_driver_s *driver)
    * canceled while the class driver is still bound.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
   stm32_reset(priv);
 
   /* Unbind the class driver */
@@ -3949,7 +3949,7 @@ int usbdev_unregister(struct usbdevclass_driver_s *driver)
   /* Unhook the driver */
 
   priv->driver = NULL;
-  leave_critical_section(flags);
+  irqrestore(flags);
   return OK;
 }
 

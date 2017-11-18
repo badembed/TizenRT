@@ -42,7 +42,7 @@
 #ifndef __ARCH_ARM_SRC_STM32_STM32_RTC_H
 #define __ARCH_ARM_SRC_STM32_STM32_RTC_H
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include "chip.h"
 
@@ -205,7 +205,7 @@ int stm32_rtc_setdatetime(FAR const struct tm *tp);
  * Description:
  *   Instantiate the RTC lower half driver for the STM32.  General usage:
  *
- *     #include <nuttx/timers/rtc.h>
+ *     #include <tinyara/timers/rtc.h>
  *     #include "stm32_rtc.h>
  *
  *     struct rtc_lowerhalf_s *lower;

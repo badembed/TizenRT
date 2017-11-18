@@ -41,7 +41,7 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -56,10 +56,10 @@
 #include <unistd.h>
 
 #include <arch/board/board.h>
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <nuttx/analog/adc.h>
-#include <nuttx/analog/ioctl.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/analog/adc.h>
+#include <tinyara/analog/ioctl.h>
 
 #include "up_internal.h"
 #include "up_arch.h"
@@ -1752,7 +1752,7 @@ static void adc_reset(FAR struct adc_dev_s *dev)
 #endif
 
   ainfo("intf: %d\n", priv->intf);
-  flags = enter_critical_section();
+  flags = irqsave();
 
 #if defined(CONFIG_STM32_STM32L15XX) && \
     (STM32_CFGR_PLLSRC != 0 || STM32_SYSCLK_SW != RCC_CFGR_SW_HSI)
@@ -2064,7 +2064,7 @@ static void adc_reset(FAR struct adc_dev_s *dev)
     }
 #endif
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
 #if defined(CONFIG_STM32_STM32F30XX) || defined(CONFIG_STM32_STM32F33XX)
   ainfo("ISR:  0x%08x CR:   0x%08x CFGR: 0x%08x\n",

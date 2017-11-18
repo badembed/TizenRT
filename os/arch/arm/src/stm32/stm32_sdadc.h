@@ -42,7 +42,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include "chip.h"
 
@@ -54,7 +54,7 @@
 #  error "This chip is not yet supported"
 #endif
 
-#include <nuttx/analog/adc.h>
+#include <tinyara/analog/adc.h>
 
 /************************************************************************************
  * Pre-processor Definitions

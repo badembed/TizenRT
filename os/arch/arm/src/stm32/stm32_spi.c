@@ -59,7 +59,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -68,10 +68,10 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/irq.h>
-#include <nuttx/arch.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/spi/spi.h>
+#include <tinyara/irq.h>
+#include <tinyara/arch.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/spi/spi.h>
 
 #include <arch/board/board.h>
 
@@ -1778,7 +1778,7 @@ FAR struct spi_dev_s *stm32_spibus_initialize(int bus)
 {
   FAR struct stm32_spidev_s *priv = NULL;
 
-  irqstate_t flags = enter_critical_section();
+  irqstate_t flags = irqsave();
 
 #ifdef CONFIG_STM32_SPI1
   if (bus == 1)
@@ -1929,7 +1929,7 @@ FAR struct spi_dev_s *stm32_spibus_initialize(int bus)
       return NULL;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return (FAR struct spi_dev_s *)priv;
 }
 

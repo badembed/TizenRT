@@ -37,14 +37,14 @@
  * Included Files
  ****************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <debug.h>
 
 #include <arch/board/board.h>
-#include <nuttx/power/pm.h>
+#include <tinyara/pm/pm.h>
 
 #include "chip.h"
 #include "up_arch.h"

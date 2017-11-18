@@ -72,7 +72,7 @@
  * Included Files
  ************************************************************************************/
 
-#include <nuttx/config.h>
+#include <tinyara/config.h>
 
 #include <sys/types.h>
 #include <stdio.h>
@@ -83,11 +83,11 @@
 #include <errno.h>
 #include <debug.h>
 
-#include <nuttx/arch.h>
-#include <nuttx/irq.h>
-#include <nuttx/clock.h>
-#include <nuttx/semaphore.h>
-#include <nuttx/i2c/i2c_master.h>
+#include <tinyara/arch.h>
+#include <tinyara/irq.h>
+#include <tinyara/clock.h>
+#include <tinyara/semaphore.h>
+#include <tinyara/i2c.h>
 
 #include <arch/board/board.h>
 
@@ -594,7 +594,7 @@ static inline int stm32_i2c_sem_waitdone(FAR struct stm32_i2c_priv_s *priv)
   uint32_t regval;
   int ret;
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   /* Enable I2C interrupts */
 
@@ -663,7 +663,7 @@ static inline int stm32_i2c_sem_waitdone(FAR struct stm32_i2c_priv_s *priv)
 
   stm32_i2c_modifyreg32(priv, STM32_I2C_CR1_OFFSET, I2C_CR1_ALLINTS, 0);
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return ret;
 }
 #else
@@ -1333,7 +1333,7 @@ static int stm32_i2c_isr_process(struct stm32_i2c_priv_s *priv)
            */
 
 #ifdef CONFIG_I2C_POLLED
-          irqstate_t flags = enter_critical_section();
+          irqstate_t flags = irqsave();
 #endif
           /* Receive a byte */
 
@@ -1348,7 +1348,7 @@ static int stm32_i2c_isr_process(struct stm32_i2c_priv_s *priv)
             }
 
 #ifdef CONFIG_I2C_POLLED
-          leave_critical_section(flags);
+          irqrestore(flags);
 #endif
         }
     }
@@ -1950,7 +1950,7 @@ FAR struct i2c_master_s *stm32_i2cbus_initialize(int port)
    * power-up hardware and configure GPIOs.
    */
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   if ((volatile int)priv->refs++ == 0)
     {
@@ -1958,7 +1958,7 @@ FAR struct i2c_master_s *stm32_i2cbus_initialize(int port)
       stm32_i2c_init(priv);
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
   return (struct i2c_master_s *)priv;
 }
 
@@ -1984,15 +1984,15 @@ int stm32_i2cbus_uninitialize(FAR struct i2c_master_s * dev)
       return ERROR;
     }
 
-  flags = enter_critical_section();
+  flags = irqsave();
 
   if (--priv->refs)
     {
-      leave_critical_section(flags);
+      irqrestore(flags);
       return OK;
     }
 
-  leave_critical_section(flags);
+  irqrestore(flags);
 
   /* Disable power and other HW resource (GPIO's) */
 
