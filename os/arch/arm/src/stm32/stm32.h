@@ -58,7 +58,11 @@
 #include "chip.h"
 #include "stm32_adc.h"
 //#include "stm32_bkp.h"
+
+#ifdef CONFIG_CAN
 #include "stm32_can.h"
+#endif
+
 #include "stm32_comp.h"
 #include "stm32_dbgmcu.h"
 #include "stm32_dma.h"
