@@ -8,6 +8,12 @@ choice
 	prompt "ARM chip selection"
 	default ARCH_CHIP_S5J
 
+config ARCH_CHIP_STM32
+	bool "STM32"
+	select ARCH_HAVE_MPU
+  ---help---
+    STM32 chip
+
 config ARCH_CHIP_LM
 	bool "TI/Luminary Stellaris"
 	select ARCH_HAVE_CMNVECTOR
@@ -29,6 +35,7 @@ endchoice
 
 config ARCH_CHIP
 	string
+  default "stm32"     if ARCH_CHIP_STM32
 	default "s5j"       if ARCH_CHIP_S5J
 	default "tiva"      if ARCH_CHIP_LM
 
@@ -167,6 +174,9 @@ source arch/arm/src/tiva/Kconfig
 endif
 if ARCH_CHIP_S5J
 source arch/arm/src/s5j/Kconfig
+endif
+if ARCH_CHIP_STM32
+source arch/arm/src/stm32/Kconfig
 endif
 
 endif
