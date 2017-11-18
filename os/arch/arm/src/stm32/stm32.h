@@ -73,7 +73,11 @@
 #include "stm32_gpio.h"
 #include "stm32_hrtim.h"
 #include "stm32_i2c.h"
+
+#ifdef CONFIG_STM32_LTDC
 #include "stm32_ltdc.h"
+#endif
+
 #include "stm32_opamp.h"
 #include "stm32_pwr.h"
 #include "stm32_rcc.h"
