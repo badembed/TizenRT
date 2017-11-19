@@ -56,7 +56,7 @@
  */
 
 #if defined(CONFIG_STM32_STM32F10XX)
-#  include "stm32_rtcounter.c"
+#include "stm32_rtcounter.c"
 
 /* The other families use a more traditional Realtime Clock/Calendar (RTCC) with
  * broken-out data/time in BCD format.  The backup registers are integrated into
@@ -65,7 +65,7 @@
 
 #elif defined(CONFIG_STM32_STM32L15XX) || defined(CONFIG_STM32_STM32F20XX) || \
       defined(CONFIG_STM32_STM32F30XX)
-#  include "stm32_rtcc.c"
+#include "stm32_rtcc.c"
 #elif defined(CONFIG_STM32_STM32F4XXX)
-#  include "stm32f40xxx_rtcc.c"
+#include "stm32f40xxx_rtcc.c"
 #endif

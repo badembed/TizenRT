@@ -65,7 +65,6 @@
  *
  ****************************************************************************/
 
-int stm32_exti_pvd(bool risingedge, bool fallingedge, bool event,
-                   xcpt_t func, void *arg);
+int stm32_exti_pvd(bool risingedge, bool fallingedge, bool event, xcpt_t func, void *arg);
 
-#endif /* STM32_EXTI_PWR_H_ */
+#endif							/* STM32_EXTI_PWR_H_ */

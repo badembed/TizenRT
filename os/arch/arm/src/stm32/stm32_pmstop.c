@@ -83,40 +83,39 @@
 
 int stm32_pmstop(bool lpds)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Clear the Power Down Deep Sleep (PDDS) and the Low Power Deep Sleep
-   * (LPDS)) bits in the power control register.
-   */
+	/* Clear the Power Down Deep Sleep (PDDS) and the Low Power Deep Sleep
+	 * (LPDS)) bits in the power control register.
+	 */
 
-  regval  = getreg32(STM32_PWR_CR);
-  regval &= ~(PWR_CR_LPDS | PWR_CR_PDDS);
+	regval = getreg32(STM32_PWR_CR);
+	regval &= ~(PWR_CR_LPDS | PWR_CR_PDDS);
 
-  /* Set the Low Power Deep Sleep (LPDS) bit if so requested */
+	/* Set the Low Power Deep Sleep (LPDS) bit if so requested */
 
-  if (lpds)
-    {
-      regval |= PWR_CR_LPDS;
-    }
+	if (lpds) {
+		regval |= PWR_CR_LPDS;
+	}
 
-  putreg32(regval, STM32_PWR_CR);
+	putreg32(regval, STM32_PWR_CR);
 
-  /* Set SLEEPDEEP bit of Cortex System Control Register */
+	/* Set SLEEPDEEP bit of Cortex System Control Register */
 
-  regval  = getreg32(NVIC_SYSCON);
-  regval |= NVIC_SYSCON_SLEEPDEEP;
-  putreg32(regval, NVIC_SYSCON);
+	regval = getreg32(NVIC_SYSCON);
+	regval |= NVIC_SYSCON_SLEEPDEEP;
+	putreg32(regval, NVIC_SYSCON);
 
-  /* Sleep until the wakeup interrupt or event occurs */
+	/* Sleep until the wakeup interrupt or event occurs */
 
 #ifdef CONFIG_PM_WFE
-  /* Mode: SLEEP + Entry with WFE */
+	/* Mode: SLEEP + Entry with WFE */
 
-  asm("wfe");
+	asm("wfe");
 #else
-  /* Mode: SLEEP + Entry with WFI */
+	/* Mode: SLEEP + Entry with WFI */
 
-  asm("wfi");
+	asm("wfi");
 #endif
-  return OK;
+	return OK;
 }

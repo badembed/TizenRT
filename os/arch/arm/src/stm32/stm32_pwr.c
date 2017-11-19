@@ -66,18 +66,17 @@ static uint16_t g_bkp_writable_counter = 0;
 
 static inline uint32_t stm32_pwr_getreg(uint8_t offset)
 {
-  return getreg32(STM32_PWR_BASE + (uint32_t)offset);
+	return getreg32(STM32_PWR_BASE + (uint32_t) offset);
 }
 
 static inline void stm32_pwr_putreg(uint8_t offset, uint32_t value)
 {
-  putreg32(value, STM32_PWR_BASE + (uint32_t)offset);
+	putreg32(value, STM32_PWR_BASE + (uint32_t) offset);
 }
 
-static inline void stm32_pwr_modifyreg(uint8_t offset, uint32_t clearbits,
-                                       uint32_t setbits)
+static inline void stm32_pwr_modifyreg(uint8_t offset, uint32_t clearbits, uint32_t setbits)
 {
-  modifyreg32(STM32_PWR_BASE + (uint32_t)offset, clearbits, setbits);
+	modifyreg32(STM32_PWR_BASE + (uint32_t) offset, clearbits, setbits);
 }
 
 /************************************************************************************
@@ -101,24 +100,23 @@ static inline void stm32_pwr_modifyreg(uint8_t offset, uint32_t clearbits,
 #if defined(CONFIG_STM32_STM32F37XX)
 void stm32_pwr_enablesdadc(uint8_t sdadc)
 {
-  uint32_t setbits = 0;
+	uint32_t setbits = 0;
 
-  switch (sdadc)
-    {
-      case 1:
-        setbits = PWR_CR_ENSD1;
-        break;
+	switch (sdadc) {
+	case 1:
+		setbits = PWR_CR_ENSD1;
+		break;
 
-      case 2:
-        setbits = PWR_CR_ENSD2;
-        break;
+	case 2:
+		setbits = PWR_CR_ENSD2;
+		break;
 
-      case 3:
-        setbits = PWR_CR_ENSD3;
-        break;
-    }
+	case 3:
+		setbits = PWR_CR_ENSD3;
+		break;
+	}
 
-  stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, setbits);
+	stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, setbits);
 
 }
 #endif
@@ -143,18 +141,18 @@ void stm32_pwr_enablesdadc(uint8_t sdadc)
 
 void stm32_pwr_initbkp(bool writable)
 {
-  uint16_t regval;
+	uint16_t regval;
 
-  /* Make the HW not writable */
+	/* Make the HW not writable */
 
-  regval = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
-  regval &= ~PWR_CR_DBP;
-  stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
+	regval = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
+	regval &= ~PWR_CR_DBP;
+	stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
 
-  /* Make the reference count agree */
+	/* Make the reference count agree */
 
-  g_bkp_writable_counter =  0;
-  stm32_pwr_enablebkp(writable);
+	g_bkp_writable_counter = 0;
+	stm32_pwr_enablebkp(writable);
 }
 
 /************************************************************************************
@@ -178,55 +176,48 @@ void stm32_pwr_initbkp(bool writable)
 
 void stm32_pwr_enablebkp(bool writable)
 {
-  irqstate_t flags;
-  uint16_t regval;
-  bool waswritable;
-  bool wait = false;
+	irqstate_t flags;
+	uint16_t regval;
+	bool waswritable;
+	bool wait = false;
 
-  flags = irqsave();
+	flags = irqsave();
 
-  /* Get the current state of the STM32 PWR control register */
+	/* Get the current state of the STM32 PWR control register */
 
-  regval      = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
-  waswritable = ((regval & PWR_CR_DBP) != 0);
+	regval = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
+	waswritable = ((regval & PWR_CR_DBP) != 0);
 
-  if (writable)
-    {
-      DEBUGASSERT(g_bkp_writable_counter < UINT16_MAX);
-      g_bkp_writable_counter++;
-    }
-  else if (g_bkp_writable_counter > 0)
-    {
-      g_bkp_writable_counter--;
-    }
+	if (writable) {
+		DEBUGASSERT(g_bkp_writable_counter < UINT16_MAX);
+		g_bkp_writable_counter++;
+	} else if (g_bkp_writable_counter > 0) {
+		g_bkp_writable_counter--;
+	}
 
-  /* Enable or disable the ability to write */
+	/* Enable or disable the ability to write */
 
-  if (waswritable && g_bkp_writable_counter == 0)
-    {
-      /* Disable backup domain access */
+	if (waswritable && g_bkp_writable_counter == 0) {
+		/* Disable backup domain access */
 
-      regval &= ~PWR_CR_DBP;
-      stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
-    }
-  else if (!waswritable && g_bkp_writable_counter > 0)
-    {
-      /* Enable backup domain access */
+		regval &= ~PWR_CR_DBP;
+		stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
+	} else if (!waswritable && g_bkp_writable_counter > 0) {
+		/* Enable backup domain access */
 
-      regval |= PWR_CR_DBP;
-      stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
+		regval |= PWR_CR_DBP;
+		stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
 
-      wait = true;
-    }
+		wait = true;
+	}
 
-  irqrestore(flags);
+	irqrestore(flags);
 
-  if (wait)
-    {
-      /* Enable does not happen right away */
+	if (wait) {
+		/* Enable does not happen right away */
 
-      up_udelay(4);
-    }
+		up_udelay(4);
+	}
 }
 
 /************************************************************************************
@@ -251,17 +242,16 @@ void stm32_pwr_enablebkp(bool writable)
 #if defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX)
 void stm32_pwr_enablebreg(bool regon)
 {
-  uint16_t regval;
+	uint16_t regval;
 
-  regval  = stm32_pwr_getreg(STM32_PWR_CSR_OFFSET);
-  regval &= ~PWR_CSR_BRE;
-  regval |= regon ? PWR_CSR_BRE : 0;
-  stm32_pwr_putreg(STM32_PWR_CSR_OFFSET, regval);
+	regval = stm32_pwr_getreg(STM32_PWR_CSR_OFFSET);
+	regval &= ~PWR_CSR_BRE;
+	regval |= regon ? PWR_CSR_BRE : 0;
+	stm32_pwr_putreg(STM32_PWR_CSR_OFFSET, regval);
 
-  if (regon)
-    {
-      while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_BRR) == 0);
-    }
+	if (regon) {
+		while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_BRR) == 0) ;
+	}
 }
 #endif
 
@@ -287,24 +277,24 @@ void stm32_pwr_enablebreg(bool regon)
 #ifdef CONFIG_STM32_ENERGYLITE
 void stm32_pwr_setvos(uint16_t vos)
 {
-  uint16_t regval;
+	uint16_t regval;
 
-  /* The following sequence is required to program the voltage regulator ranges:
-   * 1. Check VDD to identify which ranges are allowed...
-   * 2. Poll VOSF bit of in PWR_CSR. Wait until it is reset to 0.
-   * 3. Configure the voltage scaling range by setting the VOS bits in the PWR_CR
-   *    register.
-   * 4. Poll VOSF bit of in PWR_CSR register. Wait until it is reset to 0.
-   */
+	/* The following sequence is required to program the voltage regulator ranges:
+	 * 1. Check VDD to identify which ranges are allowed...
+	 * 2. Poll VOSF bit of in PWR_CSR. Wait until it is reset to 0.
+	 * 3. Configure the voltage scaling range by setting the VOS bits in the PWR_CR
+	 *    register.
+	 * 4. Poll VOSF bit of in PWR_CSR register. Wait until it is reset to 0.
+	 */
 
-  while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_VOSF) != 0);
+	while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_VOSF) != 0) ;
 
-  regval  = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
-  regval &= ~PWR_CR_VOS_MASK;
-  regval |= (vos & PWR_CR_VOS_MASK);
-  stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
+	regval = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
+	regval &= ~PWR_CR_VOS_MASK;
+	regval |= (vos & PWR_CR_VOS_MASK);
+	stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
 
-  while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_VOSF) != 0);
+	while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_VOSF) != 0) ;
 }
 
 /************************************************************************************
@@ -328,17 +318,17 @@ void stm32_pwr_setvos(uint16_t vos)
 
 void stm32_pwr_setpvd(uint16_t pls)
 {
-  uint16_t regval;
+	uint16_t regval;
 
-  /* Set PLS */
+	/* Set PLS */
 
-  regval = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
-  regval &= ~PWR_CR_PLS_MASK;
-  regval |= (pls & PWR_CR_PLS_MASK);
+	regval = stm32_pwr_getreg(STM32_PWR_CR_OFFSET);
+	regval &= ~PWR_CR_PLS_MASK;
+	regval |= (pls & PWR_CR_PLS_MASK);
 
-  /* Write value to register */
+	/* Write value to register */
 
-  stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
+	stm32_pwr_putreg(STM32_PWR_CR_OFFSET, regval);
 }
 
 /************************************************************************************
@@ -351,9 +341,9 @@ void stm32_pwr_setpvd(uint16_t pls)
 
 void stm32_pwr_enablepvd(void)
 {
-  /* Enable PVD by setting the PVDE bit in PWR_CR register. */
+	/* Enable PVD by setting the PVDE bit in PWR_CR register. */
 
-  stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, PWR_CR_PVDE);
+	stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, PWR_CR_PVDE);
 }
 
 /************************************************************************************
@@ -366,12 +356,12 @@ void stm32_pwr_enablepvd(void)
 
 void stm32_pwr_disablepvd(void)
 {
-  /* Disable PVD by clearing the PVDE bit in PWR_CR register. */
+	/* Disable PVD by clearing the PVDE bit in PWR_CR register. */
 
-  stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, PWR_CR_PVDE, 0);
+	stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, PWR_CR_PVDE, 0);
 }
 
-#endif /* CONFIG_STM32_ENERGYLITE */
+#endif							/* CONFIG_STM32_ENERGYLITE */
 
 /************************************************************************************
  * Name: stm32_pwr_enableoverdrive
@@ -387,29 +377,26 @@ void stm32_pwr_disablepvd(void)
 void stm32_pwr_enableoverdrive(bool state)
 {
 
-  /* Switch overdrive state */
+	/* Switch overdrive state */
 
-  if (state)
-    {
-      stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, PWR_CR_ODEN);
-    }
-  else
-    {
-      stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, PWR_CR_ODEN, 0);
-    }
+	if (state) {
+		stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, PWR_CR_ODEN);
+	} else {
+		stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, PWR_CR_ODEN, 0);
+	}
 
-  /* Wait for overdrive ready */
+	/* Wait for overdrive ready */
 
-  while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_ODRDY) == 0);
+	while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_ODRDY) == 0) ;
 
-  /* Set ODSWEN to switch to this new state*/
+	/* Set ODSWEN to switch to this new state */
 
-  stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, PWR_CR_ODSWEN);
+	stm32_pwr_modifyreg(STM32_PWR_CR_OFFSET, 0, PWR_CR_ODSWEN);
 
-  /* Wait for completion */
+	/* Wait for completion */
 
-  while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_ODSWRDY) == 0);
+	while ((stm32_pwr_getreg(STM32_PWR_CSR_OFFSET) & PWR_CSR_ODSWRDY) == 0) ;
 }
 #endif
 
-#endif /* CONFIG_STM32_PWR */
+#endif							/* CONFIG_STM32_PWR */

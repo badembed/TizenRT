@@ -53,11 +53,11 @@
  ****************************************************************************/
 
 #ifndef MAX
-#  define MAX(a,b) a > b ? a : b
+#define MAX(a,b) a > b ? a : b
 #endif
 
 #ifndef MIN
-#  define MIN(a,b) a < b ? a : b
+#define MIN(a,b) a < b ? a : b
 #endif
 
 /****************************************************************************
@@ -83,26 +83,24 @@
 
 void stm32_mpuinitialize(void)
 {
-  uintptr_t datastart = MIN(USERSPACE->us_datastart, USERSPACE->us_bssstart);
-  uintptr_t dataend   = MAX(USERSPACE->us_dataend,   USERSPACE->us_bssend);
+	uintptr_t datastart = MIN(USERSPACE->us_datastart, USERSPACE->us_bssstart);
+	uintptr_t dataend = MAX(USERSPACE->us_dataend, USERSPACE->us_bssend);
 
-  DEBUGASSERT(USERSPACE->us_textend >= USERSPACE->us_textstart &&
-              dataend >= datastart);
+	DEBUGASSERT(USERSPACE->us_textend >= USERSPACE->us_textstart && dataend >= datastart);
 
-  /* Show MPU information */
+	/* Show MPU information */
 
-  mpu_showtype();
+	mpu_showtype();
 
-  /* Configure user flash and SRAM space */
+	/* Configure user flash and SRAM space */
 
-  mpu_user_flash(USERSPACE->us_textstart,
-                 USERSPACE->us_textend - USERSPACE->us_textstart);
+	mpu_user_flash(USERSPACE->us_textstart, USERSPACE->us_textend - USERSPACE->us_textstart);
 
-  mpu_user_intsram(datastart, dataend - datastart);
+	mpu_user_intsram(datastart, dataend - datastart);
 
-  /* Then enable the MPU */
+	/* Then enable the MPU */
 
-  mpu_control(true, false, true);
+	mpu_control(true, false, true);
 }
 
 /****************************************************************************
@@ -117,8 +115,7 @@ void stm32_mpuinitialize(void)
 
 void stm32_mpu_uheap(uintptr_t start, size_t size)
 {
-  mpu_user_intsram(start, size);
+	mpu_user_intsram(start, size);
 }
 
-#endif /* CONFIG_BUILD_PROTECTED && CONFIG_ARM_MPU */
-
+#endif							/* CONFIG_BUILD_PROTECTED && CONFIG_ARM_MPU */

@@ -57,8 +57,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -149,7 +148,7 @@ void stm32_pwr_enablebkp(bool writable);
 #if defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX)
 void stm32_pwr_enablebreg(bool regon);
 #else
-#  define stm32_pwr_enablebreg(regon)
+#define stm32_pwr_enablebreg(regon)
 #endif
 
 /************************************************************************************
@@ -213,7 +212,7 @@ void stm32_pwr_enablepvd(void);
 
 void stm32_pwr_disablepvd(void);
 
-#endif /* CONFIG_STM32_ENERGYLITE */
+#endif							/* CONFIG_STM32_ENERGYLITE */
 
 /************************************************************************************
  * Name: stm32_pwr_enableoverdrive
@@ -234,5 +233,5 @@ void stm32_pwr_enableoverdrive(bool state);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_PWR_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_PWR_H */

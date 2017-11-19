@@ -51,9 +51,9 @@
  */
 
 #ifdef CONFIG_STM32_STM32L15XX
-#  include "chip/stm32l15xxx_aes.h"
+#include "chip/stm32l15xxx_aes.h"
 #else
-#  error "Unknown chip for AES"
+#error "Unknown chip for AES"
 #endif
 
 /************************************************************************************
@@ -68,4 +68,4 @@
  * Inline Functions
  ************************************************************************************/
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_AES_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_AES_H */

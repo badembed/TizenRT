@@ -81,29 +81,29 @@
 
 int stm32_pmstandby(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Clear the Wake-Up Flag by setting the CWUF bit in the power control
-   * register.
-   */
+	/* Clear the Wake-Up Flag by setting the CWUF bit in the power control
+	 * register.
+	 */
 
-  regval  = getreg32(STM32_PWR_CR);
-  regval |= PWR_CR_CWUF;
-  putreg32(regval, STM32_PWR_CR);
+	regval = getreg32(STM32_PWR_CR);
+	regval |= PWR_CR_CWUF;
+	putreg32(regval, STM32_PWR_CR);
 
-  /* Set the Power Down Deep Sleep (PDDS) bit in the power control register. */
+	/* Set the Power Down Deep Sleep (PDDS) bit in the power control register. */
 
-  regval |= PWR_CR_PDDS;
-  putreg32(regval, STM32_PWR_CR);
+	regval |= PWR_CR_PDDS;
+	putreg32(regval, STM32_PWR_CR);
 
-  /* Set SLEEPDEEP bit of Cortex System Control Register */
+	/* Set SLEEPDEEP bit of Cortex System Control Register */
 
-  regval  = getreg32(NVIC_SYSCON);
-  regval |= NVIC_SYSCON_SLEEPDEEP;
-  putreg32(regval, NVIC_SYSCON);
+	regval = getreg32(NVIC_SYSCON);
+	regval |= NVIC_SYSCON_SLEEPDEEP;
+	putreg32(regval, NVIC_SYSCON);
 
-  /* Sleep until the wakeup reset occurs */
+	/* Sleep until the wakeup reset occurs */
 
-  asm("wfi");
-  return OK;  /* Won't get here */
+	asm("wfi");
+	return OK;					/* Won't get here */
 }

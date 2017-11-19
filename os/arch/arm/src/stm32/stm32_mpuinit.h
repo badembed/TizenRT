@@ -70,7 +70,7 @@
 #ifdef CONFIG_BUILD_PROTECTED
 void stm32_mpuinitialize(void);
 #else
-#  define stm32_mpuinitialize()
+#define stm32_mpuinitialize()
 #endif
 
 /****************************************************************************
@@ -84,7 +84,7 @@ void stm32_mpuinitialize(void);
 #ifdef CONFIG_BUILD_PROTECTED
 void stm32_mpu_uheap(uintptr_t start, size_t size);
 #else
-#  define stm32_mpu_uheap(start,size)
+#define stm32_mpu_uheap(start,size)
 #endif
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_MPUINIT_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_MPUINIT_H */

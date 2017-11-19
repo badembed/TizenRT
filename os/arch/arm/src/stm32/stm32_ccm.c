@@ -62,4 +62,4 @@ struct mm_heap_s g_ccm_heap;
  * Public Function Prototypes
  ****************************************************************************/
 
-#endif /* HAVE_CCM_HEAP */
+#endif							/* HAVE_CCM_HEAP */

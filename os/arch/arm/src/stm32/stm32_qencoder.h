@@ -56,22 +56,22 @@
  */
 
 #ifndef CONFIG_STM32_TIM1
-#  undef CONFIG_STM32_TIM1_QE
+#undef CONFIG_STM32_TIM1_QE
 #endif
 #ifndef CONFIG_STM32_TIM2
-#  undef CONFIG_STM32_TIM2_QE
+#undef CONFIG_STM32_TIM2_QE
 #endif
 #ifndef CONFIG_STM32_TIM3
-#  undef CONFIG_STM32_TIM3_QE
+#undef CONFIG_STM32_TIM3_QE
 #endif
 #ifndef CONFIG_STM32_TIM4
-#  undef CONFIG_STM32_TIM4_QE
+#undef CONFIG_STM32_TIM4_QE
 #endif
 #ifndef CONFIG_STM32_TIM5
-#  undef CONFIG_STM32_TIM5_QE
+#undef CONFIG_STM32_TIM5_QE
 #endif
 #ifndef CONFIG_STM32_TIM8
-#  undef CONFIG_STM32_TIM8_QE
+#undef CONFIG_STM32_TIM8_QE
 #endif
 
 /* Only timers 2-5, and 1 & 8 can be used as a quadrature encoder (at least for the
@@ -92,27 +92,27 @@
  */
 
 #ifndef CONFIG_STM32_TIM1_QECLKOUT
-#  define CONFIG_STM32_TIM1_QECLKOUT 28000000
+#define CONFIG_STM32_TIM1_QECLKOUT 28000000
 #endif
 
 #ifndef CONFIG_STM32_TIM2_QECLKOUT
-#  define CONFIG_STM32_TIM2_QECLKOUT 28000000
+#define CONFIG_STM32_TIM2_QECLKOUT 28000000
 #endif
 
 #ifndef CONFIG_STM32_TIM3_QECLKOUT
-#  define CONFIG_STM32_TIM3_QECLKOUT 28000000
+#define CONFIG_STM32_TIM3_QECLKOUT 28000000
 #endif
 
 #ifndef CONFIG_STM32_TIM4_QECLKOUT
-#  define CONFIG_STM32_TIM4_QECLKOUT 28000000
+#define CONFIG_STM32_TIM4_QECLKOUT 28000000
 #endif
 
 #ifndef CONFIG_STM32_TIM5_QECLKOUT
-#  define CONFIG_STM32_TIM5_QECLKOUT 28000000
+#define CONFIG_STM32_TIM5_QECLKOUT 28000000
 #endif
 
 #ifndef CONFIG_STM32_TIM8_QECLKOUT
-#  define CONFIG_STM32_TIM8_QECLKOUT 28000000
+#define CONFIG_STM32_TIM8_QECLKOUT 28000000
 #endif
 
 /************************************************************************************
@@ -137,6 +137,5 @@
 
 int stm32_qeinitialize(FAR const char *devpath, int tim);
 
-#endif /* CONFIG_SENSORS_QENCODER */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_QENCODER_H */
-
+#endif							/* CONFIG_SENSORS_QENCODER */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_QENCODER_H */

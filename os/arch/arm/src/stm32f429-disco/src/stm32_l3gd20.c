@@ -59,7 +59,7 @@
  * Private Function Prototypes
  ****************************************************************************/
 
-static int l3gd20_attach(FAR struct l3gd20_config_s * cfg, xcpt_t irq);
+static int l3gd20_attach(FAR struct l3gd20_config_s *cfg, xcpt_t irq);
 
 /****************************************************************************
  * Private Data
@@ -67,11 +67,10 @@ static int l3gd20_attach(FAR struct l3gd20_config_s * cfg, xcpt_t irq);
 
 /* Only one L3GD20 device on board */
 
-static struct l3gd20_config_s g_l3gd20_config =
-{
-  .attach = l3gd20_attach,
-  .irq = L3GD20_IRQ,
-  .spi_devid = SPIDEV_ACCELEROMETER(0)
+static struct l3gd20_config_s g_l3gd20_config = {
+	.attach = l3gd20_attach,
+	.irq = L3GD20_IRQ,
+	.spi_devid = SPIDEV_ACCELEROMETER(0)
 };
 
 /****************************************************************************
@@ -87,7 +86,7 @@ static struct l3gd20_config_s g_l3gd20_config =
 
 static int l3gd20_attach(FAR struct l3gd20_config_s *cfg, xcpt_t irq)
 {
-  return stm32_gpiosetevent(GPIO_L3GD20_DREADY, true, false, true, irq, NULL);
+	return stm32_gpiosetevent(GPIO_L3GD20_DREADY, true, false, true, irq, NULL);
 }
 
 /****************************************************************************
@@ -110,33 +109,31 @@ static int l3gd20_attach(FAR struct l3gd20_config_s *cfg, xcpt_t irq)
 
 int stm32_l3gd20initialize(FAR const char *devpath)
 {
-  int ret = 0;
-  struct spi_dev_s *spi;
+	int ret = 0;
+	struct spi_dev_s *spi;
 
-  /* Configure DREADY IRQ input */
+	/* Configure DREADY IRQ input */
 
-  stm32_configgpio(GPIO_L3GD20_DREADY);
+	stm32_configgpio(GPIO_L3GD20_DREADY);
 
-  /* Initialize SPI */
+	/* Initialize SPI */
 
-  spi = stm32_spi5initialize();
+	spi = stm32_spi5initialize();
 
-  if (!spi)
-    {
-      ret = -ENODEV;
-      goto errout;
-    }
+	if (!spi) {
+		ret = -ENODEV;
+		goto errout;
+	}
 
-  /* Then register the gyro */
+	/* Then register the gyro */
 
-  ret = l3gd20_register(devpath, spi, &g_l3gd20_config);
-  if (ret != OK)
-    {
-      goto errout;
-    }
+	ret = l3gd20_register(devpath, spi, &g_l3gd20_config);
+	if (ret != OK) {
+		goto errout;
+	}
 
 errout:
-  return ret;
+	return ret;
 }
 
-#endif  /* CONFIG_SPI && CONFIG_SENSORS_L3GD20 */
+#endif							/* CONFIG_SPI && CONFIG_SENSORS_L3GD20 */

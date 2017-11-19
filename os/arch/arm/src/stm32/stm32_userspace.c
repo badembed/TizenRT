@@ -78,42 +78,36 @@
 
 void stm32_userspace(void)
 {
-  uint8_t *src;
-  uint8_t *dest;
-  uint8_t *end;
+	uint8_t *src;
+	uint8_t *dest;
+	uint8_t *end;
 
-  /* Clear all of user-space .bss */
+	/* Clear all of user-space .bss */
 
-  DEBUGASSERT(USERSPACE->us_bssstart != 0 && USERSPACE->us_bssend != 0 &&
-              USERSPACE->us_bssstart <= USERSPACE->us_bssend);
+	DEBUGASSERT(USERSPACE->us_bssstart != 0 && USERSPACE->us_bssend != 0 && USERSPACE->us_bssstart <= USERSPACE->us_bssend);
 
-  dest = (uint8_t *)USERSPACE->us_bssstart;
-  end  = (uint8_t *)USERSPACE->us_bssend;
+	dest = (uint8_t *) USERSPACE->us_bssstart;
+	end = (uint8_t *) USERSPACE->us_bssend;
 
-  while (dest != end)
-    {
-      *dest++ = 0;
-    }
+	while (dest != end) {
+		*dest++ = 0;
+	}
 
-  /* Initialize all of user-space .data */
+	/* Initialize all of user-space .data */
 
-  DEBUGASSERT(USERSPACE->us_datasource != 0 &&
-              USERSPACE->us_datastart != 0 && USERSPACE->us_dataend != 0 &&
-              USERSPACE->us_datastart <= USERSPACE->us_dataend);
+	DEBUGASSERT(USERSPACE->us_datasource != 0 && USERSPACE->us_datastart != 0 && USERSPACE->us_dataend != 0 && USERSPACE->us_datastart <= USERSPACE->us_dataend);
 
-  src  = (uint8_t *)USERSPACE->us_datasource;
-  dest = (uint8_t *)USERSPACE->us_datastart;
-  end  = (uint8_t *)USERSPACE->us_dataend;
+	src = (uint8_t *) USERSPACE->us_datasource;
+	dest = (uint8_t *) USERSPACE->us_datastart;
+	end = (uint8_t *) USERSPACE->us_dataend;
 
-  while (dest != end)
-    {
-      *dest++ = *src++;
-    }
+	while (dest != end) {
+		*dest++ = *src++;
+	}
 
-  /* Configure the MPU to permit user-space access to its FLASH and RAM */
+	/* Configure the MPU to permit user-space access to its FLASH and RAM */
 
-  stm32_mpuinitialize();
+	stm32_mpuinitialize();
 }
 
-#endif /* CONFIG_BUILD_PROTECTED */
-
+#endif							/* CONFIG_BUILD_PROTECTED */

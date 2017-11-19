@@ -63,12 +63,12 @@
 #undef HAVE_NXSTART
 
 #if !defined(CONFIG_NX_MULTIUSER)
-#  undef CONFIG_NX_START
+#undef CONFIG_NX_START
 #endif
 
 #if defined(CONFIG_NXWIDGETS) && !defined(CONFIG_NXWIDGET_SERVERINIT)
-#   define HAVE_NXSTART
-#   include <tinyara/nx/nx.h>
+#define HAVE_NXSTART
+#include <tinyara/nx/nx.h>
 #endif
 
 /* Should we initialize the touchscreen for the NxWM (CONFIG_NXWM=y)?  This
@@ -83,18 +83,18 @@
 #undef HAVE_TCINIT
 
 #if defined(CONFIG_NXWM_TOUCHSCREEN)
-#  if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVNO)
-#    error CONFIG_NXWM_TOUCHSCREEN_DEVNO is not defined
-#  elif defined(CONFIG_INPUT_STMPE811)
-#    if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVINIT)
-#      define HAVE_TCINIT
-#      include <tinyara/input/touchscreen.h>
-#    endif
-#  else
-#    if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVINIT) && defined(CONFIG_BUILD_PROTECTED)
-#      error CONFIG_INPUT_STMPE811=y is needed
-#    endif
-#  endif
+#if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVNO)
+#error CONFIG_NXWM_TOUCHSCREEN_DEVNO is not defined
+#elif defined(CONFIG_INPUT_STMPE811)
+#if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVINIT)
+#define HAVE_TCINIT
+#include <tinyara/input/touchscreen.h>
+#endif
+#else
+#if !defined(CONFIG_NXWM_TOUCHSCREEN_DEVINIT) && defined(CONFIG_BUILD_PROTECTED)
+#error CONFIG_INPUT_STMPE811=y is needed
+#endif
+#endif
 #endif
 
 /************************************************************************************
@@ -116,43 +116,41 @@ void stm32_boardinitialize(void)
 #if defined(CONFIG_STM32_SPI1) || defined(CONFIG_STM32_SPI2) || \
     defined(CONFIG_STM32_SPI3) || defined(CONFIG_STM32_SPI4) || \
     defined(CONFIG_STM32_SPI5)
-  /* Configure SPI chip selects if 1) SPI is not disabled, and 2) the weak function
-   * stm32_spidev_initialize() has been brought into the link.
-   */
+	/* Configure SPI chip selects if 1) SPI is not disabled, and 2) the weak function
+	 * stm32_spidev_initialize() has been brought into the link.
+	 */
 
-  if (stm32_spidev_initialize)
-    {
-      stm32_spidev_initialize();
-    }
+	if (stm32_spidev_initialize) {
+		stm32_spidev_initialize();
+	}
 #endif
 
 #ifdef CONFIG_STM32_OTGHS
-  /* Initialize USB if the 1) OTG HS controller is in the configuration and 2)
-   * disabled, and 3) the weak function stm32_usbinitialize() has been brought
-   * into the build. Presumably either CONFIG_USBDEV or CONFIG_USBHOST is also
-   * selected.
-   */
+	/* Initialize USB if the 1) OTG HS controller is in the configuration and 2)
+	 * disabled, and 3) the weak function stm32_usbinitialize() has been brought
+	 * into the build. Presumably either CONFIG_USBDEV or CONFIG_USBHOST is also
+	 * selected.
+	 */
 
-  if (stm32_usbinitialize)
-    {
-      stm32_usbinitialize();
-    }
+	if (stm32_usbinitialize) {
+		stm32_usbinitialize();
+	}
 #endif
 
 #ifdef CONFIG_ARCH_LEDS
-  /* Configure on-board LEDs if LED support has been selected. */
+	/* Configure on-board LEDs if LED support has been selected. */
 
-  board_autoled_initialize();
+	board_autoled_initialize();
 #endif
 
 #ifdef CONFIG_STM32_FSMC
-  stm32_enablefsmc();
+	stm32_enablefsmc();
 #endif
 
 #ifdef HAVE_CCM_HEAP
-  /* Initialize CCM allocator */
+	/* Initialize CCM allocator */
 
-  ccm_initialize();
+	ccm_initialize();
 #endif
 }
 
@@ -173,24 +171,24 @@ void stm32_boardinitialize(void)
 void board_initialize(void)
 {
 #ifdef CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE
-  /* Initialize the framebuffer driver */
+	/* Initialize the framebuffer driver */
 
-  up_fbinitialize(0);
+	up_fbinitialize(0);
 #endif
 
 #ifdef CONFIG_STM32F429I_DISCO_ILI9341_LCDIFACE
-  /* Initialize the SPI-based LCD early */
+	/* Initialize the SPI-based LCD early */
 
-  board_lcd_initialize();
+	board_lcd_initialize();
 #endif
 
 #if defined(CONFIG_NSH_LIBRARY) && !defined(CONFIG_LIB_BOARDCTL)
-  /* Perform NSH initialization here instead of from the NSH.  This
-   * alternative NSH initialization is necessary when NSH is ran in user-space
-   * but the initialization function must run in kernel space.
-   */
+	/* Perform NSH initialization here instead of from the NSH.  This
+	 * alternative NSH initialization is necessary when NSH is ran in user-space
+	 * but the initialization function must run in kernel space.
+	 */
 
-  (void)board_app_initialize(0);
+	(void)board_app_initialize(0);
 #endif
 }
 #endif

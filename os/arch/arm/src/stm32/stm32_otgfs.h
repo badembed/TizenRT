@@ -56,7 +56,7 @@
 /* Configuration ********************************************************************/
 
 #ifndef CONFIG_OTGFS_PRI
-#  define CONFIG_OTGFS_PRI NVIC_SYSH_PRIORITY_DEFAULT
+#define CONFIG_OTGFS_PRI NVIC_SYSH_PRIORITY_DEFAULT
 #endif
 
 /************************************************************************************
@@ -68,8 +68,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -122,7 +121,6 @@ void stm32_usbsuspend(FAR struct usbdev_s *dev, bool resume);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* CONFIG_STM32_OTGFS */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_OTGFS_H */
-
+#endif							/* __ASSEMBLY__ */
+#endif							/* CONFIG_STM32_OTGFS */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_OTGFS_H */

@@ -60,20 +60,20 @@
  ****************************************************************************/
 
 #if defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX)
-#  define STM32_BBSRAM_SIZE 4096
+#define STM32_BBSRAM_SIZE 4096
 #else
-#  error No backup SRAM on this STM32
+#error No backup SRAM on this STM32
 #endif
 
 #if !defined(CONFIG_STM32_BBSRAM_FILES)
-#  define CONFIG_STM32_BBSRAM_FILES 4
+#define CONFIG_STM32_BBSRAM_FILES 4
 #endif
 
 /* REVISIT: What guarantees that STM32_BBSRAM_GETDESC_IOCTL has a unique
  * value among all over _DIOC() values?
  */
 
-#define STM32_BBSRAM_GETDESC_IOCTL _DIOC(0x0010) /* Returns a bbsramd_s */
+#define STM32_BBSRAM_GETDESC_IOCTL _DIOC(0x0010)	/* Returns a bbsramd_s */
 
 /****************************************************************************
  * Public Types
@@ -81,18 +81,16 @@
 
 #ifndef __ASSEMBLY__
 
-enum bbsramdf_e
-{
-  BBSRAM_CRC_VALID = 1,        /* The crc is valid */
-  BBSRAM_DIRTY     = 2,        /* The file was closed */
+enum bbsramdf_e {
+	BBSRAM_CRC_VALID = 1,		/* The crc is valid */
+	BBSRAM_DIRTY = 2,			/* The file was closed */
 };
 
-struct bbsramd_s
-{
-  uint8_t flags;               /* The crc is valid and the file was closed */
-  uint8_t fileno;              /* The minor number */
-  uint16_t len;                /* Total Bytes in this file*/
-  struct timespec lastwrite;   /* Last write time */
+struct bbsramd_s {
+	uint8_t flags;				/* The crc is valid and the file was closed */
+	uint8_t fileno;				/* The minor number */
+	uint16_t len;				/* Total Bytes in this file */
+	struct timespec lastwrite;	/* Last write time */
 };
 
 /****************************************************************************
@@ -101,11 +99,10 @@ struct bbsramd_s
 
 #undef EXTERN
 #if defined(__cplusplus)
-#  define EXTERN extern "C"
-extern "C"
-{
+#define EXTERN extern "C"
+extern "C" {
 #else
-#  define EXTERN extern
+#define EXTERN extern
 #endif
 
 /****************************************************************************
@@ -161,5 +158,5 @@ int stm32_bbsram_savepanic(int fileno, uint8_t *context, int length);
 #ifdef __cplusplus
 }
 #endif
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_BBSRAM_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_BBSRAM_H */

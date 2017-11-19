@@ -56,14 +56,14 @@
 /* How many SPI modules does this chip support? */
 
 #if STM32_NSPI < 1
-#  undef CONFIG_STM32_SPI1
-#  undef CONFIG_STM32_SPI2
-#  undef CONFIG_STM32_SPI3
+#undef CONFIG_STM32_SPI1
+#undef CONFIG_STM32_SPI2
+#undef CONFIG_STM32_SPI3
 #elif STM32_NSPI < 2
-#  undef CONFIG_STM32_SPI2
-#  undef CONFIG_STM32_SPI3
+#undef CONFIG_STM32_SPI2
+#undef CONFIG_STM32_SPI3
 #elif STM32_NSPI < 3
-#  undef CONFIG_STM32_SPI3
+#undef CONFIG_STM32_SPI3
 #endif
 
 /* STMPE811 on I2C3 */
@@ -130,10 +130,10 @@
 #define GPIO_OTGHS_PWRON (GPIO_OUTPUT|GPIO_OUTPUT_SET|GPIO_FLOAT|GPIO_SPEED_100MHz|GPIO_PUSHPULL|GPIO_PORTC|GPIO_PIN4)
 
 #ifdef CONFIG_USBHOST
-#  define GPIO_OTGHS_OVER  (GPIO_INPUT|GPIO_EXTI|GPIO_FLOAT|GPIO_SPEED_100MHz|GPIO_PUSHPULL|GPIO_PORTD|GPIO_PIN5)
+#define GPIO_OTGHS_OVER  (GPIO_INPUT|GPIO_EXTI|GPIO_FLOAT|GPIO_SPEED_100MHz|GPIO_PUSHPULL|GPIO_PORTD|GPIO_PIN5)
 
 #else
-#  define GPIO_OTGHS_OVER  (GPIO_INPUT|GPIO_FLOAT|GPIO_SPEED_100MHz|GPIO_PUSHPULL|GPIO_PORTC|GPIO_PIN5)
+#define GPIO_OTGHS_OVER  (GPIO_INPUT|GPIO_FLOAT|GPIO_SPEED_100MHz|GPIO_PUSHPULL|GPIO_PORTC|GPIO_PIN5)
 #endif
 
 /****************************************************************************************************
@@ -280,7 +280,6 @@ FAR struct ili9341_lcd_s *stm32_ili93414ws_initialize(void);
 FAR struct spi_dev_s *stm32_spi5initialize(void);
 #endif
 
-
 /****************************************************************************
  * Name: stm32_l3gd20initialize()
  *
@@ -299,6 +298,5 @@ FAR struct spi_dev_s *stm32_spi5initialize(void);
 int stm32_l3gd20initialize(FAR const char *devpath);
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* __CONFIGS_STM32F429I_DISCO_SRC_STM32F429I_DISCO_H */
-
+#endif							/* __ASSEMBLY__ */
+#endif							/* __CONFIGS_STM32F429I_DISCO_SRC_STM32F429I_DISCO_H */

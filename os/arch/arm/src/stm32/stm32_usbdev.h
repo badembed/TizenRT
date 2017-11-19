@@ -56,8 +56,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -72,7 +71,7 @@ extern "C"
  *
  ************************************************************************************/
 
-int stm32_usbpullup(FAR struct usbdev_s *dev,  bool enable);
+int stm32_usbpullup(FAR struct usbdev_s *dev, bool enable);
 
 /************************************************************************************
  * Name:  stm32_usbsuspend
@@ -92,6 +91,5 @@ void stm32_usbsuspend(FAR struct usbdev_s *dev, bool resume);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_USBDEV_H */
-
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_USBDEV_H */

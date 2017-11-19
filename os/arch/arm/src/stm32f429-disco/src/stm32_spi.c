@@ -79,13 +79,13 @@ FAR struct spi_dev_s *g_spidev5 = NULL;
 void weak_function stm32_spidev_initialize(void)
 {
 #ifdef CONFIG_STM32_SPI5
-  (void)stm32_configgpio(GPIO_CS_MEMS);    /* MEMS chip select */
-  (void)stm32_configgpio(GPIO_CS_LCD);     /* LCD chip select */
-  (void)stm32_configgpio(GPIO_LCD_DC);     /* LCD Data/Command select */
-  (void)stm32_configgpio(GPIO_LCD_ENABLE); /* LCD enable select */
+	(void)stm32_configgpio(GPIO_CS_MEMS);	/* MEMS chip select */
+	(void)stm32_configgpio(GPIO_CS_LCD);	/* LCD chip select */
+	(void)stm32_configgpio(GPIO_LCD_DC);	/* LCD Data/Command select */
+	(void)stm32_configgpio(GPIO_LCD_ENABLE);	/* LCD enable select */
 #endif
 #if defined(CONFIG_STM32_SPI4) && defined(CONFIG_MTD_SST25XX)
-  (void)stm32_configgpio(GPIO_CS_SST25);   /* SST25 FLASH chip select */
+	(void)stm32_configgpio(GPIO_CS_SST25);	/* SST25 FLASH chip select */
 #endif
 }
 
@@ -117,36 +117,36 @@ void weak_function stm32_spidev_initialize(void)
 #ifdef CONFIG_STM32_SPI1
 void stm32_spi1select(FAR struct spi_dev_s *dev, uint32_t devid, bool selected)
 {
-  spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
+	spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
 }
 
 uint8_t stm32_spi1status(FAR struct spi_dev_s *dev, uint32_t devid)
 {
-  return 0;
+	return 0;
 }
 #endif
 
 #ifdef CONFIG_STM32_SPI2
 void stm32_spi2select(FAR struct spi_dev_s *dev, uint32_t devid, bool selected)
 {
-  spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
+	spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
 }
 
 uint8_t stm32_spi2status(FAR struct spi_dev_s *dev, uint32_t devid)
 {
-  return 0;
+	return 0;
 }
 #endif
 
 #ifdef CONFIG_STM32_SPI3
 void stm32_spi3select(FAR struct spi_dev_s *dev, uint32_t devid, bool selected)
 {
-  spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
+	spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
 }
 
 uint8_t stm32_spi3status(FAR struct spi_dev_s *dev, uint32_t devid)
 {
-  return 0;
+	return 0;
 }
 #endif
 
@@ -154,40 +154,37 @@ uint8_t stm32_spi3status(FAR struct spi_dev_s *dev, uint32_t devid)
 void stm32_spi4select(FAR struct spi_dev_s *dev, uint32_t devid, bool selected)
 {
 #if defined(CONFIG_MTD_SST25XX)
-  if (devid == SPIDEV_FLASH(0))
-    {
-      stm32_gpiowrite(GPIO_CS_SST25, !selected);
-    }
+	if (devid == SPIDEV_FLASH(0)) {
+		stm32_gpiowrite(GPIO_CS_SST25, !selected);
+	}
 #endif
 }
 
 uint8_t stm32_spi4status(FAR struct spi_dev_s *dev, uint32_t devid)
 {
-  return 0;
+	return 0;
 }
 #endif
 
 #ifdef CONFIG_STM32_SPI5
 void stm32_spi5select(FAR struct spi_dev_s *dev, uint32_t devid, bool selected)
 {
-  spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
+	spiinfo("devid: %d CS: %s\n", (int)devid, selected ? "assert" : "de-assert");
 
 #if defined(CONFIG_STM32F429I_DISCO_ILI9341)
-  if (devid == SPIDEV_DISPLAY(0))
-    {
-      stm32_gpiowrite(GPIO_CS_LCD, !selected);
-    }
-  else
+	if (devid == SPIDEV_DISPLAY(0)) {
+		stm32_gpiowrite(GPIO_CS_LCD, !selected);
+	} else
 #endif
 
-    {
-      stm32_gpiowrite(GPIO_CS_MEMS, !selected);
-    }
+	{
+		stm32_gpiowrite(GPIO_CS_MEMS, !selected);
+	}
 }
 
 uint8_t stm32_spi5status(FAR struct spi_dev_s *dev, uint32_t devid)
 {
-  return 0;
+	return 0;
 }
 #endif
 
@@ -218,28 +215,28 @@ uint8_t stm32_spi5status(FAR struct spi_dev_s *dev, uint32_t devid)
 #ifdef CONFIG_STM32_SPI1
 int stm32_spi1cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd)
 {
-  return -ENODEV;
+	return -ENODEV;
 }
 #endif
 
 #ifdef CONFIG_STM32_SPI2
 int stm32_spi2cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd)
 {
-  return -ENODEV;
+	return -ENODEV;
 }
 #endif
 
 #ifdef CONFIG_STM32_SPI3
 int stm32_spi3cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd)
 {
-  return -ENODEV;
+	return -ENODEV;
 }
 #endif
 
 #ifdef CONFIG_STM32_SPI4
 int stm32_spi4cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd)
 {
-  return -ENODEV;
+	return -ENODEV;
 }
 #endif
 
@@ -247,23 +244,22 @@ int stm32_spi4cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd)
 int stm32_spi5cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd)
 {
 #if defined(CONFIG_STM32F429I_DISCO_ILI9341)
-  if (devid == SPIDEV_DISPLAY(0))
-    {
-      /*  This is the Data/Command control pad which determines whether the
-       *  data bits are data or a command.
-       */
+	if (devid == SPIDEV_DISPLAY(0)) {
+		/*  This is the Data/Command control pad which determines whether the
+		 *  data bits are data or a command.
+		 */
 
-      (void)stm32_gpiowrite(GPIO_LCD_DC, !cmd);
+		(void)stm32_gpiowrite(GPIO_LCD_DC, !cmd);
 
-      return OK;
-    }
+		return OK;
+	}
 #endif
 
-  return -ENODEV;
+	return -ENODEV;
 }
 #endif
 
-#endif /* CONFIG_SPI_CMDDATA */
+#endif							/* CONFIG_SPI_CMDDATA */
 
 /****************************************************************************
  * Name: stm32_spi5initialize
@@ -289,12 +285,11 @@ int stm32_spi5cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd)
 #ifdef CONFIG_STM32_SPI5
 FAR struct spi_dev_s *stm32_spi5initialize(void)
 {
-  if (!g_spidev5)
-    {
-      g_spidev5 = stm32_spibus_initialize(5);
-    }
+	if (!g_spidev5) {
+		g_spidev5 = stm32_spibus_initialize(5);
+	}
 
-  return g_spidev5;
+	return g_spidev5;
 }
 #endif
-#endif /* CONFIG_STM32_SPI1 || ... CONFIG_STM32_SPI5 */
+#endif							/* CONFIG_STM32_SPI1 || ... CONFIG_STM32_SPI5 */

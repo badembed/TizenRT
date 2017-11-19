@@ -121,42 +121,42 @@
 /* Define shadow layer for ltdc interface */
 
 #ifdef CONFIG_STM32_LTDC_INTERFACE
-# ifdef CONFIG_STM32_LTDC_L2
-#  define DMA2D_SHADOW_LAYER    2
-#  define DMA2D_SHADOW_LAYER_L1 0
-#  define DMA2D_SHADOW_LAYER_L2 1
-# else
-#  define DMA2D_SHADOW_LAYER    1
-#  define DMA2D_SHADOW_LAYER_L1 0
-# endif
-# define DMA2D_LAYER_NSIZE      CONFIG_STM32_DMA2D_NLAYERS + DMA2D_SHADOW_LAYER
+#ifdef CONFIG_STM32_LTDC_L2
+#define DMA2D_SHADOW_LAYER    2
+#define DMA2D_SHADOW_LAYER_L1 0
+#define DMA2D_SHADOW_LAYER_L2 1
 #else
-# define DMA2D_LAYER_NSIZE      CONFIG_STM32_DMA2D_NLAYERS
-# define DMA2D_SHADOW_LAYER     0
+#define DMA2D_SHADOW_LAYER    1
+#define DMA2D_SHADOW_LAYER_L1 0
+#endif
+#define DMA2D_LAYER_NSIZE      CONFIG_STM32_DMA2D_NLAYERS + DMA2D_SHADOW_LAYER
+#else
+#define DMA2D_LAYER_NSIZE      CONFIG_STM32_DMA2D_NLAYERS
+#define DMA2D_SHADOW_LAYER     0
 #endif
 
 /* Debug option */
 
 #ifdef CONFIG_STM32_DMA2D_REGDEBUG
-#  define regerr       lcderr
-#  define reginfo      lcdinfo
+#define regerr       lcderr
+#define reginfo      lcdinfo
 #else
-#  define regerr(x...)
-#  define reginfo(x...)
+#define regerr(x...)
+#define reginfo(x...)
 #endif
 
 /* check clut support */
 
 #ifdef CONFIG_STM32_DMA2D_L8
-# ifndef CONFIG_FB_CMAP
-#  error "Enable cmap to support the configured layer formats!"
-# endif
+#ifndef CONFIG_FB_CMAP
+#error "Enable cmap to support the configured layer formats!"
+#endif
 #endif
 
 /* check ccm heap allocation */
 
 #ifndef CONFIG_STM32_CCMEXCLUDE
-# error "Enable CONFIG_STM32_CCMEXCLUDE from the heap allocation"
+#error "Enable CONFIG_STM32_CCMEXCLUDE from the heap allocation"
 #endif
 
 /****************************************************************************
@@ -165,116 +165,106 @@
 
 /* DMA2D General layer information */
 
-struct stm32_dma2d_s
-{
-  struct dma2d_layer_s dma2d;   /* public dma2d interface */
+struct stm32_dma2d_s {
+	struct dma2d_layer_s dma2d;	/* public dma2d interface */
 
-  /* Fixed settings */
+	/* Fixed settings */
 
-  int lid;                      /* Layer identifier */
-  struct fb_videoinfo_s vinfo;  /* Layer videoinfo */
-  struct fb_planeinfo_s pinfo;  /* Layer planeinfo */
+	int lid;					/* Layer identifier */
+	struct fb_videoinfo_s vinfo;	/* Layer videoinfo */
+	struct fb_planeinfo_s pinfo;	/* Layer planeinfo */
 
-  /* Blending */
+	/* Blending */
 
-  uint32_t blendmode;           /* the interface blendmode */
-  uint8_t  alpha;               /* the alpha value */
+	uint32_t blendmode;			/* the interface blendmode */
+	uint8_t alpha;				/* the alpha value */
 
-  /* Coloring */
+	/* Coloring */
 
 #ifdef CONFIG_STM32_DMA2D_L8
-  uint32_t *clut;               /* Color lookup table */
+	uint32_t *clut;				/* Color lookup table */
 #endif
 
-  /* Operation */
-  uint8_t  fmt;                 /* the controller pixel format */
-  sem_t    *lock;               /* Ensure mutually exclusive access */
+	/* Operation */
+	uint8_t fmt;				/* the controller pixel format */
+	sem_t *lock;				/* Ensure mutually exclusive access */
 };
 
 #ifdef CONFIG_STM32_LTDC_INTERFACE
 
 /* This structures provides the DMA2D layer for each LTDC layer */
 
-struct stm32_ltdc_dma2d_s
-{
-  struct stm32_dma2d_s dma2ddev;
+struct stm32_ltdc_dma2d_s {
+	struct stm32_dma2d_s dma2ddev;
 #ifdef CONFIG_STM32_DMA2D_L8
-  FAR struct ltdc_layer_s *ltdc;
+	FAR struct ltdc_layer_s *ltdc;
 #endif
 };
 
-struct stm32_ltdc_layer_s
-{
-  /* Layer state */
+struct stm32_ltdc_layer_s {
+	/* Layer state */
 
-  struct stm32_ltdc_dma2d_s layer[DMA2D_SHADOW_LAYER];
+	struct stm32_ltdc_dma2d_s layer[DMA2D_SHADOW_LAYER];
 };
 #endif
 
 /* Interrupt handling */
 
-struct stm32_interrupt_s
-{
-  bool  wait;       /* Informs that the task is waiting for the irq */
-  bool  handled;    /* Informs that an irq was handled */
-  int   irq;        /* irq number */
-  sem_t *sem;       /* Semaphore for waiting for irq */
+struct stm32_interrupt_s {
+	bool wait;					/* Informs that the task is waiting for the irq */
+	bool handled;				/* Informs that an irq was handled */
+	int irq;					/* irq number */
+	sem_t *sem;					/* Semaphore for waiting for irq */
 };
 
 /* This enumeration foreground and background layer supported by the dma2d
  * controller
  */
 
-enum stm32_layer_e
-{
-  DMA2D_LAYER_LFORE = 0,       /* Foreground Layer */
-  DMA2D_LAYER_LBACK,           /* Background Layer */
-  DMA2D_LAYER_LOUT,            /* Output Layer */
+enum stm32_layer_e {
+	DMA2D_LAYER_LFORE = 0,		/* Foreground Layer */
+	DMA2D_LAYER_LBACK,			/* Background Layer */
+	DMA2D_LAYER_LOUT,			/* Output Layer */
 };
 
 /* DMA2D memory address register */
 
-static const uintptr_t stm32_mar_layer_t[DMA2D_NLAYERS] =
-{
-  STM32_DMA2D_FGMAR,
-  STM32_DMA2D_BGMAR,
-  STM32_DMA2D_OMAR
+static const uintptr_t stm32_mar_layer_t[DMA2D_NLAYERS] = {
+	STM32_DMA2D_FGMAR,
+	STM32_DMA2D_BGMAR,
+	STM32_DMA2D_OMAR
 };
 
 /* DMA2D offset register */
 
-static const uintptr_t stm32_or_layer_t[DMA2D_NLAYERS] =
-{
-  STM32_DMA2D_FGOR,
-  STM32_DMA2D_BGOR,
-  STM32_DMA2D_OOR
+static const uintptr_t stm32_or_layer_t[DMA2D_NLAYERS] = {
+	STM32_DMA2D_FGOR,
+	STM32_DMA2D_BGOR,
+	STM32_DMA2D_OOR
 };
 
 /* DMA2D pfc control register */
 
-static const uintptr_t stm32_pfccr_layer_t[DMA2D_NLAYERS] =
-{
-  STM32_DMA2D_FGPFCCR,
-  STM32_DMA2D_BGPFCCR,
-  STM32_DMA2D_OPFCCR
+static const uintptr_t stm32_pfccr_layer_t[DMA2D_NLAYERS] = {
+	STM32_DMA2D_FGPFCCR,
+	STM32_DMA2D_BGPFCCR,
+	STM32_DMA2D_OPFCCR
 };
 
 /* DMA2D color register */
 
-static const uintptr_t stm32_color_layer_t[DMA2D_NLAYERS] =
-{
-  STM32_DMA2D_FGCOLR,
-  STM32_DMA2D_BGCOLR,
-  STM32_DMA2D_OCOLR
+static const uintptr_t stm32_color_layer_t[DMA2D_NLAYERS] = {
+	STM32_DMA2D_FGCOLR,
+	STM32_DMA2D_BGCOLR,
+	STM32_DMA2D_OCOLR
 };
 
 #ifdef CONFIG_STM32_DMA2D_L8
 /* DMA2D clut memory address register */
 
-static const uintptr_t stm32_cmar_layer_t[DMA2D_NLAYERS - 1] =
-{
-  STM32_DMA2D_FGCMAR,
-  STM32_DMA2D_BGCMAR
+static const uintptr_t stm32_cmar_layer_t[DMA2D_NLAYERS - 1] = {
+	STM32_DMA2D_FGCMAR,
+	STM32_DMA2D_BGCMAR
 };
 #endif
 
@@ -293,63 +283,38 @@ static int stm32_dma2d_start(void);
 #ifdef CONFIG_STM32_DMA2D_L8
 static int stm32_dma2d_loadclut(uintptr_t reg);
 #endif
-static uint32_t stm32_dma2d_memaddress(FAR const struct stm32_dma2d_s *layer,
-                                        fb_coord_t xpos, fb_coord_t ypos);
-static fb_coord_t stm32_dma2d_lineoffset(FAR const struct stm32_dma2d_s *layer,
-                                          FAR const struct ltdc_area_s *area);
+static uint32_t stm32_dma2d_memaddress(FAR const struct stm32_dma2d_s *layer, fb_coord_t xpos, fb_coord_t ypos);
+static fb_coord_t stm32_dma2d_lineoffset(FAR const struct stm32_dma2d_s *layer, FAR const struct ltdc_area_s *area);
 
 static int stm32_dma2d_lfreelid(void);
-static FAR struct stm32_dma2d_s * stm32_dma2d_lalloc(void);
+static FAR struct stm32_dma2d_s *stm32_dma2d_lalloc(void);
 static void stm32_dma2d_lfree(FAR struct stm32_dma2d_s *layer);
 static void stm32_dma2d_llayerscleanup(void);
 static bool stm32_dma2d_lvalidate(FAR const struct stm32_dma2d_s *layer);
-static bool stm32_dma2d_lvalidatesize(FAR const struct stm32_dma2d_s *layer,
-                                      fb_coord_t xpos, fb_coord_t ypos,
-                                      FAR const struct ltdc_area_s *area);
-static void stm32_dma2d_linit(FAR struct stm32_dma2d_s *layer,
-                                int lid, uint8_t fmt);
+static bool stm32_dma2d_lvalidatesize(FAR const struct stm32_dma2d_s *layer, fb_coord_t xpos, fb_coord_t ypos, FAR const struct ltdc_area_s *area);
+static void stm32_dma2d_linit(FAR struct stm32_dma2d_s *layer, int lid, uint8_t fmt);
 
-static void stm32_dma2d_lfifo(FAR const struct stm32_dma2d_s *layer, int lid,
-                              fb_coord_t xpos, fb_coord_t ypos,
-                              FAR const struct ltdc_area_s *area);
-static void stm32_dma2d_lcolor(FAR const struct stm32_dma2d_s *layer,
-                               int lid, uint32_t color);
-static void stm32_dma2d_llnr(FAR struct stm32_dma2d_s *layer,
-                                FAR const struct ltdc_area_s *area);
+static void stm32_dma2d_lfifo(FAR const struct stm32_dma2d_s *layer, int lid, fb_coord_t xpos, fb_coord_t ypos, FAR const struct ltdc_area_s *area);
+static void stm32_dma2d_lcolor(FAR const struct stm32_dma2d_s *layer, int lid, uint32_t color);
+static void stm32_dma2d_llnr(FAR struct stm32_dma2d_s *layer, FAR const struct ltdc_area_s *area);
 static int stm32_dma2d_loutpfc(FAR const struct stm32_dma2d_s *layer);
-static void stm32_dma2d_lpfc(FAR const struct stm32_dma2d_s *layer,
-                              int lid, uint32_t blendmode);
+static void stm32_dma2d_lpfc(FAR const struct stm32_dma2d_s *layer, int lid, uint32_t blendmode);
 /* Public functions */
 
-static int stm32_dma2dgetvideoinfo(FAR struct dma2d_layer_s *layer,
-                                  FAR struct fb_videoinfo_s *vinfo);
-static int stm32_dma2dgetplaneinfo(FAR struct dma2d_layer_s *layer, int planeno,
-                                  FAR struct fb_planeinfo_s *pinfo);
+static int stm32_dma2dgetvideoinfo(FAR struct dma2d_layer_s *layer, FAR struct fb_videoinfo_s *vinfo);
+static int stm32_dma2dgetplaneinfo(FAR struct dma2d_layer_s *layer, int planeno, FAR struct fb_planeinfo_s *pinfo);
 static int stm32_dma2dgetlid(FAR struct dma2d_layer_s *layer, int *lid);
 #ifdef CONFIG_STM32_DMA2D_L8
-static int stm32_dma2dsetclut(FAR struct dma2d_layer_s *layer,
-                            const FAR struct fb_cmap_s *cmap);
-static int stm32_dma2dgetclut(FAR struct dma2d_layer_s *layer,
-                            FAR struct fb_cmap_s *cmap);
+static int stm32_dma2dsetclut(FAR struct dma2d_layer_s *layer, const FAR struct fb_cmap_s *cmap);
+static int stm32_dma2dgetclut(FAR struct dma2d_layer_s *layer, FAR struct fb_cmap_s *cmap);
 #endif
 static int stm32_dma2dsetalpha(FAR struct dma2d_layer_s *layer, uint8_t alpha);
 static int stm32_dma2dgetalpha(FAR struct dma2d_layer_s *layer, uint8_t *alpha);
-static int stm32_dma2dsetblendmode(FAR struct dma2d_layer_s *layer,
-                                    uint32_t mode);
-static int stm32_dma2dgetblendmode(FAR struct dma2d_layer_s *layer,
-                                    uint32_t *mode);
-static int stm32_dma2dblit(FAR struct dma2d_layer_s *dest,
-                            fb_coord_t destxpos, fb_coord_t destypos,
-                            FAR const struct dma2d_layer_s *src,
-                            FAR const struct ltdc_area_s *srcarea);
-static int stm32_dma2dblend(FAR struct dma2d_layer_s *dest,
-                            fb_coord_t destxpos, fb_coord_t destypos,
-                            FAR const struct dma2d_layer_s *fore,
-                            fb_coord_t forexpos, fb_coord_t foreypos,
-                            FAR const struct dma2d_layer_s *back,
-                            FAR const struct ltdc_area_s *backarea);
-static int stm32_dma2dfillarea(FAR struct dma2d_layer_s *layer,
-                            FAR const struct ltdc_area_s *area, uint32_t color);
+static int stm32_dma2dsetblendmode(FAR struct dma2d_layer_s *layer, uint32_t mode);
+static int stm32_dma2dgetblendmode(FAR struct dma2d_layer_s *layer, uint32_t *mode);
+static int stm32_dma2dblit(FAR struct dma2d_layer_s *dest, fb_coord_t destxpos, fb_coord_t destypos, FAR const struct dma2d_layer_s *src, FAR const struct ltdc_area_s *srcarea);
+static int stm32_dma2dblend(FAR struct dma2d_layer_s *dest, fb_coord_t destxpos, fb_coord_t destypos, FAR const struct dma2d_layer_s *fore, fb_coord_t forexpos, fb_coord_t foreypos, FAR const struct dma2d_layer_s *back, FAR const struct ltdc_area_s *backarea);
+static int stm32_dma2dfillarea(FAR struct dma2d_layer_s *layer, FAR const struct ltdc_area_s *area, uint32_t color);
 
 /****************************************************************************
  * Private Data
@@ -379,12 +344,11 @@ static sem_t g_semirq;
 
 /* This structure provides irq handling */
 
-static struct stm32_interrupt_s g_interrupt =
-{
-  .wait    = false,
-  .handled = true,
-  .irq     = STM32_IRQ_DMA2D,
-  .sem     = &g_semirq
+static struct stm32_interrupt_s g_interrupt = {
+	.wait = false,
+	.handled = true,
+	.irq = STM32_IRQ_DMA2D,
+	.sem = &g_semirq
 };
 
 /****************************************************************************
@@ -409,14 +373,14 @@ static struct stm32_interrupt_s g_interrupt =
 
 static void stm32_dma2d_control(uint32_t setbits, uint32_t clrbits)
 {
-  uint32_t   cr;
+	uint32_t cr;
 
-  lcdinfo("setbits=%08x, clrbits=%08x\n", setbits, clrbits);
+	lcdinfo("setbits=%08x, clrbits=%08x\n", setbits, clrbits);
 
-  cr = getreg32(STM32_DMA2D_CR);
-  cr &= ~clrbits;
-  cr |= setbits;
-  putreg32(cr, STM32_DMA2D_CR);
+	cr = getreg32(STM32_DMA2D_CR);
+	cr &= ~clrbits;
+	cr |= setbits;
+	putreg32(cr, STM32_DMA2D_CR);
 }
 
 /****************************************************************************
@@ -429,55 +393,50 @@ static void stm32_dma2d_control(uint32_t setbits, uint32_t clrbits)
 
 static int stm32_dma2dirq(int irq, void *context, FAR void *arg)
 {
-  uint32_t regval = getreg32(STM32_DMA2D_ISR);
-  FAR struct stm32_interrupt_s *priv = &g_interrupt;
+	uint32_t regval = getreg32(STM32_DMA2D_ISR);
+	FAR struct stm32_interrupt_s *priv = &g_interrupt;
 
-  reginfo("irq = %d, regval = %08x\n", irq, regval);
+	reginfo("irq = %d, regval = %08x\n", irq, regval);
 
-  if (regval & DMA2D_ISR_TCIF)
-    {
-      /* Transfer complete interrupt */
+	if (regval & DMA2D_ISR_TCIF) {
+		/* Transfer complete interrupt */
 
-      /* Clear the interrupt status register */
+		/* Clear the interrupt status register */
 
-      putreg32(DMA2D_IFCR_CTCIF, STM32_DMA2D_IFCR);
-    }
+		putreg32(DMA2D_IFCR_CTCIF, STM32_DMA2D_IFCR);
+	}
 #ifdef CONFIG_STM32_DMA2D_L8
-  else if (regval & DMA2D_ISR_CTCIF)
-    {
-      /* CLUT transfer complete interrupt */
+	else if (regval & DMA2D_ISR_CTCIF) {
+		/* CLUT transfer complete interrupt */
 
-      /* Clear the interrupt status register */
+		/* Clear the interrupt status register */
 
-      putreg32(DMA2D_IFCR_CCTCIF, STM32_DMA2D_IFCR);
-    }
+		putreg32(DMA2D_IFCR_CCTCIF, STM32_DMA2D_IFCR);
+	}
 #endif
-  else
-    {
-      /* Unknown irq, should not occur */
+	else {
+		/* Unknown irq, should not occur */
 
-      return OK;
-    }
+		return OK;
+	}
 
-  /* Update the handled flag */
+	/* Update the handled flag */
 
-  priv->handled = true;
+	priv->handled = true;
 
-  /* Unlock the semaphore if locked */
+	/* Unlock the semaphore if locked */
 
-  if (priv->wait)
-    {
+	if (priv->wait) {
 
-      int ret = sem_post(priv->sem);
+		int ret = sem_post(priv->sem);
 
-      if (ret != OK)
-        {
-          lcderr("ERROR: sem_post() failed\n");
-          return ret;
-        }
-    }
+		if (ret != OK) {
+			lcderr("ERROR: sem_post() failed\n");
+			return ret;
+		}
+	}
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -495,34 +454,31 @@ static int stm32_dma2dirq(int irq, void *context, FAR void *arg)
 
 static int stm32_dma2d_waitforirq(void)
 {
-  FAR struct stm32_interrupt_s *priv = &g_interrupt;
+	FAR struct stm32_interrupt_s *priv = &g_interrupt;
 
-  /* Only waits if last enabled interrupt is currently not handled */
+	/* Only waits if last enabled interrupt is currently not handled */
 
-  if (!priv->handled)
-    {
-      int ret;
+	if (!priv->handled) {
+		int ret;
 
-      /* Inform the irq handler the task is able to wait for the irq */
+		/* Inform the irq handler the task is able to wait for the irq */
 
-      priv->wait = true;
+		priv->wait = true;
 
-      ret = sem_wait(priv->sem);
+		ret = sem_wait(priv->sem);
 
-      /* irq or an error occurs, reset the wait flag */
+		/* irq or an error occurs, reset the wait flag */
 
-      priv->wait = false;
+		priv->wait = false;
 
-      if (ret != OK)
-        {
-          lcderr("ERROR: sem_wait() failed\n");
-          return ret;
-        }
-    }
+		if (ret != OK) {
+			lcderr("ERROR: sem_wait() failed\n");
+			return ret;
+		}
+	}
 
-  return OK;
+	return OK;
 }
-
 
 #ifdef CONFIG_STM32_DMA2D_L8
 /****************************************************************************
@@ -542,32 +498,31 @@ static int stm32_dma2d_waitforirq(void)
 
 static int stm32_dma2d_loadclut(uintptr_t pfcreg)
 {
-  int        ret;
-  uint32_t   regval;
-  irqstate_t flags;
+	int ret;
+	uint32_t regval;
+	irqstate_t flags;
 
-  flags = irqsave();
+	flags = irqsave();
 
-  ret = stm32_dma2d_waitforirq();
-  if (ret == OK)
-    {
-      FAR struct stm32_interrupt_s *priv = &g_interrupt;
+	ret = stm32_dma2d_waitforirq();
+	if (ret == OK) {
+		FAR struct stm32_interrupt_s *priv = &g_interrupt;
 
-      /* Reset the handled flag */
+		/* Reset the handled flag */
 
-      priv->handled = false;
+		priv->handled = false;
 
-      /* Start clut loading */
+		/* Start clut loading */
 
-      regval  = getreg32(pfcreg);
-      regval |= DMA2D_xGPFCCR_START;
-      reginfo("set regval=%08x\n", regval);
-      putreg32(regval, pfcreg);
-      reginfo("configured regval=%08x\n", getreg32(pfcreg));
-    }
+		regval = getreg32(pfcreg);
+		regval |= DMA2D_xGPFCCR_START;
+		reginfo("set regval=%08x\n", regval);
+		putreg32(regval, pfcreg);
+		reginfo("configured regval=%08x\n", getreg32(pfcreg));
+	}
 
-  irqrestore(flags);
-  return OK;
+	irqrestore(flags);
+	return OK;
 }
 #endif
 
@@ -586,31 +541,30 @@ static int stm32_dma2d_loadclut(uintptr_t pfcreg)
 
 static int stm32_dma2d_start(void)
 {
-  int        ret;
-  irqstate_t flags;
+	int ret;
+	irqstate_t flags;
 
-  flags = irqsave();
+	flags = irqsave();
 
-  ret = stm32_dma2d_waitforirq();
-  if (ret == OK)
-    {
-      FAR struct stm32_interrupt_s *priv = &g_interrupt;
+	ret = stm32_dma2d_waitforirq();
+	if (ret == OK) {
+		FAR struct stm32_interrupt_s *priv = &g_interrupt;
 
-      /* Reset the handled flag */
+		/* Reset the handled flag */
 
-      priv->handled = false;
+		priv->handled = false;
 
-      /* Start clut loading */
+		/* Start clut loading */
 
-      stm32_dma2d_control(DMA2D_CR_START, 0);
+		stm32_dma2d_control(DMA2D_CR_START, 0);
 
-      /* wait until transfer is complete */
+		/* wait until transfer is complete */
 
-      ret = stm32_dma2d_waitforirq();
-    }
+		ret = stm32_dma2d_waitforirq();
+	}
 
-  irqrestore(flags);
-  return ret;
+	irqrestore(flags);
+	return ret;
 }
 
 /****************************************************************************
@@ -627,16 +581,15 @@ static int stm32_dma2d_start(void)
  *
  ****************************************************************************/
 
-static uint32_t stm32_dma2d_memaddress(FAR const struct stm32_dma2d_s *layer,
-                                        fb_coord_t xpos, fb_coord_t ypos)
+static uint32_t stm32_dma2d_memaddress(FAR const struct stm32_dma2d_s *layer, fb_coord_t xpos, fb_coord_t ypos)
 {
-  FAR const struct fb_planeinfo_s *pinfo = &layer->pinfo;
-  uint32_t offset;
+	FAR const struct fb_planeinfo_s *pinfo = &layer->pinfo;
+	uint32_t offset;
 
-  offset = xpos * DMA2D_PF_BYPP(layer->pinfo.bpp) + layer->pinfo.stride * ypos;
+	offset = xpos * DMA2D_PF_BYPP(layer->pinfo.bpp) + layer->pinfo.stride * ypos;
 
-  lcdinfo("%p\n", ((uint32_t) pinfo->fbmem) + offset);
-  return ((uint32_t) pinfo->fbmem) + offset;
+	lcdinfo("%p\n", ((uint32_t) pinfo->fbmem) + offset);
+	return ((uint32_t) pinfo->fbmem) + offset;
 }
 
 /****************************************************************************
@@ -653,13 +606,12 @@ static uint32_t stm32_dma2d_memaddress(FAR const struct stm32_dma2d_s *layer,
  *
  ****************************************************************************/
 
-static fb_coord_t stm32_dma2d_lineoffset(FAR const struct stm32_dma2d_s *layer,
-                                          FAR const struct ltdc_area_s *area)
+static fb_coord_t stm32_dma2d_lineoffset(FAR const struct stm32_dma2d_s *layer, FAR const struct ltdc_area_s *area)
 {
-  /* offset at the end of each line in the context to the area layer */
+	/* offset at the end of each line in the context to the area layer */
 
-  lcdinfo("%d\n", layer->vinfo.xres - area->xres);
-  return layer->vinfo.xres - area->xres;
+	lcdinfo("%d\n", layer->vinfo.xres - area->xres);
+	return layer->vinfo.xres - area->xres;
 }
 
 /****************************************************************************
@@ -680,45 +632,44 @@ static fb_coord_t stm32_dma2d_lineoffset(FAR const struct stm32_dma2d_s *layer,
 
 static int stm32_dma2d_pixelformat(uint8_t fmt, uint8_t *fmtmap)
 {
-  lcdinfo("fmt=%d, fmtmap=%p\n", fmt, fmtmap);
+	lcdinfo("fmt=%d, fmtmap=%p\n", fmt, fmtmap);
 
-  /* Map to the controller known format
-   *
-   * Not supported by NuttX:
-   * ARGB8888
-   * ARGB1555
-   * ARGB4444
-   * AL44
-   * AL88
-   * L8 (non output layer only)
-   * L4
-   * A8
-   * A4
-   */
+	/* Map to the controller known format
+	 *
+	 * Not supported by NuttX:
+	 * ARGB8888
+	 * ARGB1555
+	 * ARGB4444
+	 * AL44
+	 * AL88
+	 * L8 (non output layer only)
+	 * L4
+	 * A8
+	 * A4
+	 */
 
-  switch (fmt)
-    {
+	switch (fmt) {
 #ifdef CONFIG_STM32_DMA2D_RGB565
-      case FB_FMT_RGB16_565:
-        *fmtmap = DMA2D_PF_RGB565;
-        break;
+	case FB_FMT_RGB16_565:
+		*fmtmap = DMA2D_PF_RGB565;
+		break;
 #endif
 #ifdef CONFIG_STM32_DMA2D_RGB888
-      case FB_FMT_RGB24:
-        *fmtmap = DMA2D_PF_RGB888;
-        break;
+	case FB_FMT_RGB24:
+		*fmtmap = DMA2D_PF_RGB888;
+		break;
 #endif
 #ifdef CONFIG_STM32_DMA2D_L8
-      case FB_FMT_RGB8:
-        *fmtmap = DMA2D_PF_L8;
-        break;
+	case FB_FMT_RGB8:
+		*fmtmap = DMA2D_PF_L8;
+		break;
 #endif
-      default:
-        lcderr("ERROR: Returning EINVAL\n");
-        return -EINVAL;
-    }
+	default:
+		lcderr("ERROR: Returning EINVAL\n");
+		return -EINVAL;
+	}
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -739,31 +690,30 @@ static int stm32_dma2d_pixelformat(uint8_t fmt, uint8_t *fmtmap)
 
 static int stm32_dma2d_bpp(uint8_t fmt, uint8_t *bpp)
 {
-  lcdinfo("fmt=%d, bpp=%p\n", fmt, bpp);
+	lcdinfo("fmt=%d, bpp=%p\n", fmt, bpp);
 
-  switch (fmt)
-    {
+	switch (fmt) {
 #ifdef CONFIG_STM32_DMA2D_RGB565
-      case FB_FMT_RGB16_565:
-        *bpp = 16;
-        break;
+	case FB_FMT_RGB16_565:
+		*bpp = 16;
+		break;
 #endif
 #ifdef CONFIG_STM32_DMA2D_RGB888
-      case FB_FMT_RGB24:
-        *bpp = 24;
-        break;
+	case FB_FMT_RGB24:
+		*bpp = 24;
+		break;
 #endif
 #ifdef CONFIG_STM32_DMA2D_L8
-      case FB_FMT_RGB8:
-        *bpp = 8;
-        break;
+	case FB_FMT_RGB8:
+		*bpp = 8;
+		break;
 #endif
-      default:
-        lcderr("ERROR: Returning EINVAL\n");
-        return -EINVAL;
-    }
+	default:
+		lcderr("ERROR: Returning EINVAL\n");
+		return -EINVAL;
+	}
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -780,17 +730,15 @@ static int stm32_dma2d_bpp(uint8_t fmt, uint8_t *bpp)
 
 static int stm32_dma2d_lfreelid(void)
 {
-  int n;
+	int n;
 
-  for (n = DMA2D_SHADOW_LAYER; n < DMA2D_LAYER_NSIZE; n++)
-    {
-      if (g_layers[n] == NULL)
-        {
-          return n;
-        }
-    }
+	for (n = DMA2D_SHADOW_LAYER; n < DMA2D_LAYER_NSIZE; n++) {
+		if (g_layers[n] == NULL) {
+			return n;
+		}
+	}
 
-  return -1;
+	return -1;
 }
 
 /****************************************************************************
@@ -804,26 +752,25 @@ static int stm32_dma2d_lfreelid(void)
  *
  ****************************************************************************/
 
-static FAR struct stm32_dma2d_s * stm32_dma2d_lalloc(void)
+static FAR struct stm32_dma2d_s *stm32_dma2d_lalloc(void)
 {
-  FAR struct stm32_dma2d_s *layer;
+	FAR struct stm32_dma2d_s *layer;
 
 #ifdef HAVE_CCM_HEAP
-  /* First try to allocate from the ccm heap */
+	/* First try to allocate from the ccm heap */
 
-  layer = ccm_malloc(sizeof(struct stm32_dma2d_s));
+	layer = ccm_malloc(sizeof(struct stm32_dma2d_s));
 
-  if (!layer)
-    {
-      /* Use default allocator */
+	if (!layer) {
+		/* Use default allocator */
 
-      layer = kmm_malloc(sizeof(struct stm32_dma2d_s));
-    }
+		layer = kmm_malloc(sizeof(struct stm32_dma2d_s));
+	}
 #else
-  layer = kmm_malloc(sizeof(struct stm32_dma2d_s));
+	layer = kmm_malloc(sizeof(struct stm32_dma2d_s));
 #endif
 
-  return layer;
+	return layer;
 }
 
 /****************************************************************************
@@ -839,21 +786,17 @@ static FAR struct stm32_dma2d_s * stm32_dma2d_lalloc(void)
 
 static void stm32_dma2d_lfree(FAR struct stm32_dma2d_s *layer)
 {
-  if (layer)
-    {
+	if (layer) {
 #ifdef HAVE_CCM_HEAP
-      if (((uint32_t)layer & 0xf0000000) == 0x10000000)
-        {
-          ccm_free(layer);
-        }
-      else
-        {
-          kmm_free(layer);
-        }
+		if (((uint32_t) layer & 0xf0000000) == 0x10000000) {
+			ccm_free(layer);
+		} else {
+			kmm_free(layer);
+		}
 #else
-      kmm_free(layer);
+		kmm_free(layer);
 #endif
-    }
+	}
 }
 
 /****************************************************************************
@@ -866,20 +809,18 @@ static void stm32_dma2d_lfree(FAR struct stm32_dma2d_s *layer)
 
 static void stm32_dma2d_llayerscleanup(void)
 {
-  int n;
+	int n;
 
-  /* Do not uninitialize the ltdc related dma2d layer */
+	/* Do not uninitialize the ltdc related dma2d layer */
 
-  for (n = DMA2D_SHADOW_LAYER; n < DMA2D_LAYER_NSIZE; n++)
-    {
-      FAR struct stm32_dma2d_s *priv = g_layers[n];
-      if (priv)
-        {
-          kmm_free(priv->pinfo.fbmem);
-          stm32_dma2d_lfree(priv);
-          g_layers[n] = NULL;
-        }
-    }
+	for (n = DMA2D_SHADOW_LAYER; n < DMA2D_LAYER_NSIZE; n++) {
+		FAR struct stm32_dma2d_s *priv = g_layers[n];
+		if (priv) {
+			kmm_free(priv->pinfo.fbmem);
+			stm32_dma2d_lfree(priv);
+			g_layers[n] = NULL;
+		}
+	}
 }
 
 /****************************************************************************
@@ -895,7 +836,7 @@ static void stm32_dma2d_llayerscleanup(void)
 
 static inline bool stm32_dma2d_lvalidate(FAR const struct stm32_dma2d_s *layer)
 {
-  return layer && layer->lid < DMA2D_LAYER_NSIZE;
+	return layer && layer->lid < DMA2D_LAYER_NSIZE;
 }
 
 /****************************************************************************
@@ -915,13 +856,9 @@ static inline bool stm32_dma2d_lvalidate(FAR const struct stm32_dma2d_s *layer)
  *
  ****************************************************************************/
 
-static bool stm32_dma2d_lvalidatesize(FAR const struct stm32_dma2d_s *layer,
-                                         fb_coord_t xpos, fb_coord_t ypos,
-                                         FAR const struct ltdc_area_s *area)
+static bool stm32_dma2d_lvalidatesize(FAR const struct stm32_dma2d_s *layer, fb_coord_t xpos, fb_coord_t ypos, FAR const struct ltdc_area_s *area)
 {
-  return stm32_dma2d_lvalidate(layer) &&
-            ((layer->vinfo.xres - xpos) * (layer->vinfo.yres - ypos) >=
-                area->xres * area->yres);
+	return stm32_dma2d_lvalidate(layer) && ((layer->vinfo.xres - xpos) * (layer->vinfo.yres - ypos) >= area->xres * area->yres);
 }
 
 /****************************************************************************
@@ -935,40 +872,39 @@ static bool stm32_dma2d_lvalidatesize(FAR const struct stm32_dma2d_s *layer,
  *
  ****************************************************************************/
 
-static void stm32_dma2d_linit(FAR struct stm32_dma2d_s *layer,
-                                int lid, uint8_t fmt)
+static void stm32_dma2d_linit(FAR struct stm32_dma2d_s *layer, int lid, uint8_t fmt)
 {
-  FAR struct dma2d_layer_s *priv = &layer->dma2d;
+	FAR struct dma2d_layer_s *priv = &layer->dma2d;
 
-  lcdinfo("layer=%p, lid=%d, fmt=%02x\n", layer, lid, fmt);
+	lcdinfo("layer=%p, lid=%d, fmt=%02x\n", layer, lid, fmt);
 
-  /* initialize the layer interface */
+	/* initialize the layer interface */
 
-  priv->getvideoinfo = stm32_dma2dgetvideoinfo;
-  priv->getplaneinfo = stm32_dma2dgetplaneinfo;
-  priv->getlid       = stm32_dma2dgetlid;
+	priv->getvideoinfo = stm32_dma2dgetvideoinfo;
+	priv->getplaneinfo = stm32_dma2dgetplaneinfo;
+	priv->getlid = stm32_dma2dgetlid;
 #ifdef CONFIG_STM32_DMA2D_L8
-  priv->setclut      = stm32_dma2dsetclut;
-  priv->getclut      = stm32_dma2dgetclut;
+	priv->setclut = stm32_dma2dsetclut;
+	priv->getclut = stm32_dma2dgetclut;
 #endif
-  priv->setalpha     = stm32_dma2dsetalpha;
-  priv->getalpha     = stm32_dma2dgetalpha;
-  priv->setblendmode = stm32_dma2dsetblendmode;
-  priv->getblendmode = stm32_dma2dgetblendmode;
-  priv->blit         = stm32_dma2dblit;
-  priv->blend        = stm32_dma2dblend;
-  priv->fillarea     = stm32_dma2dfillarea;
+	priv->setalpha = stm32_dma2dsetalpha;
+	priv->getalpha = stm32_dma2dgetalpha;
+	priv->setblendmode = stm32_dma2dsetblendmode;
+	priv->getblendmode = stm32_dma2dgetblendmode;
+	priv->blit = stm32_dma2dblit;
+	priv->blend = stm32_dma2dblend;
+	priv->fillarea = stm32_dma2dfillarea;
 
-  /* Initialize the layer structure */
+	/* Initialize the layer structure */
 
-  layer->lid          = lid;
+	layer->lid = lid;
 #ifdef CONFIG_STM32_DMA2D_L8
-  layer->clut         = 0;
+	layer->clut = 0;
 #endif
-  layer->blendmode    = DMA2D_BLEND_NONE;
-  layer->alpha        = 255;
-  layer->fmt          = fmt;
-  layer->lock         = &g_lock;
+	layer->blendmode = DMA2D_BLEND_NONE;
+	layer->alpha = 255;
+	layer->fmt = fmt;
+	layer->lock = &g_lock;
 }
 
 /****************************************************************************
@@ -984,15 +920,12 @@ static void stm32_dma2d_linit(FAR struct stm32_dma2d_s *layer,
  *
  ****************************************************************************/
 
-static void stm32_dma2d_lfifo(FAR const struct stm32_dma2d_s *layer, int lid,
-                              fb_coord_t xpos, fb_coord_t ypos,
-                              FAR const struct ltdc_area_s *area)
+static void stm32_dma2d_lfifo(FAR const struct stm32_dma2d_s *layer, int lid, fb_coord_t xpos, fb_coord_t ypos, FAR const struct ltdc_area_s *area)
 {
-  lcdinfo("layer=%p, lid=%d, xpos=%d, ypos=%d, area=%p\n",
-           layer, lid, xpos, ypos, area);
+	lcdinfo("layer=%p, lid=%d, xpos=%d, ypos=%d, area=%p\n", layer, lid, xpos, ypos, area);
 
-  putreg32(stm32_dma2d_memaddress(layer, xpos, ypos), stm32_mar_layer_t[lid]);
-  putreg32(stm32_dma2d_lineoffset(layer, area), stm32_or_layer_t[lid]);
+	putreg32(stm32_dma2d_memaddress(layer, xpos, ypos), stm32_mar_layer_t[lid]);
+	putreg32(stm32_dma2d_lineoffset(layer, area), stm32_or_layer_t[lid]);
 }
 
 /****************************************************************************
@@ -1006,11 +939,10 @@ static void stm32_dma2d_lfifo(FAR const struct stm32_dma2d_s *layer, int lid,
  *
  ****************************************************************************/
 
-static void stm32_dma2d_lcolor(FAR const struct stm32_dma2d_s *layer,
-                               int lid, uint32_t color)
+static void stm32_dma2d_lcolor(FAR const struct stm32_dma2d_s *layer, int lid, uint32_t color)
 {
-  lcdinfo("layer=%p, lid=%d, color=%08x\n", layer, lid, color);
-  putreg32(color, stm32_color_layer_t[lid]);
+	lcdinfo("layer=%p, lid=%d, color=%08x\n", layer, lid, color);
+	putreg32(color, stm32_color_layer_t[lid]);
 }
 
 /****************************************************************************
@@ -1025,16 +957,15 @@ static void stm32_dma2d_lcolor(FAR const struct stm32_dma2d_s *layer,
  *
  ****************************************************************************/
 
-static void stm32_dma2d_llnr(FAR struct stm32_dma2d_s *layer,
-                                FAR const struct ltdc_area_s *area)
+static void stm32_dma2d_llnr(FAR struct stm32_dma2d_s *layer, FAR const struct ltdc_area_s *area)
 {
-  uint32_t nlrreg;
+	uint32_t nlrreg;
 
-  lcdinfo("pixel per line: %d, number of lines: %d\n", area->xres, area->yres);
+	lcdinfo("pixel per line: %d, number of lines: %d\n", area->xres, area->yres);
 
-  nlrreg = getreg32(STM32_DMA2D_NLR);
-  nlrreg = (DMA2D_NLR_PL(area->xres) | DMA2D_NLR_NL(area->yres));
-  putreg32(nlrreg, STM32_DMA2D_NLR);
+	nlrreg = getreg32(STM32_DMA2D_NLR);
+	nlrreg = (DMA2D_NLR_PL(area->xres) | DMA2D_NLR_NL(area->yres));
+	putreg32(nlrreg, STM32_DMA2D_NLR);
 }
 
 /****************************************************************************
@@ -1050,24 +981,22 @@ static void stm32_dma2d_llnr(FAR struct stm32_dma2d_s *layer,
 
 static int stm32_dma2d_loutpfc(FAR const struct stm32_dma2d_s *layer)
 {
-  lcdinfo("layer=%p\n", layer);
+	lcdinfo("layer=%p\n", layer);
 
-  /* CLUT format isn't supported by the dma2d controller */
+	/* CLUT format isn't supported by the dma2d controller */
 
-  if (layer->fmt == DMA2D_PF_L8)
-    {
-      /* Destination layer doesn't support CLUT output */
+	if (layer->fmt == DMA2D_PF_L8) {
+		/* Destination layer doesn't support CLUT output */
 
-      lcderr("ERROR: Returning ENOSYS, "
-             "output to layer with CLUT format not supported.\n");
-      return -ENOSYS;
-    }
+		lcderr("ERROR: Returning ENOSYS, " "output to layer with CLUT format not supported.\n");
+		return -ENOSYS;
+	}
 
-  /* Set the mapped pixel format of source layer */
+	/* Set the mapped pixel format of source layer */
 
-  putreg32(DMA2D_OPFCCR_CM(layer->fmt), STM32_DMA2D_OPFCCR);
+	putreg32(DMA2D_OPFCCR_CM(layer->fmt), STM32_DMA2D_OPFCCR);
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -1081,73 +1010,65 @@ static int stm32_dma2d_loutpfc(FAR const struct stm32_dma2d_s *layer)
  *
  ****************************************************************************/
 
-static void stm32_dma2d_lpfc(FAR const struct stm32_dma2d_s *layer,
-                              int lid, uint32_t blendmode)
+static void stm32_dma2d_lpfc(FAR const struct stm32_dma2d_s *layer, int lid, uint32_t blendmode)
 {
-  uint32_t   pfccrreg;
+	uint32_t pfccrreg;
 
-  lcdinfo("layer=%p, lid=%d, blendmode=%08x\n", layer, lid, blendmode);
+	lcdinfo("layer=%p, lid=%d, blendmode=%08x\n", layer, lid, blendmode);
 
-  /* Set color format */
+	/* Set color format */
 
-  pfccrreg = DMA2D_xGPFCCR_CM(layer->fmt);
+	pfccrreg = DMA2D_xGPFCCR_CM(layer->fmt);
 
 #ifdef CONFIG_STM32_DMA2D_L8
-  if (layer->fmt == DMA2D_PF_L8)
-    {
-      /* Load CLUT automatically */
+	if (layer->fmt == DMA2D_PF_L8) {
+		/* Load CLUT automatically */
 
-      pfccrreg |= DMA2D_xGPFCCR_START;
+		pfccrreg |= DMA2D_xGPFCCR_START;
 
-      /* Set the CLUT color mode */
+		/* Set the CLUT color mode */
 
 #ifndef CONFIG_FB_TRANSPARENCY
-      pfccrreg |= DMA2D_xGPFCCR_CCM;
+		pfccrreg |= DMA2D_xGPFCCR_CCM;
 #endif
 
-      /* Set CLUT size */
+		/* Set CLUT size */
 
-      pfccrreg |= DMA2D_xGPFCCR_CS(DMA2D_CLUT_SIZE);
+		pfccrreg |= DMA2D_xGPFCCR_CS(DMA2D_CLUT_SIZE);
 
-      /* Set the CLUT memory address */
+		/* Set the CLUT memory address */
 
-      putreg32((uint32_t) layer->clut, stm32_cmar_layer_t[lid]);
+		putreg32((uint32_t) layer->clut, stm32_cmar_layer_t[lid]);
 
-      /* Start async clut loading */
+		/* Start async clut loading */
 
-      stm32_dma2d_loadclut(stm32_pfccr_layer_t[lid]);
-    }
+		stm32_dma2d_loadclut(stm32_pfccr_layer_t[lid]);
+	}
 #endif
 
-  if (blendmode & DMA2D_BLEND_NONE)
-    {
-      /* No blend operation */
+	if (blendmode & DMA2D_BLEND_NONE) {
+		/* No blend operation */
 
-      pfccrreg |= DMA2D_xGPFCCR_AM(STM32_DMA2D_PFCCR_AM_NONE);
-    }
-  else
-    {
-      /* Set alpha value */
+		pfccrreg |= DMA2D_xGPFCCR_AM(STM32_DMA2D_PFCCR_AM_NONE);
+	} else {
+		/* Set alpha value */
 
-      pfccrreg |= DMA2D_xGPFCCR_ALPHA(layer->alpha);
+		pfccrreg |= DMA2D_xGPFCCR_ALPHA(layer->alpha);
 
-      /* Set alpha mode */
+		/* Set alpha mode */
 
-      if (layer->blendmode & DMA2D_BLEND_ALPHA)
-        {
-          /* Blend with constant alpha */
+		if (layer->blendmode & DMA2D_BLEND_ALPHA) {
+			/* Blend with constant alpha */
 
-          pfccrreg |= DMA2D_xGPFCCR_AM(STM32_DMA2D_PFCCR_AM_CONST);
-        }
-      else if (layer->blendmode & DMA2D_BLEND_PIXELALPHA)
-        {
-          /* Blend with pixel alpha value */
+			pfccrreg |= DMA2D_xGPFCCR_AM(STM32_DMA2D_PFCCR_AM_CONST);
+		} else if (layer->blendmode & DMA2D_BLEND_PIXELALPHA) {
+			/* Blend with pixel alpha value */
 
-          pfccrreg |= DMA2D_xGPFCCR_AM(STM32_DMA2D_PFCCR_AM_PIXEL);
-        }
-    }
+			pfccrreg |= DMA2D_xGPFCCR_AM(STM32_DMA2D_PFCCR_AM_PIXEL);
+		}
+	}
 
-  putreg32(pfccrreg, stm32_pfccr_layer_t[lid]);
+	putreg32(pfccrreg, stm32_pfccr_layer_t[lid]);
 }
 
 /****************************************************************************
@@ -1170,24 +1091,22 @@ static void stm32_dma2d_lpfc(FAR const struct stm32_dma2d_s *layer,
  *
  ****************************************************************************/
 
-static int stm32_dma2dgetvideoinfo(FAR struct dma2d_layer_s *layer,
-                            FAR struct fb_videoinfo_s *vinfo)
+static int stm32_dma2dgetvideoinfo(FAR struct dma2d_layer_s *layer, FAR struct fb_videoinfo_s *vinfo)
 {
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, vinfo=%p\n", layer, vinfo);
+	lcdinfo("layer=%p, vinfo=%p\n", layer, vinfo);
 
-  if (stm32_dma2d_lvalidate(priv) && vinfo)
-    {
-      sem_wait(priv->lock);
-      memcpy(vinfo, &priv->vinfo, sizeof(struct fb_videoinfo_s));
-      sem_post(priv->lock);
+	if (stm32_dma2d_lvalidate(priv) && vinfo) {
+		sem_wait(priv->lock);
+		memcpy(vinfo, &priv->vinfo, sizeof(struct fb_videoinfo_s));
+		sem_post(priv->lock);
 
-      return OK;
-    }
+		return OK;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -ENOSYS;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -ENOSYS;
 }
 
 /****************************************************************************
@@ -1207,24 +1126,22 @@ static int stm32_dma2dgetvideoinfo(FAR struct dma2d_layer_s *layer,
  *
  ****************************************************************************/
 
-static int stm32_dma2dgetplaneinfo(FAR struct dma2d_layer_s *layer, int planeno,
-                              FAR struct fb_planeinfo_s *pinfo)
+static int stm32_dma2dgetplaneinfo(FAR struct dma2d_layer_s *layer, int planeno, FAR struct fb_planeinfo_s *pinfo)
 {
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, planeno=%d, pinfo=%p\n", layer, planeno, pinfo);
+	lcdinfo("layer=%p, planeno=%d, pinfo=%p\n", layer, planeno, pinfo);
 
-  if (stm32_dma2d_lvalidate(priv) && pinfo && planeno == 0)
-    {
-      sem_wait(priv->lock);
-      memcpy(pinfo, &priv->pinfo, sizeof(struct fb_planeinfo_s));
-      sem_post(priv->lock);
+	if (stm32_dma2d_lvalidate(priv) && pinfo && planeno == 0) {
+		sem_wait(priv->lock);
+		memcpy(pinfo, &priv->pinfo, sizeof(struct fb_planeinfo_s));
+		sem_post(priv->lock);
 
-      return OK;
-    }
+		return OK;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 
 /****************************************************************************
@@ -1245,20 +1162,19 @@ static int stm32_dma2dgetplaneinfo(FAR struct dma2d_layer_s *layer, int planeno,
 
 static int stm32_dma2dgetlid(FAR struct dma2d_layer_s *layer, int *lid)
 {
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, lid=%p\n", layer, lid);
+	lcdinfo("layer=%p, lid=%p\n", layer, lid);
 
-  if (stm32_dma2d_lvalidate(priv) && lid)
-    {
-      sem_wait(priv->lock);
-      *lid = priv->lid;
-      sem_post(priv->lock);
-      return OK;
-    }
+	if (stm32_dma2d_lvalidate(priv) && lid) {
+		sem_wait(priv->lock);
+		*lid = priv->lid;
+		sem_post(priv->lock);
+		return OK;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 
 #ifdef CONFIG_STM32_DMA2D_L8
@@ -1279,106 +1195,84 @@ static int stm32_dma2dgetlid(FAR struct dma2d_layer_s *layer, int *lid)
  *
  ****************************************************************************/
 
-static int stm32_dma2dsetclut(FAR struct dma2d_layer_s *layer,
-                            const FAR struct fb_cmap_s *cmap)
+static int stm32_dma2dsetclut(FAR struct dma2d_layer_s *layer, const FAR struct fb_cmap_s *cmap)
 {
-  int   ret;
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	int ret;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, cmap=%p\n", layer, cmap);
+	lcdinfo("layer=%p, cmap=%p\n", layer, cmap);
 
-  if (stm32_dma2d_lvalidate(priv) && cmap)
-    {
-      sem_wait(priv->lock);
+	if (stm32_dma2d_lvalidate(priv) && cmap) {
+		sem_wait(priv->lock);
 
 #ifdef CONFIG_STM32_LTDC_INTERFACE
-      if (priv->lid < DMA2D_SHADOW_LAYER)
-        {
-          /* Update the shared color lookup table.
-           *
-           * Background:
-           *
-           *  We share the same memory region of the clut table with the LTDC
-           *  driver. (see stm32_dma2dinitltdc). This is important because any
-           *  changes to the framebuffer and color lookup table by the ltdc
-           *  related dma2d layer should also effects to the ltdc visibility,
-           *  except operation settings, alpha and blendmode.
-           *
-           *  But we can not only update the clut memory region. The LTDC driver
-           *  also must update they own LTDC clut register to make the changes
-           *  visible. Using the LTDC interface to update the clut table will
-           *  also update the clut table of the related dma2d layer.
-           */
+		if (priv->lid < DMA2D_SHADOW_LAYER) {
+			/* Update the shared color lookup table.
+			 *
+			 * Background:
+			 *
+			 *  We share the same memory region of the clut table with the LTDC
+			 *  driver. (see stm32_dma2dinitltdc). This is important because any
+			 *  changes to the framebuffer and color lookup table by the ltdc
+			 *  related dma2d layer should also effects to the ltdc visibility,
+			 *  except operation settings, alpha and blendmode.
+			 *
+			 *  But we can not only update the clut memory region. The LTDC driver
+			 *  also must update they own LTDC clut register to make the changes
+			 *  visible. Using the LTDC interface to update the clut table will
+			 *  also update the clut table of the related dma2d layer.
+			 */
 
-          FAR struct ltdc_layer_s *ltdc =
-              g_ltdc_layer.layer[DMA2D_SHADOW_LAYER_L1].ltdc;
+			FAR struct ltdc_layer_s *ltdc = g_ltdc_layer.layer[DMA2D_SHADOW_LAYER_L1].ltdc;
 
-          ret = ltdc->setclut(ltdc, cmap);
+			ret = ltdc->setclut(ltdc, cmap);
 
-          sem_post(priv->lock);
+			sem_post(priv->lock);
 
-          return ret;
-        }
+			return ret;
+		}
 #endif
 
-      if (priv->fmt != DMA2D_PF_L8)
-        {
-          lcderr("ERROR: CLUT is not supported for the pixel format: %d\n",
-                  priv->vinfo.fmt);
-          ret = -EINVAL;
-        }
-      else if (cmap->first >= STM32_DMA2D_NCLUT)
-        {
-          lcderr("ERROR: only %d color table entries supported\n",
-                  STM32_DMA2D_NCLUT);
-          ret = -EINVAL;
-        }
-      else
-        {
-          uint32_t *clut;
-          int      n;
+		if (priv->fmt != DMA2D_PF_L8) {
+			lcderr("ERROR: CLUT is not supported for the pixel format: %d\n", priv->vinfo.fmt);
+			ret = -EINVAL;
+		} else if (cmap->first >= STM32_DMA2D_NCLUT) {
+			lcderr("ERROR: only %d color table entries supported\n", STM32_DMA2D_NCLUT);
+			ret = -EINVAL;
+		} else {
+			uint32_t *clut;
+			int n;
 
-          clut = priv->clut;
+			clut = priv->clut;
 
-          for (n = cmap->first; n < cmap->len && n < STM32_DMA2D_NCLUT; n++)
-            {
-              /* Update the layer clut entry */
+			for (n = cmap->first; n < cmap->len && n < STM32_DMA2D_NCLUT; n++) {
+				/* Update the layer clut entry */
 
 #ifndef CONFIG_FB_TRANSPARENCY
-              uint8_t  *clut888 = (uint8_t *)clut;
-              uint16_t offset   = 3 * n;
+				uint8_t *clut888 = (uint8_t *) clut;
+				uint16_t offset = 3 * n;
 
-              clut888[offset]     = cmap->blue[n];
-              clut888[offset + 1] = cmap->green[n];
-              clut888[offset + 2] = cmap->red[n];
+				clut888[offset] = cmap->blue[n];
+				clut888[offset + 1] = cmap->green[n];
+				clut888[offset + 2] = cmap->red[n];
 
-              reginfo("n=%d, red=%02x, green=%02x, blue=%02x\n", n,
-                        clut888[offset], clut888[offset + 1],
-                        clut888[offset + 2]);
+				reginfo("n=%d, red=%02x, green=%02x, blue=%02x\n", n, clut888[offset], clut888[offset + 1], clut888[offset + 2]);
 #else
-              clut[n] = (uint32_t)DMA2D_CLUT_RED(cmap->transp[n]) |
-                        (uint32_t)DMA2D_CLUT_GREEN(cmap->red[n]) |
-                        (uint32_t)DMA2D_CLUT_GREEN(cmap->green[n]) |
-                        (uint32_t)DMA2D_CLUT_BLUE(cmap->blue[n]);
+				clut[n] = (uint32_t) DMA2D_CLUT_RED(cmap->transp[n]) | (uint32_t) DMA2D_CLUT_GREEN(cmap->red[n]) | (uint32_t) DMA2D_CLUT_GREEN(cmap->green[n]) | (uint32_t) DMA2D_CLUT_BLUE(cmap->blue[n]);
 
-              reginfo("n=%d, alpha=%02x, red=%02x, green=%02x, blue=%02x\n", n,
-                        DMA2D_CLUT_ALPHA(cmap->alpha[n]),
-                        DMA2D_CLUT_RED(cmap->red[n]),
-                        DMA2D_CLUT_GREEN(cmap->green[n]),
-                        DMA2D_CLUT_BLUE(cmap->blue[n]));
+				reginfo("n=%d, alpha=%02x, red=%02x, green=%02x, blue=%02x\n", n, DMA2D_CLUT_ALPHA(cmap->alpha[n]), DMA2D_CLUT_RED(cmap->red[n]), DMA2D_CLUT_GREEN(cmap->green[n]), DMA2D_CLUT_BLUE(cmap->blue[n]));
 #endif
-            }
+			}
 
+			ret = OK;
+		}
 
-          ret = OK;
-        }
+		sem_post(priv->lock);
+		return ret;
+	}
 
-      sem_post(priv->lock);
-      return ret;
-    }
-
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 
 /****************************************************************************
@@ -1398,74 +1292,60 @@ static int stm32_dma2dsetclut(FAR struct dma2d_layer_s *layer,
  *
  ****************************************************************************/
 
-static int stm32_dma2dgetclut(FAR struct dma2d_layer_s *layer,
-                            FAR struct fb_cmap_s *cmap)
+static int stm32_dma2dgetclut(FAR struct dma2d_layer_s *layer, FAR struct fb_cmap_s *cmap)
 {
-  int ret;
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	int ret;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, cmap=%p\n", layer, cmap);
+	lcdinfo("layer=%p, cmap=%p\n", layer, cmap);
 
-  if (stm32_dma2d_lvalidate(priv) && cmap)
-    {
-      sem_wait(priv->lock);
+	if (stm32_dma2d_lvalidate(priv) && cmap) {
+		sem_wait(priv->lock);
 
-      if (priv->fmt != DMA2D_PF_L8)
-        {
-          lcderr("ERROR: CLUT is not supported for the pixel format: %d\n",
-                  priv->vinfo.fmt);
-          ret = -EINVAL;
-        }
-      else if (cmap->first >= STM32_DMA2D_NCLUT)
-        {
-          lcderr("ERROR: only %d color table entries supported\n",
-                  STM32_DMA2D_NCLUT);
-          ret = -EINVAL;
-        }
-      else
-        {
-          /* Copy from the layer clut */
+		if (priv->fmt != DMA2D_PF_L8) {
+			lcderr("ERROR: CLUT is not supported for the pixel format: %d\n", priv->vinfo.fmt);
+			ret = -EINVAL;
+		} else if (cmap->first >= STM32_DMA2D_NCLUT) {
+			lcderr("ERROR: only %d color table entries supported\n", STM32_DMA2D_NCLUT);
+			ret = -EINVAL;
+		} else {
+			/* Copy from the layer clut */
 
-          uint32_t *clut;
-          int      n;
+			uint32_t *clut;
+			int n;
 
-          clut = priv->clut;
+			clut = priv->clut;
 
-          for (n = cmap->first; n < cmap->len && n < STM32_DMA2D_NCLUT; n++)
-            {
+			for (n = cmap->first; n < cmap->len && n < STM32_DMA2D_NCLUT; n++) {
 #ifndef CONFIG_FB_TRANSPARENCY
-              uint8_t  *clut888 = (uint8_t *)clut;
-              uint16_t offset   = 3 * n;
+				uint8_t *clut888 = (uint8_t *) clut;
+				uint16_t offset = 3 * n;
 
-              cmap->blue[n]   = clut888[offset];
-              cmap->green[n]  = clut888[offset + 1];
-              cmap->red[n]    = clut888[offset + 2];
+				cmap->blue[n] = clut888[offset];
+				cmap->green[n] = clut888[offset + 1];
+				cmap->red[n] = clut888[offset + 2];
 
-              reginfo("n=%d, red=%02x, green=%02x, blue=%02x\n", n,
-                        clut888[offset], clut888[offset + 1],
-                        clut888[offset + 2]);
+				reginfo("n=%d, red=%02x, green=%02x, blue=%02x\n", n, clut888[offset], clut888[offset + 1], clut888[offset + 2]);
 #else
-              cmap->transp[n] = (uint8_t)DMA2D_CMAP_ALPHA(clut[n]);
-              cmap->red[n]    = (uint8_t)DMA2D_CMAP_RED(clut[n]);
-              cmap->green[n]  = (uint8_t)DMA2D_CMAP_GREEN(clut[n]);
-              cmap->blue[n]   = (uint8_t)DMA2D_CMAP_BLUE(clut[n]);
+				cmap->transp[n] = (uint8_t) DMA2D_CMAP_ALPHA(clut[n]);
+				cmap->red[n] = (uint8_t) DMA2D_CMAP_RED(clut[n]);
+				cmap->green[n] = (uint8_t) DMA2D_CMAP_GREEN(clut[n]);
+				cmap->blue[n] = (uint8_t) DMA2D_CMAP_BLUE(clut[n]);
 
-              reginfo("n=%d, alpha=%02x, red=%02x, green=%02x, blue=%02x\n", n,
-                        DMA2D_CMAP_ALPHA(clut[n]), DMA2D_CMAP_RED(clut[n]),
-                        DMA2D_CMAP_GREEN(clut[n]), DMA2D_CMAP_BLUE(clut[n]));
+				reginfo("n=%d, alpha=%02x, red=%02x, green=%02x, blue=%02x\n", n, DMA2D_CMAP_ALPHA(clut[n]), DMA2D_CMAP_RED(clut[n]), DMA2D_CMAP_GREEN(clut[n]), DMA2D_CMAP_BLUE(clut[n]));
 #endif
-            }
+			}
 
-          ret = OK;
-        }
+			ret = OK;
+		}
 
-      sem_post(priv->lock);
+		sem_post(priv->lock);
 
-      return ret;
-    }
+		return ret;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 #endif
 
@@ -1492,21 +1372,20 @@ static int stm32_dma2dgetclut(FAR struct dma2d_layer_s *layer,
 
 static int stm32_dma2dsetalpha(FAR struct dma2d_layer_s *layer, uint8_t alpha)
 {
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, alpha=%02x\n", layer, alpha);
+	lcdinfo("layer=%p, alpha=%02x\n", layer, alpha);
 
-  if (stm32_dma2d_lvalidate(priv))
-    {
-      sem_wait(priv->lock);
-      priv->alpha = alpha;
-      sem_post(priv->lock);
+	if (stm32_dma2d_lvalidate(priv)) {
+		sem_wait(priv->lock);
+		priv->alpha = alpha;
+		sem_post(priv->lock);
 
-      return OK;
-    }
+		return OK;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 
 /****************************************************************************
@@ -1527,21 +1406,20 @@ static int stm32_dma2dsetalpha(FAR struct dma2d_layer_s *layer, uint8_t alpha)
 
 static int stm32_dma2dgetalpha(FAR struct dma2d_layer_s *layer, uint8_t *alpha)
 {
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, alpha=%p\n", layer, alpha);
+	lcdinfo("layer=%p, alpha=%p\n", layer, alpha);
 
-  if (stm32_dma2d_lvalidate(priv))
-    {
-      sem_wait(priv->lock);
-      *alpha = priv->alpha;
-      sem_post(priv->lock);
+	if (stm32_dma2d_lvalidate(priv)) {
+		sem_wait(priv->lock);
+		*alpha = priv->alpha;
+		sem_post(priv->lock);
 
-      return OK;
-    }
+		return OK;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 
 /****************************************************************************
@@ -1575,24 +1453,22 @@ static int stm32_dma2dgetalpha(FAR struct dma2d_layer_s *layer, uint8_t *alpha)
  *
  ****************************************************************************/
 
-static int stm32_dma2dsetblendmode(FAR struct dma2d_layer_s *layer,
-                                    uint32_t mode)
+static int stm32_dma2dsetblendmode(FAR struct dma2d_layer_s *layer, uint32_t mode)
 {
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, mode=%08x\n", layer, mode);
+	lcdinfo("layer=%p, mode=%08x\n", layer, mode);
 
-  if (stm32_dma2d_lvalidate(priv))
-    {
-      sem_wait(priv->lock);
-      priv->blendmode = mode;
-      sem_post(priv->lock);
+	if (stm32_dma2d_lvalidate(priv)) {
+		sem_wait(priv->lock);
+		priv->blendmode = mode;
+		sem_post(priv->lock);
 
-      return OK;
-    }
+		return OK;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 
 /****************************************************************************
@@ -1611,24 +1487,22 @@ static int stm32_dma2dsetblendmode(FAR struct dma2d_layer_s *layer,
  *
  ****************************************************************************/
 
-static int stm32_dma2dgetblendmode(FAR struct dma2d_layer_s *layer,
-                                    uint32_t *mode)
+static int stm32_dma2dgetblendmode(FAR struct dma2d_layer_s *layer, uint32_t *mode)
 {
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, mode=%p\n", layer, mode);
+	lcdinfo("layer=%p, mode=%p\n", layer, mode);
 
-  if (stm32_dma2d_lvalidate(priv) && mode)
-    {
-      sem_wait(priv->lock);
-      *mode = priv->blendmode;
-      sem_post(priv->lock);
+	if (stm32_dma2d_lvalidate(priv) && mode) {
+		sem_wait(priv->lock);
+		*mode = priv->blendmode;
+		sem_post(priv->lock);
 
-      return OK;
-    }
+		return OK;
+	}
 
-  lcderr("ERROR: Returning EINVAL\n");
-  return -EINVAL;
+	lcderr("ERROR: Returning EINVAL\n");
+	return -EINVAL;
 }
 
 /****************************************************************************
@@ -1654,86 +1528,70 @@ static int stm32_dma2dgetblendmode(FAR struct dma2d_layer_s *layer,
  *
  ****************************************************************************/
 
-static int stm32_dma2dblit(FAR struct dma2d_layer_s *dest,
-                            fb_coord_t destxpos, fb_coord_t destypos,
-                            FAR const struct dma2d_layer_s *src,
-                            FAR const struct ltdc_area_s *srcarea)
+static int stm32_dma2dblit(FAR struct dma2d_layer_s *dest, fb_coord_t destxpos, fb_coord_t destypos, FAR const struct dma2d_layer_s *src, FAR const struct ltdc_area_s *srcarea)
 {
-  uint32_t   mode;
-  int        ret;
-  FAR struct stm32_dma2d_s * destlayer = (FAR struct stm32_dma2d_s *)dest;
-  FAR struct stm32_dma2d_s * srclayer = (FAR struct stm32_dma2d_s *)src;
+	uint32_t mode;
+	int ret;
+	FAR struct stm32_dma2d_s *destlayer = (FAR struct stm32_dma2d_s *)dest;
+	FAR struct stm32_dma2d_s *srclayer = (FAR struct stm32_dma2d_s *)src;
 
-  lcdinfo("dest=%p, destxpos=%d, destypos=%d, src=%p, srcarea=%p\n",
-           dest, destxpos, destypos, src, srcarea);
+	lcdinfo("dest=%p, destxpos=%d, destypos=%d, src=%p, srcarea=%p\n", dest, destxpos, destypos, src, srcarea);
 
-  if (stm32_dma2d_lvalidatesize(destlayer, destxpos, destypos, srcarea) &&
-        stm32_dma2d_lvalidatesize(srclayer, srcarea->xpos,
-                                    srcarea->ypos, srcarea))
-    {
-      sem_wait(destlayer->lock);
+	if (stm32_dma2d_lvalidatesize(destlayer, destxpos, destypos, srcarea) && stm32_dma2d_lvalidatesize(srclayer, srcarea->xpos, srcarea->ypos, srcarea)) {
+		sem_wait(destlayer->lock);
 
-      /* Set output pfc */
+		/* Set output pfc */
 
-      ret = stm32_dma2d_loutpfc(destlayer);
+		ret = stm32_dma2d_loutpfc(destlayer);
 
-      if (ret == OK)
-        {
-          /* Set foreground pfc */
+		if (ret == OK) {
+			/* Set foreground pfc */
 
-          stm32_dma2d_lpfc(srclayer, DMA2D_LAYER_LFORE, DMA2D_BLEND_NONE);
+			stm32_dma2d_lpfc(srclayer, DMA2D_LAYER_LFORE, DMA2D_BLEND_NONE);
 
-          /* Set foreground fifo */
+			/* Set foreground fifo */
 
-          stm32_dma2d_lfifo(srclayer, DMA2D_LAYER_LFORE,
-                            srcarea->xpos, srcarea->ypos, srcarea);
+			stm32_dma2d_lfifo(srclayer, DMA2D_LAYER_LFORE, srcarea->xpos, srcarea->ypos, srcarea);
 
-          /* Set output fifo */
+			/* Set output fifo */
 
-          stm32_dma2d_lfifo(destlayer, DMA2D_LAYER_LOUT,
-                            destxpos, destypos, srcarea);
+			stm32_dma2d_lfifo(destlayer, DMA2D_LAYER_LOUT, destxpos, destypos, srcarea);
 
-          /* Set number of lines and pixel per line */
+			/* Set number of lines and pixel per line */
 
-          stm32_dma2d_llnr(destlayer, srcarea);
+			stm32_dma2d_llnr(destlayer, srcarea);
 
-          /* Set dma2d mode for blit operation */
+			/* Set dma2d mode for blit operation */
 
-          if (destlayer->fmt == srclayer->fmt)
-            {
-              /* Blit without pfc */
+			if (destlayer->fmt == srclayer->fmt) {
+				/* Blit without pfc */
 
-              mode = STM32_DMA2D_CR_MODE_BLIT;
-            }
-          else
-            {
-              /* Blit with pfc */
+				mode = STM32_DMA2D_CR_MODE_BLIT;
+			} else {
+				/* Blit with pfc */
 
-              mode = STM32_DMA2D_CR_MODE_BLITPFC;
-            }
+				mode = STM32_DMA2D_CR_MODE_BLITPFC;
+			}
 
-          stm32_dma2d_control(mode, STM32_DMA2D_CR_MODE_CLEAR);
+			stm32_dma2d_control(mode, STM32_DMA2D_CR_MODE_CLEAR);
 
-          /* Start DMA2D and wait until completed */
+			/* Start DMA2D and wait until completed */
 
-          ret = stm32_dma2d_start();
+			ret = stm32_dma2d_start();
 
-          if (ret != OK)
-            {
-              ret = -ECANCELED;
-              lcderr("ERROR: Returning ECANCELED\n");
-            }
-        }
+			if (ret != OK) {
+				ret = -ECANCELED;
+				lcderr("ERROR: Returning ECANCELED\n");
+			}
+		}
 
-      sem_post(destlayer->lock);
-    }
-  else
-    {
-      ret = -EINVAL;
-      lcderr("ERROR: Returning EINVAL\n");
-    }
+		sem_post(destlayer->lock);
+	} else {
+		ret = -EINVAL;
+		lcderr("ERROR: Returning EINVAL\n");
+	}
 
-  return ret;
+	return ret;
 }
 
 /****************************************************************************
@@ -1763,91 +1621,71 @@ static int stm32_dma2dblit(FAR struct dma2d_layer_s *dest,
  *
  ****************************************************************************/
 
-static int stm32_dma2dblend(FAR struct dma2d_layer_s *dest,
-                            fb_coord_t destxpos, fb_coord_t destypos,
-                            FAR const struct dma2d_layer_s *fore,
-                            fb_coord_t forexpos, fb_coord_t foreypos,
-                            FAR const struct dma2d_layer_s *back,
-                            FAR const struct ltdc_area_s *backarea)
+static int stm32_dma2dblend(FAR struct dma2d_layer_s *dest, fb_coord_t destxpos, fb_coord_t destypos, FAR const struct dma2d_layer_s *fore, fb_coord_t forexpos, fb_coord_t foreypos, FAR const struct dma2d_layer_s *back, FAR const struct ltdc_area_s *backarea)
 {
-  int    ret;
-  FAR struct stm32_dma2d_s * destlayer = (FAR struct stm32_dma2d_s *)dest;
-  FAR struct stm32_dma2d_s * forelayer = (FAR struct stm32_dma2d_s *)fore;
-  FAR struct stm32_dma2d_s * backlayer = (FAR struct stm32_dma2d_s *)back;
+	int ret;
+	FAR struct stm32_dma2d_s *destlayer = (FAR struct stm32_dma2d_s *)dest;
+	FAR struct stm32_dma2d_s *forelayer = (FAR struct stm32_dma2d_s *)fore;
+	FAR struct stm32_dma2d_s *backlayer = (FAR struct stm32_dma2d_s *)back;
 
-  lcdinfo("dest=%p, destxpos=%d, destypos=%d, "
-          "fore=%p, forexpos=%d, foreypos=%d, "
-          "back=%p, backarea=%p\n",
-           dest, destxpos, destypos, fore, forexpos, foreypos, back, backarea);
+	lcdinfo("dest=%p, destxpos=%d, destypos=%d, " "fore=%p, forexpos=%d, foreypos=%d, " "back=%p, backarea=%p\n", dest, destxpos, destypos, fore, forexpos, foreypos, back, backarea);
 
-  if (stm32_dma2d_lvalidatesize(destlayer, destxpos, destypos, backarea) &&
-        stm32_dma2d_lvalidatesize(forelayer, forexpos, foreypos, backarea) &&
-            stm32_dma2d_lvalidatesize(backlayer, backarea->xpos,
-                                        backarea->ypos, backarea))
-    {
+	if (stm32_dma2d_lvalidatesize(destlayer, destxpos, destypos, backarea) && stm32_dma2d_lvalidatesize(forelayer, forexpos, foreypos, backarea) && stm32_dma2d_lvalidatesize(backlayer, backarea->xpos, backarea->ypos, backarea)) {
 
-      sem_wait(destlayer->lock);
+		sem_wait(destlayer->lock);
 
-      /* Set output pfc */
+		/* Set output pfc */
 
-      ret = stm32_dma2d_loutpfc(destlayer);
+		ret = stm32_dma2d_loutpfc(destlayer);
 
-      if (ret == OK)
-        {
-          /* Set background pfc */
+		if (ret == OK) {
+			/* Set background pfc */
 
-          stm32_dma2d_lpfc(backlayer, DMA2D_LAYER_LBACK, backlayer->blendmode);
+			stm32_dma2d_lpfc(backlayer, DMA2D_LAYER_LBACK, backlayer->blendmode);
 
-          /* Set foreground pfc */
+			/* Set foreground pfc */
 
-          stm32_dma2d_lpfc(forelayer, DMA2D_LAYER_LFORE, forelayer->blendmode);
+			stm32_dma2d_lpfc(forelayer, DMA2D_LAYER_LFORE, forelayer->blendmode);
 
-          /* Set background fifo */
+			/* Set background fifo */
 
-          stm32_dma2d_lfifo(backlayer, DMA2D_LAYER_LBACK,
-                                backarea->xpos, backarea->ypos, backarea);
+			stm32_dma2d_lfifo(backlayer, DMA2D_LAYER_LBACK, backarea->xpos, backarea->ypos, backarea);
 
-          /* Set foreground fifo */
+			/* Set foreground fifo */
 
-          stm32_dma2d_lfifo(forelayer, DMA2D_LAYER_LFORE,
-                                forexpos, foreypos, backarea);
+			stm32_dma2d_lfifo(forelayer, DMA2D_LAYER_LFORE, forexpos, foreypos, backarea);
 
-          /* Set output fifo */
+			/* Set output fifo */
 
-          stm32_dma2d_lfifo(destlayer, DMA2D_LAYER_LOUT,
-                                destxpos, destypos, backarea);
+			stm32_dma2d_lfifo(destlayer, DMA2D_LAYER_LOUT, destxpos, destypos, backarea);
 
-          /* Set number of lines and pixel per line */
+			/* Set number of lines and pixel per line */
 
-          stm32_dma2d_llnr(destlayer, backarea);
+			stm32_dma2d_llnr(destlayer, backarea);
 
-          /* Set watermark */
+			/* Set watermark */
 
-          /* Enable DMA2D blender */
+			/* Enable DMA2D blender */
 
-          stm32_dma2d_control(STM32_DMA2D_CR_MODE_BLEND,
-                                STM32_DMA2D_CR_MODE_CLEAR);
+			stm32_dma2d_control(STM32_DMA2D_CR_MODE_BLEND, STM32_DMA2D_CR_MODE_CLEAR);
 
-          /* Start DMA2D and wait until completed */
+			/* Start DMA2D and wait until completed */
 
-          ret = stm32_dma2d_start();
+			ret = stm32_dma2d_start();
 
-          if (ret != OK)
-            {
-              ret = -ECANCELED;
-              lcderr("ERROR: Returning ECANCELED\n");
-            }
-        }
+			if (ret != OK) {
+				ret = -ECANCELED;
+				lcderr("ERROR: Returning ECANCELED\n");
+			}
+		}
 
-      sem_post(destlayer->lock);
-    }
-  else
-    {
-      ret = -EINVAL;
-      lcderr("ERROR: Returning EINVAL\n");
-    }
+		sem_post(destlayer->lock);
+	} else {
+		ret = -EINVAL;
+		lcderr("ERROR: Returning EINVAL\n");
+	}
 
-  return ret;
+	return ret;
 }
 
 /****************************************************************************
@@ -1870,64 +1708,55 @@ static int stm32_dma2dblend(FAR struct dma2d_layer_s *dest,
  *
  ****************************************************************************/
 
-static int stm32_dma2dfillarea(FAR struct dma2d_layer_s *layer,
-                               FAR const struct ltdc_area_s *area,
-                               uint32_t color)
+static int stm32_dma2dfillarea(FAR struct dma2d_layer_s *layer, FAR const struct ltdc_area_s *area, uint32_t color)
 {
-  int ret;
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	int ret;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  lcdinfo("layer=%p, area=%p, color=%08x\n", layer, area, color);
+	lcdinfo("layer=%p, area=%p, color=%08x\n", layer, area, color);
 
-  if (stm32_dma2d_lvalidatesize(priv, area->xpos, area->ypos, area))
-    {
+	if (stm32_dma2d_lvalidatesize(priv, area->xpos, area->ypos, area)) {
 
-      sem_wait(priv->lock);
+		sem_wait(priv->lock);
 
-      /* Set output pfc */
+		/* Set output pfc */
 
-      ret = stm32_dma2d_loutpfc(priv);
+		ret = stm32_dma2d_loutpfc(priv);
 
-      if (ret == OK)
-        {
-          /* Set output fifo */
+		if (ret == OK) {
+			/* Set output fifo */
 
-          stm32_dma2d_lfifo(priv, DMA2D_LAYER_LOUT,
-                                area->xpos, area->ypos, area);
+			stm32_dma2d_lfifo(priv, DMA2D_LAYER_LOUT, area->xpos, area->ypos, area);
 
-          /* Set the output color register */
+			/* Set the output color register */
 
-          stm32_dma2d_lcolor(priv, DMA2D_LAYER_LOUT, color);
+			stm32_dma2d_lcolor(priv, DMA2D_LAYER_LOUT, color);
 
-          /* Set number of lines and pixel per line */
+			/* Set number of lines and pixel per line */
 
-          stm32_dma2d_llnr(priv, area);
+			stm32_dma2d_llnr(priv, area);
 
-          /* Set register to memory transfer */
+			/* Set register to memory transfer */
 
-          stm32_dma2d_control(STM32_DMA2D_CR_MODE_COLOR,
-                                STM32_DMA2D_CR_MODE_CLEAR);
+			stm32_dma2d_control(STM32_DMA2D_CR_MODE_COLOR, STM32_DMA2D_CR_MODE_CLEAR);
 
-          /* Start DMA2D and wait until completed */
+			/* Start DMA2D and wait until completed */
 
-          ret = stm32_dma2d_start();
+			ret = stm32_dma2d_start();
 
-          if (ret != OK)
-            {
-              ret = -ECANCELED;
-              lcderr("ERROR: Returning ECANCELED\n");
-            }
-        }
+			if (ret != OK) {
+				ret = -ECANCELED;
+				lcderr("ERROR: Returning ECANCELED\n");
+			}
+		}
 
-      sem_post(priv->lock);
-    }
-  else
-    {
-      ret = -EINVAL;
-      lcderr("ERROR: Returning EINVAL\n");
-    }
+		sem_post(priv->lock);
+	} else {
+		ret = -EINVAL;
+		lcderr("ERROR: Returning EINVAL\n");
+	}
 
-  return ret;
+	return ret;
 }
 
 /****************************************************************************
@@ -1945,21 +1774,20 @@ static int stm32_dma2dfillarea(FAR struct dma2d_layer_s *layer,
  *
  ****************************************************************************/
 
-FAR struct dma2d_layer_s * up_dma2dgetlayer(int lid)
+FAR struct dma2d_layer_s *up_dma2dgetlayer(int lid)
 {
-  if (lid < DMA2D_LAYER_NSIZE)
-    {
-      FAR struct stm32_dma2d_s *priv;
-      sem_wait(&g_lock);
-      priv = g_layers[lid];
-      sem_post(&g_lock);
+	if (lid < DMA2D_LAYER_NSIZE) {
+		FAR struct stm32_dma2d_s *priv;
+		sem_wait(&g_lock);
+		priv = g_layers[lid];
+		sem_post(&g_lock);
 
-      return &priv->dma2d;
-    }
+		return &priv->dma2d;
+	}
 
-  lcderr("ERROR: EINVAL, Unknown layer identifier\n");
-  errno = EINVAL;
-  return NULL;
+	lcderr("ERROR: EINVAL, Unknown layer identifier\n");
+	errno = EINVAL;
+	return NULL;
 }
 
 /****************************************************************************
@@ -1982,115 +1810,103 @@ FAR struct dma2d_layer_s * up_dma2dgetlayer(int lid)
  *
  ****************************************************************************/
 
-FAR struct dma2d_layer_s *up_dma2dcreatelayer(fb_coord_t width,
-                                              fb_coord_t height,
-                                              uint8_t fmt)
+FAR struct dma2d_layer_s *up_dma2dcreatelayer(fb_coord_t width, fb_coord_t height, uint8_t fmt)
 {
-  int        ret;
-  int        lid;
-  uint8_t    fmtmap;
-  uint8_t    bpp = 0;
-  FAR struct stm32_dma2d_s *layer = NULL;
+	int ret;
+	int lid;
+	uint8_t fmtmap;
+	uint8_t bpp = 0;
+	FAR struct stm32_dma2d_s *layer = NULL;
 
-  lcdinfo("width=%d, height=%d, fmt=%02x \n", width, height, fmt);
+	lcdinfo("width=%d, height=%d, fmt=%02x \n", width, height, fmt);
 
-  /* Validate if pixel format supported */
+	/* Validate if pixel format supported */
 
-  ret = stm32_dma2d_pixelformat(fmt, &fmtmap);
+	ret = stm32_dma2d_pixelformat(fmt, &fmtmap);
 
-  if (ret != OK)
-    {
-      errno = -ret;
-      return NULL;
-    }
+	if (ret != OK) {
+		errno = -ret;
+		return NULL;
+	}
 
-  ret = stm32_dma2d_bpp(fmt, &bpp);
+	ret = stm32_dma2d_bpp(fmt, &bpp);
 
-  sem_wait(&g_lock);
+	sem_wait(&g_lock);
 
-  /* Get a free layer identifier */
+	/* Get a free layer identifier */
 
-  lid = stm32_dma2d_lfreelid();
+	lid = stm32_dma2d_lfreelid();
 
-  if (lid >= 0)
-    {
-      layer = stm32_dma2d_lalloc();
+	if (lid >= 0) {
+		layer = stm32_dma2d_lalloc();
 
-      if (layer)
-        {
-          uint32_t   fblen;
-          void       *fbmem;
-          fb_coord_t stride;
+		if (layer) {
+			uint32_t fblen;
+			void *fbmem;
+			fb_coord_t stride;
 
-          /* Stride calculation for the supported formats */
+			/* Stride calculation for the supported formats */
 
-          stride = width * bpp / 8;
+			stride = width * bpp / 8;
 
-          /* Calculate buffer size */
+			/* Calculate buffer size */
 
-          fblen = stride * height;
+			fblen = stride * height;
 
-          /* Allocate 32-bit aligned memory for the layer buffer. As reported in
-           * mm_memalign 8-byte alignment is guaranteed by normal malloc calls.
-           * We have also ensure memory is allocated from the SRAM1/2/3 block.
-           * The CCM block is only accessible through the D-BUS but not by
-           * the AHB-BUS. Ensure that CONFIG_STM32_CCMEXCLUDE is set!
-           */
+			/* Allocate 32-bit aligned memory for the layer buffer. As reported in
+			 * mm_memalign 8-byte alignment is guaranteed by normal malloc calls.
+			 * We have also ensure memory is allocated from the SRAM1/2/3 block.
+			 * The CCM block is only accessible through the D-BUS but not by
+			 * the AHB-BUS. Ensure that CONFIG_STM32_CCMEXCLUDE is set!
+			 */
 
-          fbmem = kmm_zalloc(fblen);
+			fbmem = kmm_zalloc(fblen);
 
-          if (fbmem)
-            {
-              FAR struct fb_videoinfo_s *vinfo = &layer->vinfo;
-              FAR struct fb_planeinfo_s *pinfo = &layer->pinfo;
+			if (fbmem) {
+				FAR struct fb_videoinfo_s *vinfo = &layer->vinfo;
+				FAR struct fb_planeinfo_s *pinfo = &layer->pinfo;
 
-              /* Initialize dma2d structure */
+				/* Initialize dma2d structure */
 
-              stm32_dma2d_linit(layer, lid, fmtmap);
+				stm32_dma2d_linit(layer, lid, fmtmap);
 
-              /* Initialize the videoinfo structure */
+				/* Initialize the videoinfo structure */
 
-              vinfo->fmt      = fmt;
-              vinfo->xres     = width;
-              vinfo->yres     = height;
-              vinfo->nplanes  = 1;
+				vinfo->fmt = fmt;
+				vinfo->xres = width;
+				vinfo->yres = height;
+				vinfo->nplanes = 1;
 
-              /* Initialize the planeinfo structure */
+				/* Initialize the planeinfo structure */
 
-              pinfo->fbmem   = fbmem;
-              pinfo->fblen   = fblen;
-              pinfo->stride  = stride;
-              pinfo->display = 0;
-              pinfo->bpp     = bpp;
+				pinfo->fbmem = fbmem;
+				pinfo->fblen = fblen;
+				pinfo->stride = stride;
+				pinfo->display = 0;
+				pinfo->bpp = bpp;
 
-              /* Bind the layer to the identifier */
+				/* Bind the layer to the identifier */
 
-              g_layers[lid] = layer;
-            }
-          else
-            {
-              /* free the layer struture */
+				g_layers[lid] = layer;
+			} else {
+				/* free the layer struture */
 
-              kmm_free(layer);
-              layer = NULL;
-              lcderr("ERROR: ENOMEM, Unable to allocate layer buffer\n");
-              errno = ENOMEM;
-            }
-        }
-      else
-        {
-          lcderr("ERROR: ENOMEM, unable to allocate layer structure\n");
-          errno = ENOMEM;
-        }
-    }
-  else
-    {
-      lcderr("ERROR: EINVAL, no free layer available\n");
-      errno = EINVAL;
-    }
+				kmm_free(layer);
+				layer = NULL;
+				lcderr("ERROR: ENOMEM, Unable to allocate layer buffer\n");
+				errno = ENOMEM;
+			}
+		} else {
+			lcderr("ERROR: ENOMEM, unable to allocate layer structure\n");
+			errno = ENOMEM;
+		}
+	} else {
+		lcderr("ERROR: EINVAL, no free layer available\n");
+		errno = EINVAL;
+	}
 
-  sem_post(&g_lock);
-  return (FAR struct dma2d_layer_s *)layer;
+	sem_post(&g_lock);
+	return (FAR struct dma2d_layer_s *)layer;
 }
 
 /****************************************************************************
@@ -2110,32 +1926,30 @@ FAR struct dma2d_layer_s *up_dma2dcreatelayer(fb_coord_t width,
 
 int up_dma2dremovelayer(FAR struct dma2d_layer_s *layer)
 {
-  int ret = -EINVAL;
-  FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
+	int ret = -EINVAL;
+	FAR struct stm32_dma2d_s *priv = (FAR struct stm32_dma2d_s *)layer;
 
-  /* Check if the layer is valid and unlike a ltdc related layer */
+	/* Check if the layer is valid and unlike a ltdc related layer */
 
-  if (stm32_dma2d_lvalidate(priv) && priv->lid >= DMA2D_SHADOW_LAYER)
-    {
-      sem_wait(priv->lock);
+	if (stm32_dma2d_lvalidate(priv) && priv->lid >= DMA2D_SHADOW_LAYER) {
+		sem_wait(priv->lock);
 
-      /* Check also if the layer id is valid to the layer reference */
+		/* Check also if the layer id is valid to the layer reference */
 
-      if (priv == g_layers[priv->lid])
-        {
-          int lid = priv->lid;
+		if (priv == g_layers[priv->lid]) {
+			int lid = priv->lid;
 
-          kmm_free(priv->pinfo.fbmem);
-          stm32_dma2d_lfree(priv);
+			kmm_free(priv->pinfo.fbmem);
+			stm32_dma2d_lfree(priv);
 
-          g_layers[lid] = NULL;
-          ret = OK;
-        }
+			g_layers[lid] = NULL;
+			ret = OK;
+		}
 
-      sem_post(priv->lock);
-    }
+		sem_post(priv->lock);
+	}
 
-  return ret;
+	return ret;
 }
 
 /****************************************************************************
@@ -2152,68 +1966,63 @@ int up_dma2dremovelayer(FAR struct dma2d_layer_s *layer)
 
 int up_dma2dinitialize(void)
 {
-  lcdinfo("Initialize DMA2D driver\n");
+	lcdinfo("Initialize DMA2D driver\n");
 
-  if (g_initialized == false)
-    {
-      /* Abort current dma2d data transfer */
+	if (g_initialized == false) {
+		/* Abort current dma2d data transfer */
 
-      up_dma2duninitialize();
+		up_dma2duninitialize();
 
-      /* Enable dma2d is done in rcc_enableahb1, see
-       * arch/arm/src/stm32/stm32f40xxx_rcc.c
-       */
+		/* Enable dma2d is done in rcc_enableahb1, see
+		 * arch/arm/src/stm32/stm32f40xxx_rcc.c
+		 */
 
-      /* Initialize the DMA2D semaphore that enforces mutually exclusive access
-       * to the driver
-       */
+		/* Initialize the DMA2D semaphore that enforces mutually exclusive access
+		 * to the driver
+		 */
 
-      sem_init(&g_lock, 0, 1);
+		sem_init(&g_lock, 0, 1);
 
-      /* Initialize the semaphore for interrupt handling.  This waitsem
-       * semaphore is used for signaling and, hence, should not have
-       * priority inheritance enabled.
-       */
+		/* Initialize the semaphore for interrupt handling.  This waitsem
+		 * semaphore is used for signaling and, hence, should not have
+		 * priority inheritance enabled.
+		 */
 
-      sem_init(g_interrupt.sem, 0, 0);
-      sem_setprotocol(g_interrupt.sem, SEM_PRIO_NONE);
+		sem_init(g_interrupt.sem, 0, 0);
+		sem_setprotocol(g_interrupt.sem, SEM_PRIO_NONE);
 
 #ifdef CONFIG_STM32_DMA2D_L8
-      /* Enable dma2d transfer and clut loading interrupts only */
+		/* Enable dma2d transfer and clut loading interrupts only */
 
-      stm32_dma2d_control(DMA2D_CR_TCIE | DMA2D_CR_CTCIE, DMA2D_CR_TEIE |
-                          DMA2D_CR_TWIE | DMA2D_CR_CAEIE | DMA2D_CR_CEIE);
+		stm32_dma2d_control(DMA2D_CR_TCIE | DMA2D_CR_CTCIE, DMA2D_CR_TEIE | DMA2D_CR_TWIE | DMA2D_CR_CAEIE | DMA2D_CR_CEIE);
 #else
-      /* Enable dma transfer interrupt only */
+		/* Enable dma transfer interrupt only */
 
-      stm32_dma2d_control(DMA2D_CR_TCIE, DMA2D_CR_TEIE | DMA2D_CR_TWIE |
-                          DMA2D_CR_CAEIE | DMA2D_CR_CTCIE | DMA2D_CR_CEIE);
+		stm32_dma2d_control(DMA2D_CR_TCIE, DMA2D_CR_TEIE | DMA2D_CR_TWIE | DMA2D_CR_CAEIE | DMA2D_CR_CTCIE | DMA2D_CR_CEIE);
 #endif
 
-      /* Attach DMA2D interrupt vector */
+		/* Attach DMA2D interrupt vector */
 
-      (void)irq_attach(g_interrupt.irq, stm32_dma2dirq, NULL);
+		(void)irq_attach(g_interrupt.irq, stm32_dma2dirq, NULL);
 
-      /* Enable the IRQ at the NVIC */
+		/* Enable the IRQ at the NVIC */
 
-      up_enable_irq(g_interrupt.irq);
+		up_enable_irq(g_interrupt.irq);
 
-      /* Initialize the dma2d layer for ltdc binding */
+		/* Initialize the dma2d layer for ltdc binding */
 
 #ifdef DMA2D_SHADOW_LAYER_L1
-      g_layers[DMA2D_SHADOW_LAYER_L1] =
-        &g_ltdc_layer.layer[DMA2D_SHADOW_LAYER_L1].dma2ddev;
+		g_layers[DMA2D_SHADOW_LAYER_L1] = &g_ltdc_layer.layer[DMA2D_SHADOW_LAYER_L1].dma2ddev;
 #endif
 #ifdef DMA2D_SHADOW_LAYER_L2
-      g_layers[DMA2D_SHADOW_LAYER_L2] =
-        &g_ltdc_layer.layer[DMA2D_SHADOW_LAYER_L2].dma2ddev;
+		g_layers[DMA2D_SHADOW_LAYER_L2] = &g_ltdc_layer.layer[DMA2D_SHADOW_LAYER_L2].dma2ddev;
 #endif
-      /* Set initialized state */
+		/* Set initialized state */
 
-      g_initialized = true;
-    }
+		g_initialized = true;
+	}
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -2226,22 +2035,22 @@ int up_dma2dinitialize(void)
 
 void up_dma2duninitialize(void)
 {
-  /* Disable DMA2D interrupts */
+	/* Disable DMA2D interrupts */
 
-  up_disable_irq(g_interrupt.irq);
-  irq_detach(g_interrupt.irq);
+	up_disable_irq(g_interrupt.irq);
+	irq_detach(g_interrupt.irq);
 
-  /* Cleanup all layers */
+	/* Cleanup all layers */
 
-  stm32_dma2d_llayerscleanup();
+	stm32_dma2d_llayerscleanup();
 
-  /* Abort current dma2d transfer */
+	/* Abort current dma2d transfer */
 
-  stm32_dma2d_control(DMA2D_CR_ABORT, 0);
+	stm32_dma2d_control(DMA2D_CR_ABORT, 0);
 
-  /* Set initialized state */
+	/* Set initialized state */
 
-  g_initialized = false;
+	g_initialized = false;
 }
 
 #ifdef CONFIG_STM32_LTDC_INTERFACE
@@ -2267,45 +2076,42 @@ void up_dma2duninitialize(void)
  *
  ****************************************************************************/
 
-FAR struct dma2d_layer_s * stm32_dma2dinitltdc(FAR struct stm32_ltdc_s *layer)
+FAR struct dma2d_layer_s *stm32_dma2dinitltdc(FAR struct stm32_ltdc_s *layer)
 {
-  int        ret;
-  uint8_t    fmt = 0;
-  FAR struct stm32_ltdc_dma2d_s *priv;
+	int ret;
+	uint8_t fmt = 0;
+	FAR struct stm32_ltdc_dma2d_s *priv;
 
-  lcdinfo("layer=%p\n", layer);
-  DEBUGASSERT(layer && layer->lid >= 0 && layer->lid < DMA2D_SHADOW_LAYER);
+	lcdinfo("layer=%p\n", layer);
+	DEBUGASSERT(layer && layer->lid >= 0 && layer->lid < DMA2D_SHADOW_LAYER);
 
-  ret = stm32_dma2d_pixelformat(layer->vinfo.fmt, &fmt);
+	ret = stm32_dma2d_pixelformat(layer->vinfo.fmt, &fmt);
 
-  if (ret != OK)
-    {
-      lcderr("ERROR: Returning -EINVAL, unsupported pixel format: %d\n",
-             layer->vinfo.fmt);
-      errno = -EINVAL;
-      return NULL;
-    }
+	if (ret != OK) {
+		lcderr("ERROR: Returning -EINVAL, unsupported pixel format: %d\n", layer->vinfo.fmt);
+		errno = -EINVAL;
+		return NULL;
+	}
 
-  priv = &g_ltdc_layer.layer[layer->lid];
+	priv = &g_ltdc_layer.layer[layer->lid];
 
-  stm32_dma2d_linit(&priv->dma2ddev, layer->lid, fmt);
+	stm32_dma2d_linit(&priv->dma2ddev, layer->lid, fmt);
 
-  memcpy(&priv->dma2ddev.vinfo, &layer->vinfo, sizeof(struct fb_videoinfo_s));
-  memcpy(&priv->dma2ddev.pinfo, &layer->pinfo, sizeof(struct fb_planeinfo_s));
+	memcpy(&priv->dma2ddev.vinfo, &layer->vinfo, sizeof(struct fb_videoinfo_s));
+	memcpy(&priv->dma2ddev.pinfo, &layer->pinfo, sizeof(struct fb_planeinfo_s));
 
 #ifdef CONFIG_STM32_DMA2D_L8
-  /* Verifies that the ltdc layer has a clut. This ensures that DMA2D driver can
-   * support clut format but the LTDC driver does not and vice versa.
-   */
+	/* Verifies that the ltdc layer has a clut. This ensures that DMA2D driver can
+	 * support clut format but the LTDC driver does not and vice versa.
+	 */
 
-  if (layer->vinfo.fmt == FB_FMT_RGB8)
-    {
-      priv->dma2ddev.clut = layer->clut;
-      priv->ltdc = stm32_ltdcgetlayer(layer->lid);
-      DEBUGASSERT(priv->ltdc != NULL);
-    }
+	if (layer->vinfo.fmt == FB_FMT_RGB8) {
+		priv->dma2ddev.clut = layer->clut;
+		priv->ltdc = stm32_ltdcgetlayer(layer->lid);
+		DEBUGASSERT(priv->ltdc != NULL);
+	}
 #endif
 
-  return &priv->dma2ddev.dma2d;
+	return &priv->dma2ddev.dma2d;
 }
-#endif /* CONFIG_STM32_LTDC_INTERFACE */
+#endif							/* CONFIG_STM32_LTDC_INTERFACE */

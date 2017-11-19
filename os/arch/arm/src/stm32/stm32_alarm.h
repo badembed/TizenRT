@@ -65,8 +65,7 @@ typedef CODE void (*alarmcb_t)(void);
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -110,6 +109,6 @@ int stm32_rtc_cancelalarm(void);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* CONFIG_RTC_ALARM */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_ALARM_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* CONFIG_RTC_ALARM */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_ALARM_H */

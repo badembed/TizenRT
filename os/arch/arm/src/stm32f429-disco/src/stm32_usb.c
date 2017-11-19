@@ -63,18 +63,18 @@
  ************************************************************************************/
 
 #if defined(CONFIG_USBDEV) || defined(CONFIG_USBHOST)
-#  define HAVE_USB 1
+#define HAVE_USB 1
 #else
-#  warning "CONFIG_STM32_OTGHS is enabled but neither CONFIG_USBDEV nor CONFIG_USBHOST"
-#  undef HAVE_USB
+#warning "CONFIG_STM32_OTGHS is enabled but neither CONFIG_USBDEV nor CONFIG_USBHOST"
+#undef HAVE_USB
 #endif
 
 #ifndef CONFIG_STM32F429IDISCO_USBHOST_PRIO
-#  define CONFIG_STM32F429IDISCO_USBHOST_PRIO 100
+#define CONFIG_STM32F429IDISCO_USBHOST_PRIO 100
 #endif
 
 #ifndef CONFIG_STM32F429IDISCO_USBHOST_STACKSIZE
-#  define CONFIG_STM32F429IDISCO_USBHOST_STACKSIZE 1024
+#define CONFIG_STM32F429IDISCO_USBHOST_STACKSIZE 1024
 #endif
 
 /************************************************************************************
@@ -100,29 +100,27 @@ static struct usbhost_connection_s *g_usbconn;
 #ifdef CONFIG_USBHOST
 static int usbhost_waiter(int argc, char *argv[])
 {
-  struct usbhost_hubport_s *hport;
+	struct usbhost_hubport_s *hport;
 
-  uinfo("Running\n");
-  for (;;)
-    {
-      /* Wait for the device to change state */
+	uinfo("Running\n");
+	for (;;) {
+		/* Wait for the device to change state */
 
-      DEBUGVERIFY(CONN_WAIT(g_usbconn, &hport));
-      uinfo("%s\n", hport->connected ? "connected" : "disconnected");
+		DEBUGVERIFY(CONN_WAIT(g_usbconn, &hport));
+		uinfo("%s\n", hport->connected ? "connected" : "disconnected");
 
-      /* Did we just become connected? */
+		/* Did we just become connected? */
 
-      if (hport->connected)
-        {
-          /* Yes.. enumerate the newly connected device */
+		if (hport->connected) {
+			/* Yes.. enumerate the newly connected device */
 
-          (void)CONN_ENUMERATE(g_usbconn, hport);
-        }
-    }
+			(void)CONN_ENUMERATE(g_usbconn, hport);
+		}
+	}
 
-  /* Keep the compiler from complaining */
+	/* Keep the compiler from complaining */
 
-  return 0;
+	return 0;
 }
 #endif
 
@@ -141,14 +139,14 @@ static int usbhost_waiter(int argc, char *argv[])
 
 void stm32_usbinitialize(void)
 {
-  /* The OTG HS has an internal soft pull-up.  No GPIO configuration is required */
+	/* The OTG HS has an internal soft pull-up.  No GPIO configuration is required */
 
-  /* Configure the OTG HS VBUS sensing GPIO, Power On, and Overcurrent GPIOs */
+	/* Configure the OTG HS VBUS sensing GPIO, Power On, and Overcurrent GPIOs */
 
 #ifdef CONFIG_STM32_OTGHS
-  stm32_configgpio(GPIO_OTGHS_VBUS);
-  stm32_configgpio(GPIO_OTGHS_PWRON);
-  stm32_configgpio(GPIO_OTGHS_OVER);
+	stm32_configgpio(GPIO_OTGHS_VBUS);
+	stm32_configgpio(GPIO_OTGHS_PWRON);
+	stm32_configgpio(GPIO_OTGHS_OVER);
 #endif
 }
 
@@ -165,62 +163,56 @@ void stm32_usbinitialize(void)
 #ifdef CONFIG_USBHOST
 int stm32_usbhost_initialize(void)
 {
-  int pid;
-  int ret;
+	int pid;
+	int ret;
 
-  /* First, register all of the class drivers needed to support the drivers
-   * that we care about:
-   */
+	/* First, register all of the class drivers needed to support the drivers
+	 * that we care about:
+	 */
 
-  uinfo("Register class drivers\n");
+	uinfo("Register class drivers\n");
 
 #ifdef CONFIG_USBHOST_HUB
-  /* Initialize USB hub class support */
+	/* Initialize USB hub class support */
 
-  ret = usbhost_hub_initialize();
-  if (ret < 0)
-    {
-      uerr("ERROR: usbhost_hub_initialize failed: %d\n", ret);
-    }
+	ret = usbhost_hub_initialize();
+	if (ret < 0) {
+		uerr("ERROR: usbhost_hub_initialize failed: %d\n", ret);
+	}
 #endif
 
 #ifdef CONFIG_USBHOST_MSC
-  /* Register the USB mass storage class class */
+	/* Register the USB mass storage class class */
 
-  ret = usbhost_msc_initialize();
-  if (ret != OK)
-    {
-      uerr("ERROR: Failed to register the mass storage class: %d\n", ret);
-    }
+	ret = usbhost_msc_initialize();
+	if (ret != OK) {
+		uerr("ERROR: Failed to register the mass storage class: %d\n", ret);
+	}
 #endif
 
 #ifdef CONFIG_USBHOST_CDCACM
-  /* Register the CDC/ACM serial class */
+	/* Register the CDC/ACM serial class */
 
-  ret = usbhost_cdcacm_initialize();
-  if (ret != OK)
-    {
-      uerr("ERROR: Failed to register the CDC/ACM serial class: %d\n", ret);
-    }
+	ret = usbhost_cdcacm_initialize();
+	if (ret != OK) {
+		uerr("ERROR: Failed to register the CDC/ACM serial class: %d\n", ret);
+	}
 #endif
 
-  /* Then get an instance of the USB host interface */
+	/* Then get an instance of the USB host interface */
 
-  uinfo("Initialize USB host\n");
-  g_usbconn = stm32_otghshost_initialize(0);
-  if (g_usbconn)
-    {
-      /* Start a thread to handle device connection. */
+	uinfo("Initialize USB host\n");
+	g_usbconn = stm32_otghshost_initialize(0);
+	if (g_usbconn) {
+		/* Start a thread to handle device connection. */
 
-      uinfo("Start usbhost_waiter\n");
+		uinfo("Start usbhost_waiter\n");
 
-      pid = task_create("usbhost", CONFIG_STM32F429IDISCO_USBHOST_PRIO,
-                        CONFIG_STM32F429IDISCO_USBHOST_STACKSIZE,
-                        (main_t)usbhost_waiter, (FAR char * const *)NULL);
-      return pid < 0 ? -ENOEXEC : OK;
-    }
+		pid = task_create("usbhost", CONFIG_STM32F429IDISCO_USBHOST_PRIO, CONFIG_STM32F429IDISCO_USBHOST_STACKSIZE, (main_t) usbhost_waiter, (FAR char * const *)NULL);
+		return pid < 0 ? -ENOEXEC : OK;
+	}
 
-  return -ENODEV;
+	return -ENODEV;
 }
 #endif
 
@@ -253,20 +245,17 @@ int stm32_usbhost_initialize(void)
 #ifdef CONFIG_USBHOST
 void stm32_usbhost_vbusdrive(int iface, bool enable)
 {
-  DEBUGASSERT(iface == 0);
+	DEBUGASSERT(iface == 0);
 
-  if (enable)
-    {
-      /* Enable the Power Switch by driving the enable pin low */
+	if (enable) {
+		/* Enable the Power Switch by driving the enable pin low */
 
-      stm32_gpiowrite(GPIO_OTGHS_PWRON, false);
-    }
-  else
-    {
-      /* Disable the Power Switch by driving the enable pin high */
+		stm32_gpiowrite(GPIO_OTGHS_PWRON, false);
+	} else {
+		/* Disable the Power Switch by driving the enable pin high */
 
-      stm32_gpiowrite(GPIO_OTGHS_PWRON, true);
-    }
+		stm32_gpiowrite(GPIO_OTGHS_PWRON, true);
+	}
 }
 #endif
 
@@ -290,7 +279,7 @@ void stm32_usbhost_vbusdrive(int iface, bool enable)
 #ifdef CONFIG_USBHOST
 int stm32_setup_overcurrent(xcpt_t handler, void *arg)
 {
-  return stm32_gpiosetevent(GPIO_OTGHS_OVER, true, true, true, handler, arg);
+	return stm32_gpiosetevent(GPIO_OTGHS_OVER, true, true, true, handler, arg);
 }
 #endif
 
@@ -308,8 +297,8 @@ int stm32_setup_overcurrent(xcpt_t handler, void *arg)
 #ifdef CONFIG_USBDEV
 void stm32_usbsuspend(FAR struct usbdev_s *dev, bool resume)
 {
-  uinfo("resume: %d\n", resume);
+	uinfo("resume: %d\n", resume);
 }
 #endif
 
-#endif /* CONFIG_STM32_OTGHS */
+#endif							/* CONFIG_STM32_OTGHS */

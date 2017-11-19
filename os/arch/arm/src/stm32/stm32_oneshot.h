@@ -57,14 +57,14 @@
 
 #if !defined(CONFIG_STM32_ONESHOT_MAXTIMERS) || \
     CONFIG_STM32_ONESHOT_MAXTIMERS < 1
-#  undef CONFIG_STM32_ONESHOT_MAXTIMERS
-#  define CONFIG_STM32_ONESHOT_MAXTIMERS 1
+#undef CONFIG_STM32_ONESHOT_MAXTIMERS
+#define CONFIG_STM32_ONESHOT_MAXTIMERS 1
 #endif
 
 #if CONFIG_STM32_ONESHOT_MAXTIMERS > 8
-#  warning Additional logic required to handle more than 8 timers
-#  undef CONFIG_STM32_ONESHOT_MAXTIMERS
-#  define CONFIG_STM32_ONESHOT_MAXTIMERS 8
+#warning Additional logic required to handle more than 8 timers
+#undef CONFIG_STM32_ONESHOT_MAXTIMERS
+#define CONFIG_STM32_ONESHOT_MAXTIMERS 8
 #endif
 
 /****************************************************************************
@@ -85,20 +85,19 @@ typedef void (*oneshot_handler_t)(void *arg);
  * contents are subject to change.
  */
 
-struct stm32_oneshot_s
-{
-  uint8_t chan;                       /* The timer/counter in use */
+struct stm32_oneshot_s {
+	uint8_t chan;				/* The timer/counter in use */
 #if CONFIG_STM32_ONESHOT_MAXTIMERS > 1
-  uint8_t cbndx;                      /* Timer callback handler index */
+	uint8_t cbndx;				/* Timer callback handler index */
 #endif
-  volatile bool running;              /* True: the timer is running */
-  FAR struct stm32_tim_dev_s *tch;    /* Pointer returned by
-                                       * stm32_tim_init() */
-  volatile oneshot_handler_t handler; /* Oneshot expiration callback */
-  volatile void *arg;                 /* The argument that will accompany
-                                       * the callback */
-  uint32_t frequency;
-  uint32_t period;
+	volatile bool running;		/* True: the timer is running */
+	FAR struct stm32_tim_dev_s *tch;	/* Pointer returned by
+										 * stm32_tim_init() */
+	volatile oneshot_handler_t handler;	/* Oneshot expiration callback */
+	volatile void *arg;			/* The argument that will accompany
+								 * the callback */
+	uint32_t frequency;
+	uint32_t period;
 };
 
 /****************************************************************************
@@ -108,8 +107,7 @@ struct stm32_oneshot_s
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -137,8 +135,7 @@ extern "C"
  *
  ****************************************************************************/
 
-int stm32_oneshot_initialize(struct stm32_oneshot_s *oneshot, int chan,
-                             uint16_t resolution);
+int stm32_oneshot_initialize(struct stm32_oneshot_s *oneshot, int chan, uint16_t resolution);
 
 /****************************************************************************
  * Name: stm32_oneshot_max_delay
@@ -170,9 +167,7 @@ int stm32_oneshot_max_delay(struct stm32_oneshot_s *oneshot, uint64_t *usec);
  *
  ****************************************************************************/
 
-int stm32_oneshot_start(struct stm32_oneshot_s *oneshot,
-                        oneshot_handler_t handler, void *arg,
-                        const struct timespec *ts);
+int stm32_oneshot_start(struct stm32_oneshot_s *oneshot, oneshot_handler_t handler, void *arg, const struct timespec *ts);
 
 /****************************************************************************
  * Name: stm32_oneshot_cancel
@@ -198,13 +193,12 @@ int stm32_oneshot_start(struct stm32_oneshot_s *oneshot,
  *
  ****************************************************************************/
 
-int stm32_oneshot_cancel(struct stm32_oneshot_s *oneshot,
-                         struct timespec *ts);
+int stm32_oneshot_cancel(struct stm32_oneshot_s *oneshot, struct timespec *ts);
 
 #undef EXTERN
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* CONFIG_STM32_ONESHOT */
-#endif /* __ARCH_ARM_SRC_STM32_ONESHOT_H */
+#endif							/* CONFIG_STM32_ONESHOT */
+#endif							/* __ARCH_ARM_SRC_STM32_ONESHOT_H */

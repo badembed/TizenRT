@@ -51,8 +51,8 @@
  */
 
 #if defined(CONFIG_STM32_STM32F10XX)
-#  include "chip/stm32_rtc.h"
-#  include "chip/stm32_bkp.h"
+#include "chip/stm32_rtc.h"
+#include "chip/stm32_bkp.h"
 
 /* The other families use a more traditional Realtime Clock/Calendar (RTCC) with
  * broken-out data/time in BCD format.  The backup registers are integrated into
@@ -61,24 +61,24 @@
 
 #elif defined(CONFIG_STM32_STM32L15XX) || defined(CONFIG_STM32_STM32F20XX) || \
       defined(CONFIG_STM32_STM32F30XX) || defined(CONFIG_STM32_STM32F4XXX)
-#  include "chip/stm32_rtcc.h"
+#include "chip/stm32_rtcc.h"
 #endif
 
 /* Alarm function differs from part to part */
 
 #ifdef CONFIG_STM32_STM32F4XXX
-#  include "stm32f40xxx_alarm.h"
+#include "stm32f40xxx_alarm.h"
 #else
-#  include "stm32_alarm.h"
+#include "stm32_alarm.h"
 #endif
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define STM32_RTC_PRESCALER_SECOND 32767    /* Default prescaler to get a
-                                             * second base */
-#define STM32_RTC_PRESCALER_MIN    1        /* Maximum speed of 16384 Hz */
+#define STM32_RTC_PRESCALER_SECOND 32767	/* Default prescaler to get a
+											 * second base */
+#define STM32_RTC_PRESCALER_MIN    1	/* Maximum speed of 16384 Hz */
 
 #if defined(CONFIG_STM32_STM32F10XX)
 /* RTC is only a counter, store RTC data in backup domain register DR1 (if
@@ -86,30 +86,30 @@
  */
 
 #if !defined(CONFIG_RTC_MAGIC)
-#  define CONFIG_RTC_MAGIC         (0xface) /* only 16 bit */
+#define CONFIG_RTC_MAGIC         (0xface)	/* only 16 bit */
 #endif
 
 #define RTC_MAGIC_REG              STM32_BKP_DR2
 
-#else /* !CONFIG_STM32_STM32F10XX */
+#else							/* !CONFIG_STM32_STM32F10XX */
 
 #if !defined(CONFIG_RTC_MAGIC)
-#  define CONFIG_RTC_MAGIC         (0xfacefeee)
+#define CONFIG_RTC_MAGIC         (0xfacefeee)
 #endif
 
 #if !defined(CONFIG_RTC_MAGIC_REG)
-#  define CONFIG_RTC_MAGIC_REG     (0)
+#define CONFIG_RTC_MAGIC_REG     (0)
 #endif
 
 #define RTC_MAGIC_REG              STM32_RTC_BKR(CONFIG_RTC_MAGIC_REG)
 
-#endif /* CONFIG_STM32_STM32F10XX */
+#endif							/* CONFIG_STM32_STM32F10XX */
 
 #define RTC_MAGIC                  CONFIG_RTC_MAGIC
 #define RTC_MAGIC_TIME_SET         CONFIG_RTC_MAGIC_TIME_SET
 
 #if !defined(CONFIG_RTC_MAGIC_TIME_SET)
-#  define CONFIG_RTC_MAGIC_TIME_SET (CONFIG_RTC_MAGIC + 1)
+#define CONFIG_RTC_MAGIC_TIME_SET (CONFIG_RTC_MAGIC + 1)
 #endif
 
 /****************************************************************************
@@ -125,8 +125,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -230,5 +229,5 @@ FAR struct rtc_lowerhalf_s *stm32_rtc_lowerhalf(void);
 #if defined(__cplusplus)
 }
 #endif
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_RTC_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_RTC_H */

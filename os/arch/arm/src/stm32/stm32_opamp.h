@@ -47,9 +47,9 @@
 #ifdef CONFIG_STM32_OPAMP
 
 #if defined(CONFIG_STM32_STM32F30XX)
-#  error "OPAMP support for STM32F30XX not implemented yet"
+#error "OPAMP support for STM32F30XX not implemented yet"
 #elif defined(CONFIG_STM32_STM32F33XX)
-#  include "chip/stm32f33xxx_opamp.h"
+#include "chip/stm32f33xxx_opamp.h"
 #endif
 
 #include <tinyara/analog/opamp.h>
@@ -76,11 +76,11 @@
 
 /* Default configuration */
 
-#define OPAMP_MODE_DEFAULT    OPAMP_MODE_STANDALONE /* Standalone mode */
-#define OPAMP_MUX_DEFAULT     OPAMP_MUX_DISABLE     /* MUX disabled */
-#define OPAMP_USERCAL_DEFAULT OPAMP_USERCAL_DISABLE /* User calibration disabled */
-#define OPAMP_GAIN_DEFAULT    OPAMP_GAIN_2          /* Gain in PGA mode = 2 */
-#define OPAMP_LOCK_DEFAULT    OPAMP_LOCK_RW         /* Do not lock CSR register */
+#define OPAMP_MODE_DEFAULT    OPAMP_MODE_STANDALONE	/* Standalone mode */
+#define OPAMP_MUX_DEFAULT     OPAMP_MUX_DISABLE	/* MUX disabled */
+#define OPAMP_USERCAL_DEFAULT OPAMP_USERCAL_DISABLE	/* User calibration disabled */
+#define OPAMP_GAIN_DEFAULT    OPAMP_GAIN_2	/* Gain in PGA mode = 2 */
+#define OPAMP_LOCK_DEFAULT    OPAMP_LOCK_RW	/* Do not lock CSR register */
 
 /************************************************************************************
  * Public Types
@@ -88,103 +88,93 @@
 
 /* CSR register lock state */
 
-enum stm32_opamp_lock_e
-{
-  OPAMP_LOCK_RW,
-  OPAMP_LOCK_RO
+enum stm32_opamp_lock_e {
+	OPAMP_LOCK_RW,
+	OPAMP_LOCK_RO
 };
 
 /* Gain in PGA mode */
 
-enum stm32_opamp_gain_e
-{
-  OPAMP_GAIN_2,
-  OPAMP_GAIN_4,
-  OPAMP_GAIN_8,
-  OPAMP_GAIN_2_VM0,
-  OPAMP_GAIN_4_VM0,
-  OPAMP_GAIN_8_VM0,
-  OPAMP_GAIN_16_VM0,
-  OPAMP_GAIN_2_VM1,
-  OPAMP_GAIN_4_VM1,
-  OPAMP_GAIN_8_VM1,
-  OPAMP_GAIN_16_VM1
+enum stm32_opamp_gain_e {
+	OPAMP_GAIN_2,
+	OPAMP_GAIN_4,
+	OPAMP_GAIN_8,
+	OPAMP_GAIN_2_VM0,
+	OPAMP_GAIN_4_VM0,
+	OPAMP_GAIN_8_VM0,
+	OPAMP_GAIN_16_VM0,
+	OPAMP_GAIN_2_VM1,
+	OPAMP_GAIN_4_VM1,
+	OPAMP_GAIN_8_VM1,
+	OPAMP_GAIN_16_VM1
 };
 
 /* Input selection and secondary input selection use the same GPIOs */
 
 #ifdef CONFIG_STM32_OPAMP1
-enum stm32_opamp1_vpsel_e
-{
-  OPAMP1_VPSEL_PA7,
-  OPAMP1_VPSEL_PA5,
-  OPAMP1_VPSEL_PA3,
-  OPAMP1_VPSEL_PA1
+enum stm32_opamp1_vpsel_e {
+	OPAMP1_VPSEL_PA7,
+	OPAMP1_VPSEL_PA5,
+	OPAMP1_VPSEL_PA3,
+	OPAMP1_VPSEL_PA1
 };
 
-enum stm32_opamp1_vmsel_e
-{
-  OPAMP1_VMSEL_PC5,
-  OPAMP1_VMSEL_PA3,
-  OPAMP1_VMSEL_PGAMODE,
-  OPAMP1_VMSEL_FOLLOWER,
+enum stm32_opamp1_vmsel_e {
+	OPAMP1_VMSEL_PC5,
+	OPAMP1_VMSEL_PA3,
+	OPAMP1_VMSEL_PGAMODE,
+	OPAMP1_VMSEL_FOLLOWER,
 };
 #endif
 
 #ifdef CONFIG_STM32_OPAMP2
-enum stm32_opamp2_vpsel_e
-{
+enum stm32_opamp2_vpsel_e {
 #ifndef CONFIG_STM32_STM32F33XX
-  /* TODO: STM32F303xB/C and STM32F358C devices only */
-  OPAMP2_VPSEL_PD14,
+	/* TODO: STM32F303xB/C and STM32F358C devices only */
+	OPAMP2_VPSEL_PD14,
 #endif
-  OPAMP2_VPSEL_PB14,
-  OPAMP2_VPSEL_PB0,
-  OPAMP2_VPSEL_PA7
+	OPAMP2_VPSEL_PB14,
+	OPAMP2_VPSEL_PB0,
+	OPAMP2_VPSEL_PA7
 };
 
-enum stm32_opamp2_vmsel_e
-{
-  OPAMP2_VMSEL_PC5,
-  OPAMP2_VMSEL_PA5,
-  OPAMP2_VMSEL_PGAMODE,
-  OPAMP2_VMSEL_FOLLOWER
+enum stm32_opamp2_vmsel_e {
+	OPAMP2_VMSEL_PC5,
+	OPAMP2_VMSEL_PA5,
+	OPAMP2_VMSEL_PGAMODE,
+	OPAMP2_VMSEL_FOLLOWER
 };
 #endif
 
 #ifdef CONFIG_STM32_OPAMP3
-enum stm32_opamp3_vpsel_e
-{
-  OPAMP3_VPSEL_PB13,
-  OPAMP3_VPSEL_PA5,
-  OPAMP3_VPSEL_PA1,
-  OPAMP3_VPSEL_PB0
+enum stm32_opamp3_vpsel_e {
+	OPAMP3_VPSEL_PB13,
+	OPAMP3_VPSEL_PA5,
+	OPAMP3_VPSEL_PA1,
+	OPAMP3_VPSEL_PB0
 };
 
-enum stm32_opamp3_vmsel_e
-{
-  OPAMP3_VMSEL_PB10,
-  OPAMP3_VMSEL_PB2,
-  OPAMP3_VMSEL_PGAMODE,
-  OPAMP3_VMSEL_FOLLOWER
+enum stm32_opamp3_vmsel_e {
+	OPAMP3_VMSEL_PB10,
+	OPAMP3_VMSEL_PB2,
+	OPAMP3_VMSEL_PGAMODE,
+	OPAMP3_VMSEL_FOLLOWER
 };
 #endif
 
 #ifdef CONFIG_STM32_OPAMP4
-enum stm32_opamp4_vpsel_e
-{
-  OPAMP4_VPSEL_PD11,
-  OPAMP4_VPSEL_PB11,
-  OPAMP4_VPSEL_PA4,
-  OPAMP4_VPSEL_PB13
+enum stm32_opamp4_vpsel_e {
+	OPAMP4_VPSEL_PD11,
+	OPAMP4_VPSEL_PB11,
+	OPAMP4_VPSEL_PA4,
+	OPAMP4_VPSEL_PB13
 };
 
-enum stm32_opamp4_vmsel_e
-{
-  OPAMP4_VMSEL_PB10,
-  OPAMP4_VMSEL_PD8,
-  OPAMP4_VMSEL_PGAMODE,
-  OPAMP4_VMSEL_FOLLOWER
+enum stm32_opamp4_vmsel_e {
+	OPAMP4_VMSEL_PB10,
+	OPAMP4_VMSEL_PD8,
+	OPAMP4_VMSEL_PGAMODE,
+	OPAMP4_VMSEL_FOLLOWER
 };
 #endif
 
@@ -195,8 +185,7 @@ enum stm32_opamp4_vmsel_e
 #ifndef __ASSEMBLY__
 #ifdef __cplusplus
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -219,13 +208,13 @@ extern "C"
 *
 ****************************************************************************/
 
-FAR struct opamp_dev_s* stm32_opampinitialize(int intf);
+FAR struct opamp_dev_s *stm32_opampinitialize(int intf);
 
 #undef EXTERN
 #ifdef __cplusplus
 }
 #endif
-#endif /* __ASSEMBLY__ */
+#endif							/* __ASSEMBLY__ */
 
-#endif  /* CONFIG_STM32_OPAMP */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_OPAMP_H */
+#endif							/* CONFIG_STM32_OPAMP */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_OPAMP_H */

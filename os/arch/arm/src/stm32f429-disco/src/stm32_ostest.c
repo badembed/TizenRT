@@ -60,13 +60,13 @@
 #if defined(CONFIG_ARCH_FPU) && !defined(CONFIG_EXAMPLES_OSTEST_FPUTESTDISABLE) && \
     defined(CONFIG_EXAMPLES_OSTEST_FPUSIZE) && defined(CONFIG_SCHED_WAITPID) && \
     !defined(CONFIG_DISABLE_SIGNALS)
-#    define HAVE_FPU 1
+#define HAVE_FPU 1
 #endif
 
 #ifdef HAVE_FPU
 
 #if CONFIG_EXAMPLES_OSTEST_FPUSIZE != (4*SW_FPU_REGS)
-#  error "CONFIG_EXAMPLES_OSTEST_FPUSIZE has the wrong size"
+#error "CONFIG_EXAMPLES_OSTEST_FPUSIZE has the wrong size"
 #endif
 
 /************************************************************************************
@@ -88,17 +88,17 @@ static uint32_t g_saveregs[XCPTCONTEXT_REGS];
 
 void arch_getfpu(FAR uint32_t *fpusave)
 {
-  irqstate_t flags;
+	irqstate_t flags;
 
-  /* Take a snapshot of the thread context right now */
+	/* Take a snapshot of the thread context right now */
 
-  flags = irqsave();
-  up_saveusercontext(g_saveregs);
+	flags = irqsave();
+	up_saveusercontext(g_saveregs);
 
-  /* Return only the floating register values */
+	/* Return only the floating register values */
 
-  memcpy(fpusave, &g_saveregs[REG_S0], (4*SW_FPU_REGS));
-  irqrestore(flags);
+	memcpy(fpusave, &g_saveregs[REG_S0], (4 * SW_FPU_REGS));
+	irqrestore(flags);
 }
 
 /* Given two arrays of size CONFIG_EXAMPLES_OSTEST_FPUSIZE this function
@@ -107,7 +107,7 @@ void arch_getfpu(FAR uint32_t *fpusave)
 
 bool arch_cmpfpu(FAR const uint32_t *fpusave1, FAR const uint32_t *fpusave2)
 {
-  return memcmp(fpusave1, fpusave2, (4*SW_FPU_REGS)) == 0;
+	return memcmp(fpusave1, fpusave2, (4 * SW_FPU_REGS)) == 0;
 }
 
-#endif /* HAVE_FPU */
+#endif							/* HAVE_FPU */

@@ -59,9 +59,8 @@
  ****************************************************************************/
 /* This array maps an LED number to GPIO pin configuration */
 
-static uint32_t g_ledcfg[BOARD_NLEDS] =
-{
-  GPIO_LED1, GPIO_LED2
+static uint32_t g_ledcfg[BOARD_NLEDS] = {
+	GPIO_LED1, GPIO_LED2
 };
 
 /****************************************************************************
@@ -71,22 +70,18 @@ static uint32_t g_ledcfg[BOARD_NLEDS] =
 /* LED Power Management */
 
 #ifdef CONFIG_PM
-static void led_pm_notify(struct pm_callback_s *cb, int domain,
-                          enum pm_state_e pmstate);
-static int led_pm_prepare(struct pm_callback_s *cb, int domain,
-                          enum pm_state_e pmstate);
+static void led_pm_notify(struct pm_callback_s *cb, int domain, enum pm_state_e pmstate);
+static int led_pm_prepare(struct pm_callback_s *cb, int domain, enum pm_state_e pmstate);
 #endif
-
 
 /****************************************************************************
  * Private Data
  ****************************************************************************/
 
 #ifdef CONFIG_PM
-static struct pm_callback_s g_ledscb =
-{
-  .notify  = led_pm_notify,
-  .prepare = led_pm_prepare,
+static struct pm_callback_s g_ledscb = {
+	.notify = led_pm_notify,
+	.prepare = led_pm_prepare,
 };
 #endif
 
@@ -104,46 +99,39 @@ static struct pm_callback_s g_ledscb =
  ****************************************************************************/
 
 #ifdef CONFIG_PM
-static void led_pm_notify(struct pm_callback_s *cb, int domain,
-                          enum pm_state_e pmstate)
+static void led_pm_notify(struct pm_callback_s *cb, int domain, enum pm_state_e pmstate)
 {
-  switch (pmstate)
-    {
-      case(PM_NORMAL):
-        {
-          /* Restore normal LEDs operation */
+	switch (pmstate) {
+	case (PM_NORMAL): {
+			/* Restore normal LEDs operation */
 
-        }
-        break;
+		}
+		break;
 
-      case(PM_IDLE):
-        {
-          /* Entering IDLE mode - Turn leds off */
+	case (PM_IDLE): {
+		/* Entering IDLE mode - Turn leds off */
 
-        }
-        break;
+	}
+	break;
 
-      case(PM_STANDBY):
-        {
-          /* Entering STANDBY mode - Logic for PM_STANDBY goes here */
+	case (PM_STANDBY): {
+		/* Entering STANDBY mode - Logic for PM_STANDBY goes here */
 
-        }
-        break;
+	}
+	break;
 
-      case(PM_SLEEP):
-        {
-          /* Entering SLEEP mode - Logic for PM_SLEEP goes here */
+	case (PM_SLEEP): {
+		/* Entering SLEEP mode - Logic for PM_SLEEP goes here */
 
-        }
-        break;
+	}
+	break;
 
-      default:
-        {
-          /* Should not get here */
+	default: {
+		/* Should not get here */
 
-        }
-        break;
-    }
+	}
+	break;
+	}
 }
 #endif
 
@@ -160,14 +148,13 @@ static void led_pm_notify(struct pm_callback_s *cb, int domain,
  ****************************************************************************/
 
 #ifdef CONFIG_PM
-static int led_pm_prepare(struct pm_callback_s *cb, int domain,
-                          enum pm_state_e pmstate)
+static int led_pm_prepare(struct pm_callback_s *cb, int domain, enum pm_state_e pmstate)
 {
-  /* No preparation to change power modes is required by the LEDs driver.
-   * We always accept the state change by returning OK.
-   */
+	/* No preparation to change power modes is required by the LEDs driver.
+	 * We always accept the state change by returning OK.
+	 */
 
-  return OK;
+	return OK;
 }
 #endif
 
@@ -181,10 +168,10 @@ static int led_pm_prepare(struct pm_callback_s *cb, int domain,
 
 void board_userled_initialize(void)
 {
-   /* Configure LED1-4 GPIOs for output */
+	/* Configure LED1-4 GPIOs for output */
 
-   stm32_configgpio(GPIO_LED1);
-   stm32_configgpio(GPIO_LED2);
+	stm32_configgpio(GPIO_LED1);
+	stm32_configgpio(GPIO_LED2);
 }
 
 /****************************************************************************
@@ -193,10 +180,9 @@ void board_userled_initialize(void)
 
 void board_userled(int led, bool ledon)
 {
-  if ((unsigned)led < BOARD_NLEDS)
-    {
-      stm32_gpiowrite(g_ledcfg[led], ledon);
-    }
+	if ((unsigned)led < BOARD_NLEDS) {
+		stm32_gpiowrite(g_ledcfg[led], ledon);
+	}
 }
 
 /****************************************************************************
@@ -205,8 +191,8 @@ void board_userled(int led, bool ledon)
 
 void board_userled_all(uint8_t ledset)
 {
-  stm32_gpiowrite(GPIO_LED1, (ledset & BOARD_LED1_BIT) == 0);
-  stm32_gpiowrite(GPIO_LED2, (ledset & BOARD_LED2_BIT) == 0);
+	stm32_gpiowrite(GPIO_LED1, (ledset & BOARD_LED1_BIT) == 0);
+	stm32_gpiowrite(GPIO_LED2, (ledset & BOARD_LED2_BIT) == 0);
 }
 
 /****************************************************************************
@@ -216,14 +202,13 @@ void board_userled_all(uint8_t ledset)
 #ifdef CONFIG_PM
 void stm32_ledpminitialize(void)
 {
-  /* Register to receive power management callbacks */
+	/* Register to receive power management callbacks */
 
-  int ret = pm_register(&g_ledscb);
-  if (ret != OK)
-  {
-      board_autoled_on(LED_ASSERTION);
-    }
+	int ret = pm_register(&g_ledscb);
+	if (ret != OK) {
+		board_autoled_on(LED_ASSERTION);
+	}
 }
-#endif /* CONFIG_PM */
+#endif							/* CONFIG_PM */
 
-#endif /* !CONFIG_ARCH_LEDS */
+#endif							/* !CONFIG_ARCH_LEDS */

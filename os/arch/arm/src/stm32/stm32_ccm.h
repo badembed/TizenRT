@@ -56,14 +56,14 @@
 /* Only the STM32 F2, F3, and F4 have CCM memory */
 
 #if defined(CONFIG_STM32_STM32F30XX)
-#  define CCM_START 0x10000000
-#  define CCM_END   0x10002000
+#define CCM_START 0x10000000
+#define CCM_END   0x10002000
 #elif defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX) || \
       defined(CONFIG_STM32_STM32F33XX)
-#  define CCM_START 0x10000000
-#  define CCM_END   0x10010000
+#define CCM_START 0x10000000
+#define CCM_END   0x10010000
 #else
-#  undef HAVE_CCM_HEAP
+#undef HAVE_CCM_HEAP
 #endif
 
 /* In order to use the CCM heap, it had to have been excluded from the main
@@ -71,7 +71,7 @@
  */
 
 #ifndef CONFIG_STM32_CCMEXCLUDE
-#  undef HAVE_CCM_HEAP
+#undef HAVE_CCM_HEAP
 #endif
 
 /* Can we support the CCM heap? */
@@ -115,8 +115,7 @@
 
 #ifdef __cplusplus
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -144,6 +143,6 @@ EXTERN struct mm_heap_s g_ccm_heap;
 int ccm_procfs_register(void);
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* HAVE_CCM_HEAP */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_CCM_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* HAVE_CCM_HEAP */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_CCM_H */

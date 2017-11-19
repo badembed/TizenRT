@@ -75,29 +75,29 @@
 /* Include chip-specific clocking initialization logic */
 
 #if defined(CONFIG_STM32_STM32L15XX)
-#  include "stm32l15xxx_rcc.c"
+#include "stm32l15xxx_rcc.c"
 #elif defined(CONFIG_STM32_STM32F10XX)
-#  include "stm32f10xxx_rcc.c"
+#include "stm32f10xxx_rcc.c"
 #elif defined(CONFIG_STM32_STM32F20XX)
-#  include "stm32f20xxx_rcc.c"
+#include "stm32f20xxx_rcc.c"
 #elif defined(CONFIG_STM32_STM32F30XX)
-#  include "stm32f30xxx_rcc.c"
+#include "stm32f30xxx_rcc.c"
 #elif defined(CONFIG_STM32_STM32F33XX)
-#  include "stm32f33xxx_rcc.c"
+#include "stm32f33xxx_rcc.c"
 #elif defined(CONFIG_STM32_STM32F37XX)
-#  include "stm32f37xxx_rcc.c"
+#include "stm32f37xxx_rcc.c"
 #elif defined(CONFIG_STM32_STM32F4XXX)
-#  include "stm32f40xxx_rcc.c"
+#include "stm32f40xxx_rcc.c"
 #else
-#  error "Unsupported STM32 chip"
+#error "Unsupported STM32 chip"
 #endif
 
 #if defined(CONFIG_STM32_STM32L15XX)
-# define STM32_RCC_XXX       STM32_RCC_CSR
-# define RCC_XXX_YYYRST      RCC_CSR_RTCRST
+#define STM32_RCC_XXX       STM32_RCC_CSR
+#define RCC_XXX_YYYRST      RCC_CSR_RTCRST
 #else
-# define STM32_RCC_XXX       STM32_RCC_BDCR
-# define RCC_XXX_YYYRST      RCC_BDCR_BDRST
+#define STM32_RCC_XXX       STM32_RCC_BDCR
+#define RCC_XXX_YYYRST      RCC_BDCR_BDRST
 #endif
 
 /****************************************************************************
@@ -124,29 +124,28 @@
 #if defined(CONFIG_RTC) && defined(CONFIG_STM32_PWR) && !defined(CONFIG_STM32_STM32F10XX)
 static inline void rcc_resetbkp(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Check if the RTC is already configured */
+	/* Check if the RTC is already configured */
 
-  stm32_pwr_initbkp(false);
+	stm32_pwr_initbkp(false);
 
-  regval = getreg32(RTC_MAGIC_REG);
-  if (regval != RTC_MAGIC && regval != RTC_MAGIC_TIME_SET)
-    {
-      stm32_pwr_enablebkp(true);
+	regval = getreg32(RTC_MAGIC_REG);
+	if (regval != RTC_MAGIC && regval != RTC_MAGIC_TIME_SET) {
+		stm32_pwr_enablebkp(true);
 
-      /* We might be changing RTCSEL - to ensure such changes work, we must
-       * reset the backup domain (having backed up the RTC_MAGIC token)
-       */
+		/* We might be changing RTCSEL - to ensure such changes work, we must
+		 * reset the backup domain (having backed up the RTC_MAGIC token)
+		 */
 
-      modifyreg32(STM32_RCC_XXX, 0, RCC_XXX_YYYRST);
-      modifyreg32(STM32_RCC_XXX, RCC_XXX_YYYRST, 0);
+		modifyreg32(STM32_RCC_XXX, 0, RCC_XXX_YYYRST);
+		modifyreg32(STM32_RCC_XXX, RCC_XXX_YYYRST, 0);
 
-      stm32_pwr_enablebkp(false);
-    }
+		stm32_pwr_enablebkp(false);
+	}
 }
 #else
-#  define rcc_resetbkp()
+#define rcc_resetbkp()
 #endif
 
 /****************************************************************************
@@ -176,31 +175,31 @@ static inline void rcc_resetbkp(void)
 
 void stm32_clockconfig(void)
 {
-  /* Make sure that we are starting in the reset state */
+	/* Make sure that we are starting in the reset state */
 
-  rcc_reset();
+	rcc_reset();
 
-  /* Reset backup domain if appropriate */
+	/* Reset backup domain if appropriate */
 
-  rcc_resetbkp();
+	rcc_resetbkp();
 
 #if defined(CONFIG_ARCH_BOARD_STM32_CUSTOM_CLOCKCONFIG)
 
-  /* Invoke Board Custom Clock Configuration */
+	/* Invoke Board Custom Clock Configuration */
 
-  stm32_board_clockconfig();
+	stm32_board_clockconfig();
 
 #else
 
-  /* Invoke standard, fixed clock configuration based on definitions in board.h */
+	/* Invoke standard, fixed clock configuration based on definitions in board.h */
 
-  stm32_stdclockconfig();
+	stm32_stdclockconfig();
 
 #endif
 
-  /* Enable peripheral clocking */
+	/* Enable peripheral clocking */
 
-  rcc_enableperipherals();
+	rcc_enableperipherals();
 }
 
 /************************************************************************************
@@ -233,15 +232,15 @@ void stm32_clockenable(void)
 {
 #if defined(CONFIG_ARCH_BOARD_STM32_CUSTOM_CLOCKCONFIG)
 
-  /* Invoke Board Custom Clock Configuration */
+	/* Invoke Board Custom Clock Configuration */
 
-  stm32_board_clockconfig();
+	stm32_board_clockconfig();
 
 #else
 
-  /* Invoke standard, fixed clock configuration based on definitions in board.h */
+	/* Invoke standard, fixed clock configuration based on definitions in board.h */
 
-  stm32_stdclockconfig();
+	stm32_stdclockconfig();
 
 #endif
 }

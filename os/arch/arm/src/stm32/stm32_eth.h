@@ -57,8 +57,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -115,7 +114,6 @@ int stm32_phy_boardinitialize(int intf);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* STM32_NETHERNET > 0 */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_ETH_H */
-
+#endif							/* __ASSEMBLY__ */
+#endif							/* STM32_NETHERNET > 0 */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_ETH_H */

@@ -56,8 +56,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -85,8 +84,7 @@ extern "C"
  *
  ************************************************************************************/
 
-int stm32_gpiosetevent(uint32_t pinset, bool risingedge, bool fallingedge,
-                       bool event, xcpt_t func, void *arg);
+int stm32_gpiosetevent(uint32_t pinset, bool risingedge, bool fallingedge, bool event, xcpt_t func, void *arg);
 
 /************************************************************************************
  * Name: stm32_exti_alarm
@@ -107,8 +105,7 @@ int stm32_gpiosetevent(uint32_t pinset, bool risingedge, bool fallingedge,
  ************************************************************************************/
 
 #ifdef CONFIG_RTC_ALARM
-int stm32_exti_alarm(bool risingedge, bool fallingedge, bool event, xcpt_t func,
-                     void *arg);
+int stm32_exti_alarm(bool risingedge, bool fallingedge, bool event, xcpt_t func, void *arg);
 #endif
 
 #undef EXTERN
@@ -116,5 +113,5 @@ int stm32_exti_alarm(bool risingedge, bool fallingedge, bool event, xcpt_t func,
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_EXTI_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_EXTI_H */

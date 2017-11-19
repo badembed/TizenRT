@@ -102,4 +102,4 @@ ssize_t stm32_eeprom_write(size_t addr, const void *buf, size_t buflen);
 
 ssize_t stm32_eeprom_erase(size_t addr, size_t eraselen);
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_FLASH_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_FLASH_H */

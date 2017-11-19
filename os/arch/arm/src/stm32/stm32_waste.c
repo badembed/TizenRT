@@ -53,5 +53,5 @@ uint32_t idle_wastecounter = 0;
 
 void up_waste(void)
 {
-  idle_wastecounter++;
+	idle_wastecounter++;
 }

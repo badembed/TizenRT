@@ -73,4 +73,4 @@
 void stm32_userspace(void);
 #endif
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_USERSPACE_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_USERSPACE_H */

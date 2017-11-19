@@ -86,9 +86,9 @@
 
 void up_pminitialize(void)
 {
-  /* Then initialize the NuttX power management subsystem proper */
+	/* Then initialize the NuttX power management subsystem proper */
 
-  pm_initialize();
+	pm_initialize();
 }
 
-#endif /* CONFIG_PM */
+#endif							/* CONFIG_PM */

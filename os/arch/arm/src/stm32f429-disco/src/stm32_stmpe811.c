@@ -61,35 +61,35 @@
 
 #ifdef CONFIG_INPUT_STMPE811
 #ifndef CONFIG_INPUT
-#  error "STMPE811 support requires CONFIG_INPUT"
+#error "STMPE811 support requires CONFIG_INPUT"
 #endif
 
 #ifndef CONFIG_STM32_I2C3
-#  error "STMPE811 support requires CONFIG_STM32_I2C3"
+#error "STMPE811 support requires CONFIG_STM32_I2C3"
 #endif
 
 #ifndef CONFIG_STMPE811_I2C
-#  error "Only the STMPE811 I2C interface is supported"
+#error "Only the STMPE811 I2C interface is supported"
 #endif
 
 #ifdef CONFIG_STMPE811_SPI
-#  error "Only the STMPE811 SPI interface is supported"
+#error "Only the STMPE811 SPI interface is supported"
 #endif
 
 #ifndef CONFIG_STMPE811_FREQUENCY
-#  define CONFIG_STMPE811_FREQUENCY 100000
+#define CONFIG_STMPE811_FREQUENCY 100000
 #endif
 
 #ifndef CONFIG_STMPE811_I2CDEV
-#  define CONFIG_STMPE811_I2CDEV 3
+#define CONFIG_STMPE811_I2CDEV 3
 #endif
 
 #if CONFIG_STMPE811_I2CDEV != 3
-#  error "CONFIG_STMPE811_I2CDEV must be three"
+#error "CONFIG_STMPE811_I2CDEV must be three"
 #endif
 
 #ifndef CONFIG_STMPE811_DEVMINOR
-#  define CONFIG_STMPE811_DEVMINOR 0
+#define CONFIG_STMPE811_DEVMINOR 0
 #endif
 
 /* Board definitions ********************************************************/
@@ -127,17 +127,16 @@
  * Private Types
  ****************************************************************************/
 
-struct stm32_stmpe811config_s
-{
-  /* Configuration structure as seen by the STMPE811 driver */
+struct stm32_stmpe811config_s {
+	/* Configuration structure as seen by the STMPE811 driver */
 
-  struct stmpe811_config_s config;
+	struct stmpe811_config_s config;
 
-  /* Additional private definitions only known to this driver */
+	/* Additional private definitions only known to this driver */
 
-  STMPE811_HANDLE handle;   /* The STMPE811 driver handle */
-  xcpt_t          handler;  /* The STMPE811 interrupt handler */
-  FAR void       *arg;      /* Interrupt handler argument */
+	STMPE811_HANDLE handle;		/* The STMPE811 driver handle */
+	xcpt_t handler;				/* The STMPE811 interrupt handler */
+	FAR void *arg;				/* Interrupt handler argument */
 };
 
 /****************************************************************************
@@ -154,8 +153,7 @@ struct stm32_stmpe811config_s
  * clear   - Acknowledge/clear any pending GPIO interrupt
  */
 
-static int  stmpe811_attach(FAR struct stmpe811_config_s *state, xcpt_t isr,
-                            FAR void *arg);
+static int stmpe811_attach(FAR struct stmpe811_config_s *state, xcpt_t isr, FAR void *arg);
 static void stmpe811_enable(FAR struct stmpe811_config_s *state, bool enable);
 static void stmpe811_clear(FAR struct stmpe811_config_s *state);
 
@@ -174,27 +172,25 @@ static void stmpe811_clear(FAR struct stmpe811_config_s *state);
  */
 
 #ifndef CONFIG_STMPE811_TSC_DISABLE
-static struct stm32_stmpe811config_s g_stmpe811config =
-{
-  .config =
-  {
+static struct stm32_stmpe811config_s g_stmpe811config = {
+	.config = {
 #ifdef CONFIG_STMPE811_I2C
-    .address   = STMPE811_ADDR1,
+		.address = STMPE811_ADDR1,
 #endif
-    .frequency = CONFIG_STMPE811_FREQUENCY,
+		.frequency = CONFIG_STMPE811_FREQUENCY,
 
 #ifdef CONFIG_STMPE811_MULTIPLE
-    .irq       = STM32_IRQ_EXTI2,
+		.irq = STM32_IRQ_EXTI2,
 #endif
-    .ctrl1     = (ADC_CTRL1_SAMPLE_TIME_80 | ADC_CTRL1_MOD_12B),
-    .ctrl2     = ADC_CTRL2_ADC_FREQ_3p25,
+		.ctrl1 = (ADC_CTRL1_SAMPLE_TIME_80 | ADC_CTRL1_MOD_12B),
+		.ctrl2 = ADC_CTRL2_ADC_FREQ_3p25,
 
-    .attach    = stmpe811_attach,
-    .enable    = stmpe811_enable,
-    .clear     = stmpe811_clear,
-  },
-  .handler     = NULL,
-  .arg         = NULL,
+		.attach = stmpe811_attach,
+		.enable = stmpe811_enable,
+		.clear = stmpe811_clear,
+	},
+	.handler = NULL,
+	.arg = NULL,
 };
 #endif
 
@@ -211,55 +207,47 @@ static struct stm32_stmpe811config_s g_stmpe811config =
  * clear   - Acknowledge/clear any pending GPIO interrupt
  */
 
-static int stmpe811_attach(FAR struct stmpe811_config_s *state, xcpt_t isr,
-                           FAR void *arg)
+static int stmpe811_attach(FAR struct stmpe811_config_s *state, xcpt_t isr, FAR void *arg)
 {
-  FAR struct stm32_stmpe811config_s *priv =
-    (FAR struct stm32_stmpe811config_s *)state;
+	FAR struct stm32_stmpe811config_s *priv = (FAR struct stm32_stmpe811config_s *)state;
 
-  iinfo("Saving handler %p\n", isr);
-  DEBUGASSERT(priv);
+	iinfo("Saving handler %p\n", isr);
+	DEBUGASSERT(priv);
 
-  /* Just save the handler.  We will use it when EXTI interruptsare enabled */
+	/* Just save the handler.  We will use it when EXTI interruptsare enabled */
 
-  priv->handler = isr;
-  priv->arg     = arg;
-  return OK;
+	priv->handler = isr;
+	priv->arg = arg;
+	return OK;
 }
 
 static void stmpe811_enable(FAR struct stmpe811_config_s *state, bool enable)
 {
-  FAR struct stm32_stmpe811config_s *priv =
-    (FAR struct stm32_stmpe811config_s *)state;
-  irqstate_t flags;
+	FAR struct stm32_stmpe811config_s *priv = (FAR struct stm32_stmpe811config_s *)state;
+	irqstate_t flags;
 
-  /* Attach and enable, or detach and disable.  Enabling and disabling GPIO
-   * interrupts is a multi-step process so the safest thing is to keep
-   * interrupts disabled during the reconfiguration.
-   */
+	/* Attach and enable, or detach and disable.  Enabling and disabling GPIO
+	 * interrupts is a multi-step process so the safest thing is to keep
+	 * interrupts disabled during the reconfiguration.
+	 */
 
-  flags = irqsave();
-  if (enable)
-    {
-      /* Configure the EXTI interrupt using the SAVED handler */
+	flags = irqsave();
+	if (enable) {
+		/* Configure the EXTI interrupt using the SAVED handler */
 
-      (void)stm32_gpiosetevent(GPIO_IO_EXPANDER, true, true, true,
-                               priv->handler, priv->arg);
-    }
-  else
-    {
-      /* Configure the EXTI interrupt with a NULL handler to disable it */
+		(void)stm32_gpiosetevent(GPIO_IO_EXPANDER, true, true, true, priv->handler, priv->arg);
+	} else {
+		/* Configure the EXTI interrupt with a NULL handler to disable it */
 
-     (void)stm32_gpiosetevent(GPIO_IO_EXPANDER, false, false, false,
-                              NULL, NULL);
-    }
+		(void)stm32_gpiosetevent(GPIO_IO_EXPANDER, false, false, false, NULL, NULL);
+	}
 
-  irqrestore(flags);
+	irqrestore(flags);
 }
 
 static void stmpe811_clear(FAR struct stmpe811_config_s *state)
 {
-  /* Does nothing */
+	/* Does nothing */
 }
 
 /****************************************************************************
@@ -287,55 +275,50 @@ static void stmpe811_clear(FAR struct stmpe811_config_s *state)
 int board_tsc_setup(int minor)
 {
 #ifndef CONFIG_STMPE811_TSC_DISABLE
-  FAR struct i2c_master_s *dev;
-  int ret;
+	FAR struct i2c_master_s *dev;
+	int ret;
 
-  iinfo("minor %d\n", minor);
-  DEBUGASSERT(minor == 0);
+	iinfo("minor %d\n", minor);
+	DEBUGASSERT(minor == 0);
 
-  /* Check if we are already initialized */
+	/* Check if we are already initialized */
 
-  if (!g_stmpe811config.handle)
-    {
-      iinfo("Initializing\n");
+	if (!g_stmpe811config.handle) {
+		iinfo("Initializing\n");
 
-      /* Configure the STMPE811 interrupt pin as an input */
+		/* Configure the STMPE811 interrupt pin as an input */
 
-      (void)stm32_configgpio(GPIO_IO_EXPANDER);
+		(void)stm32_configgpio(GPIO_IO_EXPANDER);
 
-      /* Get an instance of the I2C interface */
+		/* Get an instance of the I2C interface */
 
-      dev = stm32_i2cbus_initialize(CONFIG_STMPE811_I2CDEV);
-      if (!dev)
-        {
-          ierr("ERROR: Failed to initialize I2C bus %d\n", CONFIG_STMPE811_I2CDEV);
-          return -ENODEV;
-        }
+		dev = stm32_i2cbus_initialize(CONFIG_STMPE811_I2CDEV);
+		if (!dev) {
+			ierr("ERROR: Failed to initialize I2C bus %d\n", CONFIG_STMPE811_I2CDEV);
+			return -ENODEV;
+		}
 
-      /* Instantiate the STMPE811 driver */
+		/* Instantiate the STMPE811 driver */
 
-      g_stmpe811config.handle =
-        stmpe811_instantiate(dev, (FAR struct stmpe811_config_s *)&g_stmpe811config);
-      if (!g_stmpe811config.handle)
-        {
-          ierr("ERROR: Failed to instantiate the STMPE811 driver\n");
-          return -ENODEV;
-        }
+		g_stmpe811config.handle = stmpe811_instantiate(dev, (FAR struct stmpe811_config_s *)&g_stmpe811config);
+		if (!g_stmpe811config.handle) {
+			ierr("ERROR: Failed to instantiate the STMPE811 driver\n");
+			return -ENODEV;
+		}
 
-      /* Initialize and register the I2C touchscreen device */
+		/* Initialize and register the I2C touchscreen device */
 
-      ret = stmpe811_register(g_stmpe811config.handle, CONFIG_STMPE811_DEVMINOR);
-      if (ret < 0)
-        {
-          ierr("ERROR: Failed to register STMPE driver: %d\n", ret);
-          /* stm32_i2cbus_uninitialize(dev); */
-          return -ENODEV;
-        }
-    }
+		ret = stmpe811_register(g_stmpe811config.handle, CONFIG_STMPE811_DEVMINOR);
+		if (ret < 0) {
+			ierr("ERROR: Failed to register STMPE driver: %d\n", ret);
+			/* stm32_i2cbus_uninitialize(dev); */
+			return -ENODEV;
+		}
+	}
 
-  return OK;
+	return OK;
 #else
-  return -ENOSYS;
+	return -ENOSYS;
 #endif
 }
 
@@ -357,8 +340,7 @@ int board_tsc_setup(int minor)
 
 void board_tsc_teardown(void)
 {
-  /* No support for un-initializing the touchscreen STMPE811 device yet */
+	/* No support for un-initializing the touchscreen STMPE811 device yet */
 }
 
-#endif /* CONFIG_INPUT_STMPE811 */
-
+#endif							/* CONFIG_INPUT_STMPE811 */

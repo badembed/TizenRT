@@ -60,14 +60,14 @@
  */
 
 #if defined(CONFIG_ARCH_LEDS) && defined(LED_IDLE)
-#  define BEGIN_IDLE() board_autoled_on(LED_IDLE)
-#  define END_IDLE()   board_autoled_off(LED_IDLE)
+#define BEGIN_IDLE() board_autoled_on(LED_IDLE)
+#define END_IDLE()   board_autoled_off(LED_IDLE)
 #else
-#  define BEGIN_IDLE()
-#  define END_IDLE()
+#define BEGIN_IDLE()
+#define END_IDLE()
 #endif
 
-#define PM_IDLE_DOMAIN 0 /* Revisit */
+#define PM_IDLE_DOMAIN 0		/* Revisit */
 
 /****************************************************************************
  * Private Functions
@@ -84,68 +84,63 @@
 #ifdef CONFIG_PM
 static void up_idlepm(void)
 {
-  static enum pm_state_e oldstate = PM_NORMAL;
-  enum pm_state_e newstate;
-  irqstate_t flags;
-  int ret;
+	static enum pm_state_e oldstate = PM_NORMAL;
+	enum pm_state_e newstate;
+	irqstate_t flags;
+	int ret;
 
-  /* Decide, which power saving level can be obtained */
+	/* Decide, which power saving level can be obtained */
 
-  newstate = pm_checkstate(PM_IDLE_DOMAIN);
+	newstate = pm_checkstate(PM_IDLE_DOMAIN);
 
-  /* Check for state changes */
+	/* Check for state changes */
 
-  if (newstate != oldstate)
-    {
-      flags = irqsave();
+	if (newstate != oldstate) {
+		flags = irqsave();
 
-      /* Perform board-specific, state-dependent logic here */
+		/* Perform board-specific, state-dependent logic here */
 
-      _info("newstate= %d oldstate=%d\n", newstate, oldstate);
+		_info("newstate= %d oldstate=%d\n", newstate, oldstate);
 
-      /* Then force the global state change */
+		/* Then force the global state change */
 
-      ret = pm_changestate(PM_IDLE_DOMAIN, newstate);
-      if (ret < 0)
-        {
-          /* The new state change failed, revert to the preceding state */
+		ret = pm_changestate(PM_IDLE_DOMAIN, newstate);
+		if (ret < 0) {
+			/* The new state change failed, revert to the preceding state */
 
-          (void)pm_changestate(PM_IDLE_DOMAIN, oldstate);
-        }
-      else
-        {
-          /* Save the new state */
+			(void)pm_changestate(PM_IDLE_DOMAIN, oldstate);
+		} else {
+			/* Save the new state */
 
-          oldstate = newstate;
-        }
+			oldstate = newstate;
+		}
 
-      /* MCU-specific power management logic */
+		/* MCU-specific power management logic */
 
-      switch (newstate)
-        {
-        case PM_NORMAL:
-          break;
+		switch (newstate) {
+		case PM_NORMAL:
+			break;
 
-        case PM_IDLE:
-          break;
+		case PM_IDLE:
+			break;
 
-        case PM_STANDBY:
-          stm32_pmstop(true);
-          break;
+		case PM_STANDBY:
+			stm32_pmstop(true);
+			break;
 
-        case PM_SLEEP:
-          (void)stm32_pmstandby();
-          break;
+		case PM_SLEEP:
+			(void)stm32_pmstandby();
+			break;
 
-        default:
-          break;
-        }
+		default:
+			break;
+		}
 
-      irqrestore(flags);
-    }
+		irqrestore(flags);
+	}
 }
 #else
-#  define up_idlepm()
+#define up_idlepm()
 #endif
 
 /****************************************************************************
@@ -168,44 +163,44 @@ static void up_idlepm(void)
 void up_idle(void)
 {
 #if defined(CONFIG_SUPPRESS_INTERRUPTS) || defined(CONFIG_SUPPRESS_TIMER_INTS)
-  /* If the system is idle and there are no timer interrupts, then process
-   * "fake" timer interrupts. Hopefully, something will wake up.
-   */
+	/* If the system is idle and there are no timer interrupts, then process
+	 * "fake" timer interrupts. Hopefully, something will wake up.
+	 */
 
-  sched_process_timer();
+	sched_process_timer();
 #else
 
-  /* Perform IDLE mode power management */
+	/* Perform IDLE mode power management */
 
-  up_idlepm();
+	up_idlepm();
 
-  /* Sleep until an interrupt occurs to save power.
-   *
-   * NOTE:  There is an STM32F107 errata that is fixed by the following
-   * workaround:
-   *
-   * "2.17.11 Ethernet DMA not working after WFI/WFE instruction
-   *  Description
-   *  If a WFI/WFE instruction is executed to put the system in sleep mode
-   *    while the Ethernet MAC master clock on the AHB bus matrix is ON and all
-   *    remaining masters clocks are OFF, the Ethernet DMA will be not able to
-   *    perform any AHB master accesses during sleep mode."
-   *
-   *  Workaround
-   *    Enable DMA1 or DMA2 clocks in the RCC_AHBENR register before
-   *    executing the WFI/WFE instruction."
-   *
-   * Here the workaround is just to avoid SLEEP mode for the connectivity
-   * line parts if Ethernet is enabled.  The errate recommends a  more
-   * general solution:  Enabling DMA1/2 clocking in stm32f10xx_rcc.c if the
-   * STM32107 Ethernet peripheral is enabled.
-   */
+	/* Sleep until an interrupt occurs to save power.
+	 *
+	 * NOTE:  There is an STM32F107 errata that is fixed by the following
+	 * workaround:
+	 *
+	 * "2.17.11 Ethernet DMA not working after WFI/WFE instruction
+	 *  Description
+	 *  If a WFI/WFE instruction is executed to put the system in sleep mode
+	 *    while the Ethernet MAC master clock on the AHB bus matrix is ON and all
+	 *    remaining masters clocks are OFF, the Ethernet DMA will be not able to
+	 *    perform any AHB master accesses during sleep mode."
+	 *
+	 *  Workaround
+	 *    Enable DMA1 or DMA2 clocks in the RCC_AHBENR register before
+	 *    executing the WFI/WFE instruction."
+	 *
+	 * Here the workaround is just to avoid SLEEP mode for the connectivity
+	 * line parts if Ethernet is enabled.  The errate recommends a  more
+	 * general solution:  Enabling DMA1/2 clocking in stm32f10xx_rcc.c if the
+	 * STM32107 Ethernet peripheral is enabled.
+	 */
 
 #if !defined(CONFIG_STM32_CONNECTIVITYLINE) || !defined(CONFIG_STM32_ETHMAC)
 #if !(defined(CONFIG_DEBUG_SYMBOLS) && defined(CONFIG_STM32_DISABLE_IDLE_SLEEP_DURING_DEBUG))
-  BEGIN_IDLE();
-  asm("WFI");
-  END_IDLE();
+	BEGIN_IDLE();
+	asm("WFI");
+	END_IDLE();
 #endif
 #endif
 #endif

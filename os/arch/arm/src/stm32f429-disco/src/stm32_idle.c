@@ -67,24 +67,24 @@
  */
 
 #if defined(CONFIG_ARCH_LEDS) && defined(LED_IDLE)
-#  define BEGIN_IDLE() board_autoled_on(LED_IDLE)
-#  define END_IDLE()   board_autoled_off(LED_IDLE)
+#define BEGIN_IDLE() board_autoled_on(LED_IDLE)
+#define END_IDLE()   board_autoled_off(LED_IDLE)
 #else
-#  define BEGIN_IDLE()
-#  define END_IDLE()
+#define BEGIN_IDLE()
+#define END_IDLE()
 #endif
 
 /* Values for the RTC Alarm to wake up from the PM_STANDBY mode */
 
 #ifndef CONFIG_PM_ALARM_SEC
-#  define CONFIG_PM_ALARM_SEC 3
+#define CONFIG_PM_ALARM_SEC 3
 #endif
 
 #ifndef CONFIG_PM_ALARM_NSEC
-#  define CONFIG_PM_ALARM_NSEC 0
+#define CONFIG_PM_ALARM_NSEC 0
 #endif
 
-#define PM_IDLE_DOMAIN 0 /* Revisit */
+#define PM_IDLE_DOMAIN 0		/* Revisit */
 
 /****************************************************************************
  * Private Data
@@ -110,117 +110,110 @@ static void stm32_alarmcb(void);
 static void stm32_idlepm(void)
 {
 #ifdef CONFIG_RTC_ALARM
-  struct timespec alarmtime;
+	struct timespec alarmtime;
 #endif
-  static enum pm_state_e oldstate = PM_NORMAL;
-  enum pm_state_e newstate;
-  irqstate_t flags;
-  int ret;
+	static enum pm_state_e oldstate = PM_NORMAL;
+	enum pm_state_e newstate;
+	irqstate_t flags;
+	int ret;
 
-  /* Decide, which power saving level can be obtained */
+	/* Decide, which power saving level can be obtained */
 
-  newstate = pm_checkstate(PM_IDLE_DOMAIN);
+	newstate = pm_checkstate(PM_IDLE_DOMAIN);
 
-  /* Check for state changes */
+	/* Check for state changes */
 
-  if (newstate != oldstate)
-    {
-      sinfo("newstate= %d oldstate=%d\n", newstate, oldstate);
+	if (newstate != oldstate) {
+		sinfo("newstate= %d oldstate=%d\n", newstate, oldstate);
 
-      flags = irqsave();
+		flags = irqsave();
 
-      /* Force the global state change */
+		/* Force the global state change */
 
-      ret = pm_changestate(PM_IDLE_DOMAIN, newstate);
-      if (ret < 0)
-        {
-          /* The new state change failed, revert to the preceding state */
+		ret = pm_changestate(PM_IDLE_DOMAIN, newstate);
+		if (ret < 0) {
+			/* The new state change failed, revert to the preceding state */
 
-          (void)pm_changestate(PM_IDLE_DOMAIN, oldstate);
+			(void)pm_changestate(PM_IDLE_DOMAIN, oldstate);
 
-          /* No state change... */
+			/* No state change... */
 
-          goto errout;
-        }
+			goto errout;
+		}
 
-      /* Then perform board-specific, state-dependent logic here */
+		/* Then perform board-specific, state-dependent logic here */
 
-      switch (newstate)
-        {
-        case PM_NORMAL:
-          {
-          }
-          break;
+		switch (newstate) {
+		case PM_NORMAL: {
+		}
+		break;
 
-        case PM_IDLE:
-          {
-          }
-          break;
+		case PM_IDLE: {
+		}
+		break;
 
-        case PM_STANDBY:
-          {
+		case PM_STANDBY: {
 #ifdef CONFIG_RTC_ALARM
-            /* Disable RTC Alarm interrupt */
+			/* Disable RTC Alarm interrupt */
 
 #warning "missing logic"
 
-            /* Configure the RTC alarm to Auto Wake the system */
+			/* Configure the RTC alarm to Auto Wake the system */
 
 #warning "missing logic"
 
-            /* The tv_nsec value must not exceed 1,000,000,000. That
-             * would be an invalid time.
-             */
+			/* The tv_nsec value must not exceed 1,000,000,000. That
+			 * would be an invalid time.
+			 */
 
 #warning "missing logic"
 
-            /* Set the alarm */
+			/* Set the alarm */
 
 #warning "missing logic"
 #endif
-            /* Call the STM32 stop mode */
+			/* Call the STM32 stop mode */
 
-            stm32_pmstop(true);
+			stm32_pmstop(true);
 
-            /* We have been re-awakened by some even:  A button press?
-             * An alarm?  Cancel any pending alarm and resume the normal
-             * operation.
-             */
+			/* We have been re-awakened by some even:  A button press?
+			 * An alarm?  Cancel any pending alarm and resume the normal
+			 * operation.
+			 */
 
 #ifdef CONFIG_RTC_ALARM
 #warning "missing logic"
 #endif
-            /* Resume normal operation */
+			/* Resume normal operation */
 
-            pm_changestate(PM_IDLE_DOMAIN, PM_NORMAL);
-            newstate = PM_NORMAL;
-          }
-          break;
+			pm_changestate(PM_IDLE_DOMAIN, PM_NORMAL);
+			newstate = PM_NORMAL;
+		}
+		break;
 
-        case PM_SLEEP:
-          {
-            /* We should not return from standby mode.  The only way out
-             * of standby is via the reset path.
-             */
+		case PM_SLEEP: {
+			/* We should not return from standby mode.  The only way out
+			 * of standby is via the reset path.
+			 */
 
-            (void)stm32_pmstandby();
-          }
-          break;
+			(void)stm32_pmstandby();
+		}
+		break;
 
-        default:
-          break;
-        }
+		default:
+			break;
+		}
 
-      /* Save the new state */
+		/* Save the new state */
 
-      oldstate = newstate;
+		oldstate = newstate;
 
 errout:
-      irqrestore(flags);
-    }
+		irqrestore(flags);
+	}
 }
 #else
-#  define stm32_idlepm()
+#define stm32_idlepm()
 #endif
 
 /************************************************************************************
@@ -234,11 +227,11 @@ errout:
 #if defined(CONFIG_PM) && defined(CONFIG_RTC_ALARM)
 static void stm32_alarmcb(void)
 {
-  /* This alarm occurs because there wasn't any EXTI interrupt during the
-   * PM_STANDBY period. So just go to sleep.
-   */
+	/* This alarm occurs because there wasn't any EXTI interrupt during the
+	 * PM_STANDBY period. So just go to sleep.
+	 */
 
-  pm_changestate(PM_IDLE_DOMAIN, PM_SLEEP);
+	pm_changestate(PM_IDLE_DOMAIN, PM_SLEEP);
 }
 #endif
 
@@ -262,18 +255,17 @@ static void stm32_alarmcb(void)
 void up_idle(void)
 {
 #if defined(CONFIG_SUPPRESS_INTERRUPTS) || defined(CONFIG_SUPPRESS_TIMER_INTS)
-  /* If the system is idle and there are no timer interrupts, then process
-   * "fake" timer interrupts. Hopefully, something will wake up.
-   */
+	/* If the system is idle and there are no timer interrupts, then process
+	 * "fake" timer interrupts. Hopefully, something will wake up.
+	 */
 
-  sched_process_timer();
+	sched_process_timer();
 #else
 
-  /* Perform IDLE mode power management */
+	/* Perform IDLE mode power management */
 
-  BEGIN_IDLE();
-  stm32_idlepm();
-  END_IDLE();
+	BEGIN_IDLE();
+	stm32_idlepm();
+	END_IDLE();
 #endif
 }
-

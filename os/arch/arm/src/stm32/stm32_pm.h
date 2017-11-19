@@ -62,8 +62,7 @@
 #ifndef __ASSEMBLY__
 #ifdef __cplusplus
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -138,6 +137,6 @@ void stm32_pmsleep(bool sleeponexit);
 #ifdef __cplusplus
 }
 #endif
-#endif /* __ASSEMBLY__ */
+#endif							/* __ASSEMBLY__ */
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_PM_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_PM_H */

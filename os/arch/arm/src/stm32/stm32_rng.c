@@ -71,14 +71,13 @@ static ssize_t stm32_read(struct file *filep, char *buffer, size_t);
  * Private Types
  ****************************************************************************/
 
-struct rng_dev_s
-{
-  sem_t rd_devsem;      /* Threads can only exclusively access the RNG */
-  sem_t rd_readsem;     /* To block until the buffer is filled  */
-  char *rd_buf;
-  size_t rd_buflen;
-  uint32_t rd_lastval;
-  bool rd_first;
+struct rng_dev_s {
+	sem_t rd_devsem;			/* Threads can only exclusively access the RNG */
+	sem_t rd_readsem;			/* To block until the buffer is filled  */
+	char *rd_buf;
+	size_t rd_buflen;
+	uint32_t rd_lastval;
+	bool rd_first;
 };
 
 /****************************************************************************
@@ -87,19 +86,18 @@ struct rng_dev_s
 
 static struct rng_dev_s g_rngdev;
 
-static const struct file_operations g_rngops =
-{
-  0,               /* open */
-  0,               /* close */
-  stm32_read,      /* read */
-  0,               /* write */
-  0,               /* seek */
-  0                /* ioctl */
+static const struct file_operations g_rngops = {
+	0,							/* open */
+	0,							/* close */
+	stm32_read,					/* read */
+	0,							/* write */
+	0,							/* seek */
+	0							/* ioctl */
 #ifndef CONFIG_DISABLE_POLL
-  , 0              /* poll */
+	, 0						/* poll */
 #endif
 #ifndef CONFIG_DISABLE_PSEUDOFS_OPERATIONS
-  , 0              /* unlink */
+	, 0						/* unlink */
 #endif
 };
 
@@ -113,32 +111,31 @@ static const struct file_operations g_rngops =
 
 static int stm32_rng_initialize(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  _info("Initializing RNG\n");
+	_info("Initializing RNG\n");
 
-  memset(&g_rngdev, 0, sizeof(struct rng_dev_s));
+	memset(&g_rngdev, 0, sizeof(struct rng_dev_s));
 
-  sem_init(&g_rngdev.rd_devsem, 0, 1);
+	sem_init(&g_rngdev.rd_devsem, 0, 1);
 
-  if (irq_attach(STM32_IRQ_RNG, stm32_interrupt, NULL))
-    {
-      /* We could not attach the ISR to the interrupt */
+	if (irq_attach(STM32_IRQ_RNG, stm32_interrupt, NULL)) {
+		/* We could not attach the ISR to the interrupt */
 
-      _info("Could not attach IRQ.\n");
+		_info("Could not attach IRQ.\n");
 
-      return -EAGAIN;
-    }
+		return -EAGAIN;
+	}
 
-  /* Enable interrupts */
+	/* Enable interrupts */
 
-  regval = getreg32(STM32_RNG_CR);
-  regval |=  RNG_CR_IE;
-  putreg32(regval, STM32_RNG_CR);
+	regval = getreg32(STM32_RNG_CR);
+	regval |= RNG_CR_IE;
+	putreg32(regval, STM32_RNG_CR);
 
-  up_enable_irq(STM32_IRQ_RNG);
+	up_enable_irq(STM32_IRQ_RNG);
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -147,13 +144,13 @@ static int stm32_rng_initialize(void)
 
 static void stm32_enable(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  g_rngdev.rd_first = true;
+	g_rngdev.rd_first = true;
 
-  regval = getreg32(STM32_RNG_CR);
-  regval |= RNG_CR_RNGEN;
-  putreg32(regval, STM32_RNG_CR);
+	regval = getreg32(STM32_RNG_CR);
+	regval |= RNG_CR_RNGEN;
+	putreg32(regval, STM32_RNG_CR);
 }
 
 /****************************************************************************
@@ -162,10 +159,10 @@ static void stm32_enable(void)
 
 static void stm32_disable(void)
 {
-  uint32_t regval;
-  regval = getreg32(STM32_RNG_CR);
-  regval &= ~RNG_CR_RNGEN;
-  putreg32(regval, STM32_RNG_CR);
+	uint32_t regval;
+	regval = getreg32(STM32_RNG_CR);
+	regval &= ~RNG_CR_RNGEN;
+	putreg32(regval, STM32_RNG_CR);
 }
 
 /****************************************************************************
@@ -174,70 +171,62 @@ static void stm32_disable(void)
 
 static int stm32_interrupt(int irq, void *context, FAR void *arg)
 {
-  uint32_t rngsr;
-  uint32_t data;
+	uint32_t rngsr;
+	uint32_t data;
 
-  rngsr = getreg32(STM32_RNG_SR);
+	rngsr = getreg32(STM32_RNG_SR);
 
-  if ((rngsr & (RNG_SR_SEIS | RNG_SR_CEIS)) /* Check for error bits */
-      || !(rngsr & RNG_SR_DRDY)) /* Data ready must be set */
-    {
-      /* This random value is not valid, we will try again. */
+	if ((rngsr & (RNG_SR_SEIS | RNG_SR_CEIS))	/* Check for error bits */
+		|| !(rngsr & RNG_SR_DRDY)) {	/* Data ready must be set */
+		/* This random value is not valid, we will try again. */
 
-      return OK;
-    }
+		return OK;
+	}
 
-  data = getreg32(STM32_RNG_DR);
+	data = getreg32(STM32_RNG_DR);
 
-  /* As required by the FIPS PUB (Federal Information Processing Standard
-   * Publication) 140-2, the first random number generated after setting the
-   * RNGEN bit should not be used, but saved for comparison with the next
-   * generated random number. Each subsequent generated random number has to be
-   * compared with the previously generated number. The test fails if any two
-   * compared numbers are equal (continuous random number generator test).
-   */
+	/* As required by the FIPS PUB (Federal Information Processing Standard
+	 * Publication) 140-2, the first random number generated after setting the
+	 * RNGEN bit should not be used, but saved for comparison with the next
+	 * generated random number. Each subsequent generated random number has to be
+	 * compared with the previously generated number. The test fails if any two
+	 * compared numbers are equal (continuous random number generator test).
+	 */
 
-  if (g_rngdev.rd_first)
-    {
-      g_rngdev.rd_first = false;
-      g_rngdev.rd_lastval = data;
-      return OK;
-    }
+	if (g_rngdev.rd_first) {
+		g_rngdev.rd_first = false;
+		g_rngdev.rd_lastval = data;
+		return OK;
+	}
 
-  if (g_rngdev.rd_lastval == data)
-    {
-      /* Two subsequent same numbers, we will try again. */
+	if (g_rngdev.rd_lastval == data) {
+		/* Two subsequent same numbers, we will try again. */
 
-      return OK;
-    }
+		return OK;
+	}
 
-  /* If we get here, the random number is valid. */
+	/* If we get here, the random number is valid. */
 
-  g_rngdev.rd_lastval = data;
+	g_rngdev.rd_lastval = data;
 
-  if (g_rngdev.rd_buflen >= 4)
-    {
-      g_rngdev.rd_buflen -= 4;
-      *(uint32_t *)&g_rngdev.rd_buf[g_rngdev.rd_buflen] = data;
-    }
-  else
-    {
-      while (g_rngdev.rd_buflen > 0)
-        {
-          g_rngdev.rd_buf[--g_rngdev.rd_buflen] = (char)data;
-          data >>= 8;
-        }
-    }
+	if (g_rngdev.rd_buflen >= 4) {
+		g_rngdev.rd_buflen -= 4;
+		*(uint32_t *)&g_rngdev.rd_buf[g_rngdev.rd_buflen] = data;
+	} else {
+		while (g_rngdev.rd_buflen > 0) {
+			g_rngdev.rd_buf[--g_rngdev.rd_buflen] = (char)data;
+			data >>= 8;
+		}
+	}
 
-  if (g_rngdev.rd_buflen == 0)
-    {
-      /* Buffer filled, stop further interrupts. */
+	if (g_rngdev.rd_buflen == 0) {
+		/* Buffer filled, stop further interrupts. */
 
-      stm32_disable();
-      sem_post(&g_rngdev.rd_readsem);
-    }
+		stm32_disable();
+		sem_post(&g_rngdev.rd_readsem);
+	}
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -246,40 +235,37 @@ static int stm32_interrupt(int irq, void *context, FAR void *arg)
 
 static ssize_t stm32_read(struct file *filep, char *buffer, size_t buflen)
 {
-  if (sem_wait(&g_rngdev.rd_devsem) != OK)
-    {
-      return -errno;
-    }
-  else
-    {
-      /* We've got the semaphore. */
+	if (sem_wait(&g_rngdev.rd_devsem) != OK) {
+		return -errno;
+	} else {
+		/* We've got the semaphore. */
 
-      /* Initialize the operation semaphore with 0 for blocking until the
-       * buffer is filled from interrupts.  The readsem semaphore is used
-       * for signaling and, hence, should not have priority inheritance
-       * enabled.
-       */
+		/* Initialize the operation semaphore with 0 for blocking until the
+		 * buffer is filled from interrupts.  The readsem semaphore is used
+		 * for signaling and, hence, should not have priority inheritance
+		 * enabled.
+		 */
 
-      sem_init(&g_rngdev.rd_readsem, 0, 0);
-      sem_setprotocol(&g_rngdev.rd_readsem, SEM_PRIO_NONE);
+		sem_init(&g_rngdev.rd_readsem, 0, 0);
+		sem_setprotocol(&g_rngdev.rd_readsem, SEM_PRIO_NONE);
 
-      g_rngdev.rd_buflen = buflen;
-      g_rngdev.rd_buf = buffer;
+		g_rngdev.rd_buflen = buflen;
+		g_rngdev.rd_buf = buffer;
 
-      /* Enable RNG with interrupts */
+		/* Enable RNG with interrupts */
 
-      stm32_enable();
+		stm32_enable();
 
-      /* Wait until the buffer is filled */
+		/* Wait until the buffer is filled */
 
-      sem_wait(&g_rngdev.rd_readsem);
+		sem_wait(&g_rngdev.rd_readsem);
 
-      /* Free RNG for next use */
+		/* Free RNG for next use */
 
-      sem_post(&g_rngdev.rd_devsem);
+		sem_post(&g_rngdev.rd_devsem);
 
-      return buflen;
-    }
+		return buflen;
+	}
 }
 
 /****************************************************************************
@@ -304,8 +290,8 @@ static ssize_t stm32_read(struct file *filep, char *buffer, size_t buflen)
 #ifdef CONFIG_DEV_RANDOM
 void devrandom_register(void)
 {
-  stm32_rng_initialize();
-  (void)register_driver("/dev/random", &g_rngops, 0444, NULL);
+	stm32_rng_initialize();
+	(void)register_driver("/dev/random", &g_rngops, 0444, NULL);
 }
 #endif
 
@@ -327,11 +313,11 @@ void devrandom_register(void)
 void devurandom_register(void)
 {
 #ifndef CONFIG_DEV_RANDOM
-  stm32_rng_initialize();
+	stm32_rng_initialize();
 #endif
-  (void)register_driver("/dev/urandom", &g_rngops, 0444, NULL);
+	(void)register_driver("/dev/urandom", &g_rngops, 0444, NULL);
 }
 #endif
 
-#endif /* CONFIG_DEV_RANDOM || CONFIG_DEV_URANDOM_ARCH */
-#endif /* CONFIG_STM32_RNG */
+#endif							/* CONFIG_DEV_RANDOM || CONFIG_DEV_URANDOM_ARCH */
+#endif							/* CONFIG_STM32_RNG */

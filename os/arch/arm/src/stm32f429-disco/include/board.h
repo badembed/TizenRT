@@ -44,7 +44,7 @@
 #include <tinyara/config.h>
 
 #ifndef __ASSEMBLY__
-# include <stdint.h>
+#include <stdint.h>
 #endif
 
 #include "stm32_rcc.h"
@@ -115,13 +115,13 @@
 
 /* AHB clock (HCLK) is SYSCLK (168MHz) */
 
-#define STM32_RCC_CFGR_HPRE     RCC_CFGR_HPRE_SYSCLK  /* HCLK  = SYSCLK / 1 */
+#define STM32_RCC_CFGR_HPRE     RCC_CFGR_HPRE_SYSCLK	/* HCLK  = SYSCLK / 1 */
 #define STM32_HCLK_FREQUENCY    STM32_SYSCLK_FREQUENCY
-#define STM32_BOARD_HCLK        STM32_HCLK_FREQUENCY  /* same as above, to satisfy compiler */
+#define STM32_BOARD_HCLK        STM32_HCLK_FREQUENCY	/* same as above, to satisfy compiler */
 
 /* APB1 clock (PCLK1) is HCLK/4 (42MHz) */
 
-#define STM32_RCC_CFGR_PPRE1    RCC_CFGR_PPRE1_HCLKd4     /* PCLK1 = HCLK / 4 */
+#define STM32_RCC_CFGR_PPRE1    RCC_CFGR_PPRE1_HCLKd4	/* PCLK1 = HCLK / 4 */
 #define STM32_PCLK1_FREQUENCY   (STM32_HCLK_FREQUENCY/4)
 
 /* Timers driven from APB1 will be twice PCLK1 */
@@ -138,7 +138,7 @@
 
 /* APB2 clock (PCLK2) is HCLK/2 (84MHz) */
 
-#define STM32_RCC_CFGR_PPRE2    RCC_CFGR_PPRE2_HCLKd2     /* PCLK2 = HCLK / 2 */
+#define STM32_RCC_CFGR_PPRE2    RCC_CFGR_PPRE2_HCLKd2	/* PCLK2 = HCLK / 2 */
 #define STM32_PCLK2_FREQUENCY   (STM32_HCLK_FREQUENCY/2)
 
 /* Timers driven from APB2 will be twice PCLK2 */
@@ -186,14 +186,14 @@
  * stm32f429i-disco.  The following definitions describe how NuttX controls the LEDs:
  */
 
-#define LED_STARTED       0  /* LED1 */
-#define LED_HEAPALLOCATE  1  /* LED2 */
-#define LED_IRQSENABLED   2  /* LED1 + LED2 */
-#define LED_STACKCREATED  3  /* LED3 */
-#define LED_INIRQ         4  /* LED1 + LED3 */
-#define LED_SIGNAL        5  /* LED2 + LED3 */
-#define LED_ASSERTION     6  /* LED1 + LED2 + LED3 */
-#define LED_PANIC         7  /* N/C  + N/C  + N/C + LED4 */
+#define LED_STARTED       0		/* LED1 */
+#define LED_HEAPALLOCATE  1		/* LED2 */
+#define LED_IRQSENABLED   2		/* LED1 + LED2 */
+#define LED_STACKCREATED  3		/* LED3 */
+#define LED_INIRQ         4		/* LED1 + LED3 */
+#define LED_SIGNAL        5		/* LED2 + LED3 */
+#define LED_ASSERTION     6		/* LED1 + LED2 + LED3 */
+#define LED_PANIC         7		/* N/C  + N/C  + N/C + LED4 */
 
 /* Button definitions ***************************************************************/
 /* The STM32F4 Discovery supports one button: */
@@ -256,7 +256,7 @@
 #define GPIO_TIM8_CH2IN  GPIO_TIM8_CH2IN_1
 
 #ifdef CONFIG_STM32_LTDC
-# ifdef CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE
+#ifdef CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE
 
 /* LCD
  *
@@ -305,11 +305,11 @@
 
 #if defined(CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE_LANDSCAPE) || \
     defined(CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE_RLANDSCAPE)
-# define BOARD_LTDC_WIDTH               320
-# define BOARD_LTDC_HEIGHT              240
+#define BOARD_LTDC_WIDTH               320
+#define BOARD_LTDC_HEIGHT              240
 #else
-# define BOARD_LTDC_WIDTH               240
-# define BOARD_LTDC_HEIGHT              320
+#define BOARD_LTDC_WIDTH               240
+#define BOARD_LTDC_HEIGHT              320
 #endif
 
 #define BOARD_LTDC_OUTPUT_BPP           16
@@ -329,17 +329,17 @@
 #define STM32_RCC_DCKCFGR_PLLSAIDIVR    RCC_DCKCFGR_PLLSAIDIVR_DIV8
 
 /* Pixel Clock Polarity */
-#define BOARD_LTDC_GCR_PCPOL            0 /* !LTDC_GCR_PCPOL */
+#define BOARD_LTDC_GCR_PCPOL            0	/* !LTDC_GCR_PCPOL */
 /* Data Enable Polarity */
-#define BOARD_LTDC_GCR_DEPOL            0 /* !LTDC_GCR_DEPOL */
+#define BOARD_LTDC_GCR_DEPOL            0	/* !LTDC_GCR_DEPOL */
 /* Vertical Sync Polarity */
-#define BOARD_LTDC_GCR_VSPOL            0 /* !LTDC_GCR_VSPOL */
+#define BOARD_LTDC_GCR_VSPOL            0	/* !LTDC_GCR_VSPOL */
 /* Horicontal Sync Polarity */
-#define BOARD_LTDC_GCR_HSPOL            0 /* !LTDC_GCR_HSPOL */
+#define BOARD_LTDC_GCR_HSPOL            0	/* !LTDC_GCR_HSPOL */
 
 /* GPIO pinset */
 
-#define GPIO_LTDC_PINS                  18 /* 18-bit display */
+#define GPIO_LTDC_PINS                  18	/* 18-bit display */
 
 #define GPIO_LTDC_R2                    GPIO_LTDC_R2_1
 #define GPIO_LTDC_R3                    GPIO_LTDC_R3_1
@@ -370,8 +370,8 @@
 #else
 /* Custom LCD display configuration */
 
-# define BOARD_LTDC_WIDTH               ???
-# define BOARD_LTDC_HEIGHT              ???
+#define BOARD_LTDC_WIDTH               ???
+#define BOARD_LTDC_HEIGHT              ???
 
 #define BOARD_LTDC_HFP                  ???
 #define BOARD_LTDC_HBP                  ???
@@ -427,7 +427,7 @@
 #define GPIO_LTDC_DE                    ???
 #define GPIO_LTDC_CLK                   ???
 
-#endif /* Custom LCD display */
+#endif							/* Custom LCD display */
 
 /* Configure PLLSAI */
 
@@ -435,7 +435,7 @@
 #define STM32_RCC_PLLSAICFGR_PLLSAIR    RCC_PLLSAICFGR_PLLSAIR(BOARD_LTDC_PLLSAIR)
 #define STM32_RCC_PLLSAICFGR_PLLSAIQ    RCC_PLLSAICFGR_PLLSAIQ(BOARD_LTDC_PLLSAIQ)
 
-#endif /* CONFIG_STM32_LTDC */
+#endif							/* CONFIG_STM32_LTDC */
 
 /************************************************************************************
  * Public Data
@@ -445,8 +445,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -472,5 +471,5 @@ void stm32_boardinitialize(void);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif  /* __CONFIG_STM32F429I_DISCO_INCLUDE_BOARD_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* __CONFIG_STM32F429I_DISCO_INCLUDE_BOARD_H */

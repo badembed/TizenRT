@@ -58,46 +58,46 @@
  */
 
 #ifndef CONFIG_STM32_TIM1
-#  undef CONFIG_STM32_TIM1_DAC
+#undef CONFIG_STM32_TIM1_DAC
 #endif
 #ifndef CONFIG_STM32_TIM2
-#  undef CONFIG_STM32_TIM2_DAC
+#undef CONFIG_STM32_TIM2_DAC
 #endif
 #ifndef CONFIG_STM32_TIM3
-#  undef CONFIG_STM32_TIM3_DAC
+#undef CONFIG_STM32_TIM3_DAC
 #endif
 #ifndef CONFIG_STM32_TIM4
-#  undef CONFIG_STM32_TIM4_DAC
+#undef CONFIG_STM32_TIM4_DAC
 #endif
 #ifndef CONFIG_STM32_TIM5
-#  undef CONFIG_STM32_TIM5_DAC
+#undef CONFIG_STM32_TIM5_DAC
 #endif
 #ifndef CONFIG_STM32_TIM6
-#  undef CONFIG_STM32_TIM6_DAC
+#undef CONFIG_STM32_TIM6_DAC
 #endif
 #ifndef CONFIG_STM32_TIM7
-#  undef CONFIG_STM32_TIM7_DAC
+#undef CONFIG_STM32_TIM7_DAC
 #endif
 #ifndef CONFIG_STM32_TIM8
-#  undef CONFIG_STM32_TIM8_DAC
+#undef CONFIG_STM32_TIM8_DAC
 #endif
 #ifndef CONFIG_STM32_TIM9
-#  undef CONFIG_STM32_TIM9_DAC
+#undef CONFIG_STM32_TIM9_DAC
 #endif
 #ifndef CONFIG_STM32_TIM10
-#  undef CONFIG_STM32_TIM10_DAC
+#undef CONFIG_STM32_TIM10_DAC
 #endif
 #ifndef CONFIG_STM32_TIM11
-#  undef CONFIG_STM32_TIM11_DAC
+#undef CONFIG_STM32_TIM11_DAC
 #endif
 #ifndef CONFIG_STM32_TIM12
-#  undef CONFIG_STM32_TIM12_DAC
+#undef CONFIG_STM32_TIM12_DAC
 #endif
 #ifndef CONFIG_STM32_TIM13
-#  undef CONFIG_STM32_TIM13_DAC
+#undef CONFIG_STM32_TIM13_DAC
 #endif
 #ifndef CONFIG_STM32_TIM14
-#  undef CONFIG_STM32_TIM14_DAC
+#undef CONFIG_STM32_TIM14_DAC
 #endif
 
 /************************************************************************************
@@ -106,9 +106,8 @@
 
 /* IOCTL commands specific to this driver  */
 
-enum dac_io_cmds
-{
-  IO_DMABUFFER_INIT = 0,
+enum dac_io_cmds {
+	IO_DMABUFFER_INIT = 0,
 };
 
 /************************************************************************************
@@ -118,8 +117,7 @@ enum dac_io_cmds
 #ifndef __ASSEMBLY__
 #ifdef __cplusplus
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -145,7 +143,6 @@ FAR struct dac_dev_s *stm32_dacinitialize(int intf);
 #ifdef __cplusplus
 }
 #endif
-#endif /* __ASSEMBLY__ */
+#endif							/* __ASSEMBLY__ */
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_DAC_H */
-
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_DAC_H */

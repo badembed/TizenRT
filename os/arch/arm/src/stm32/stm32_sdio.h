@@ -56,8 +56,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -76,7 +75,7 @@ extern "C"
  *
  ****************************************************************************/
 
-struct sdio_dev_s; /* See include/nuttx/sdio.h */
+struct sdio_dev_s;				/* See include/nuttx/sdio.h */
 FAR struct sdio_dev_s *sdio_initialize(int slotno);
 
 /****************************************************************************
@@ -123,6 +122,5 @@ void sdio_wrprotect(FAR struct sdio_dev_s *dev, bool wrprotect);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_SDIO_H */
-
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_SDIO_H */

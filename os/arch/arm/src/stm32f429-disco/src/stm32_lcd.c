@@ -59,9 +59,9 @@
  ************************************************************************************/
 
 #ifdef CONFIG_STM32F429I_DISCO_ILI9341_LCDDEVICE
-# define ILI9341_LCD_DEVICE CONFIG_STM32F429I_DISCO_ILI9341_LCDDEVICE
+#define ILI9341_LCD_DEVICE CONFIG_STM32F429I_DISCO_ILI9341_LCDDEVICE
 #else
-# define ILI9341_LCD_DEVICE  0
+#define ILI9341_LCD_DEVICE  0
 #endif
 
 #ifdef CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE
@@ -157,9 +157,9 @@
 #define ILI9341_MADCTL_LANDSCAPE_MV     ILI9341_MEMORY_ACCESS_CONTROL_MV
 #define ILI9341_MADCTL_LANDSCAPE_ML     0
 #ifdef CONFIG_BIG_ENDIAN
-#  define ILI9341_MADCTL_LANDSCAPE_BGR  0
+#define ILI9341_MADCTL_LANDSCAPE_BGR  0
 #else
-#  define ILI9341_MADCTL_LANDSCAPE_BGR  ILI9341_MEMORY_ACCESS_CONTROL_BGR
+#define ILI9341_MADCTL_LANDSCAPE_BGR  ILI9341_MEMORY_ACCESS_CONTROL_BGR
 #endif
 #define ILI9341_MADCTL_LANDSCAPE_MH     0
 
@@ -185,9 +185,9 @@
 #define ILI9341_MADCTL_PORTRAIT_MV      0
 #define ILI9341_MADCTL_PORTRAIT_ML      0
 #ifdef CONFIG_BIG_ENDIAN
-#  define ILI9341_MADCTL_PORTRAIT_BGR   0
+#define ILI9341_MADCTL_PORTRAIT_BGR   0
 #else
-#  define ILI9341_MADCTL_PORTRAIT_BGR   ILI9341_MEMORY_ACCESS_CONTROL_BGR
+#define ILI9341_MADCTL_PORTRAIT_BGR   ILI9341_MEMORY_ACCESS_CONTROL_BGR
 #endif
 #define ILI9341_MADCTL_PORTRAIT_MH      0
 
@@ -213,9 +213,9 @@
 #define ILI9341_MADCTL_RLANDSCAPE_MV    ILI9341_MEMORY_ACCESS_CONTROL_MV
 #define ILI9341_MADCTL_RLANDSCAPE_ML    0
 #ifdef CONFIG_BIG_ENDIAN
-#  define ILI9341_MADCTL_RLANDSCAPE_BGR 0
+#define ILI9341_MADCTL_RLANDSCAPE_BGR 0
 #else
-#  define ILI9341_MADCTL_RLANDSCAPE_BGR ILI9341_MEMORY_ACCESS_CONTROL_BGR
+#define ILI9341_MADCTL_RLANDSCAPE_BGR ILI9341_MEMORY_ACCESS_CONTROL_BGR
 #endif
 #define ILI9341_MADCTL_RLANDSCAPE_MH    0
 
@@ -243,9 +243,9 @@
 #define ILI9341_MADCTL_RPORTRAIT_MV     0
 #define ILI9341_MADCTL_RPORTRAIT_ML     0
 #ifdef CONFIG_BIG_ENDIAN
-#  define ILI9341_MADCTL_RPORTRAIT_BGR  0
+#define ILI9341_MADCTL_RPORTRAIT_BGR  0
 #else
-#  define ILI9341_MADCTL_RPORTRAIT_BGR  ILI9341_MEMORY_ACCESS_CONTROL_BGR
+#define ILI9341_MADCTL_RPORTRAIT_BGR  ILI9341_MEMORY_ACCESS_CONTROL_BGR
 #endif
 #define ILI9341_MADCTL_RPORTRAIT_MH     0
 
@@ -256,26 +256,25 @@
                                         ILI9341_MADCTL_RPORTRAIT_BGR | \
                                         ILI9341_MADCTL_RPORTRAIT_MH)
 
-
 /* Set the display orientation */
 
 #if defined(CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE_LANDSCAPE)
-# define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_LANDSCAPE_PARAM1
-# warning "ILI9341 doesn't support full landscape with RGB interface"
+#define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_LANDSCAPE_PARAM1
+#warning "ILI9341 doesn't support full landscape with RGB interface"
 #elif defined(CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE_PORTRAIT)
-# define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_PORTRAIT_PARAM1
+#define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_PORTRAIT_PARAM1
 #elif defined(CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE_RLANDSCAPE)
-# define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_RLANDSCAPE_PARAM1
-# warning "ILI9341 doesn't support full landscape with RGB interface"
+#define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_RLANDSCAPE_PARAM1
+#warning "ILI9341 doesn't support full landscape with RGB interface"
 #elif defined(CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE_RPORTRAIT)
-# define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_RPORTRAIT_PARAM1
+#define STM32_ILI9341_MADCTL_PARAM  ILI9341_MADCTL_RPORTRAIT_PARAM1
 #else
-# error "display orientation not defined"
+#error "display orientation not defined"
 #endif
 
 #define ILI9341_XRES BOARD_LTDC_WIDTH
 #define ILI9341_YRES BOARD_LTDC_HEIGHT
-#endif /* CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE */
+#endif							/* CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE */
 
 /************************************************************************************
  * Private Data
@@ -304,107 +303,100 @@ FAR struct ili9341_lcd_s *g_ltdc = NULL;
 
 static int stm32_ili9341_initialize(void)
 {
-  FAR struct ili9341_lcd_s *lcd = g_ltdc;
+	FAR struct ili9341_lcd_s *lcd = g_ltdc;
 
-  lcd = stm32_ili93414ws_initialize();
+	lcd = stm32_ili93414ws_initialize();
 
-  if (lcd == NULL)
-    {
-      return ENODEV;
-    }
+	if (lcd == NULL) {
+		return ENODEV;
+	}
 
-  /* Select spi device */
+	/* Select spi device */
 
-  lcdinfo("Initialize ili9341 lcd driver\n");
-  lcd->select(lcd);
+	lcdinfo("Initialize ili9341 lcd driver\n");
+	lcd->select(lcd);
 
 #ifdef CONFIG_DEBUG_LCD_INFO
-  /* Read display identification */
+	/* Read display identification */
 
-  lcd->sendcmd(lcd, ILI9341_READ_ID1);
-  lcd->recvparam(lcd, &param);
-  lcdinfo("ili9341 LCD driver: LCD modules manufacturer ID: %d\n", param);
+	lcd->sendcmd(lcd, ILI9341_READ_ID1);
+	lcd->recvparam(lcd, &param);
+	lcdinfo("ili9341 LCD driver: LCD modules manufacturer ID: %d\n", param);
 
-  lcd->sendcmd(lcd, ILI9341_READ_ID2);
-  lcd->recvparam(lcd, &param);
-  lcdinfo("ili9341 LCD driver: LCD modules driver version ID: %d\n", param);
+	lcd->sendcmd(lcd, ILI9341_READ_ID2);
+	lcd->recvparam(lcd, &param);
+	lcdinfo("ili9341 LCD driver: LCD modules driver version ID: %d\n", param);
 
-  lcd->sendcmd(lcd, ILI9341_READ_ID3);
-  lcd->recvparam(lcd, &param);
-  lcdinfo("ili9341 LCD driver: LCD modules driver ID: %d\n", param);
+	lcd->sendcmd(lcd, ILI9341_READ_ID3);
+	lcd->recvparam(lcd, &param);
+	lcdinfo("ili9341 LCD driver: LCD modules driver ID: %d\n", param);
 #endif
 
-  /* Reset the lcd display to the default state */
+	/* Reset the lcd display to the default state */
 
-  lcdinfo("ili9341 LCD driver: Software Reset\n");
-  lcd->sendcmd(lcd, ILI9341_SOFTWARE_RESET);
-  up_mdelay(5);
+	lcdinfo("ili9341 LCD driver: Software Reset\n");
+	lcd->sendcmd(lcd, ILI9341_SOFTWARE_RESET);
+	up_mdelay(5);
 
-  lcdinfo("ili9341 LCD driver: set Memory Access Control %08x\n",
-        STM32_ILI9341_MADCTL_PARAM);
-  lcd->sendcmd(lcd, ILI9341_MEMORY_ACCESS_CONTROL);
-  lcd->sendparam(lcd, STM32_ILI9341_MADCTL_PARAM);
+	lcdinfo("ili9341 LCD driver: set Memory Access Control %08x\n", STM32_ILI9341_MADCTL_PARAM);
+	lcd->sendcmd(lcd, ILI9341_MEMORY_ACCESS_CONTROL);
+	lcd->sendparam(lcd, STM32_ILI9341_MADCTL_PARAM);
 
-  /* Pixel Format */
+	/* Pixel Format */
 
-  lcdinfo("ili9341 LCD driver: Set Pixel Format: %02x\n",
-          STM32_ILI9341_PIXSET_PARAM);
-  lcd->sendcmd(lcd, ILI9341_PIXEL_FORMAT_SET);
-  lcd->sendparam(lcd, STM32_ILI9341_PIXSET_PARAM);
+	lcdinfo("ili9341 LCD driver: Set Pixel Format: %02x\n", STM32_ILI9341_PIXSET_PARAM);
+	lcd->sendcmd(lcd, ILI9341_PIXEL_FORMAT_SET);
+	lcd->sendparam(lcd, STM32_ILI9341_PIXSET_PARAM);
 
-  /* Select column */
+	/* Select column */
 
-  lcdinfo("ili9341 LCD driver: Set Column Address\n");
-  lcd->sendcmd(lcd, ILI9341_COLUMN_ADDRESS_SET);
-  lcd->sendparam(lcd, 0);
-  lcd->sendparam(lcd, 0);
-  lcd->sendparam(lcd, (ILI9341_XRES >> 8));
-  lcd->sendparam(lcd, (ILI9341_XRES & 0xff));
+	lcdinfo("ili9341 LCD driver: Set Column Address\n");
+	lcd->sendcmd(lcd, ILI9341_COLUMN_ADDRESS_SET);
+	lcd->sendparam(lcd, 0);
+	lcd->sendparam(lcd, 0);
+	lcd->sendparam(lcd, (ILI9341_XRES >> 8));
+	lcd->sendparam(lcd, (ILI9341_XRES & 0xff));
 
-  /* Select page */
+	/* Select page */
 
-  lcdinfo("ili9341 LCD driver: Set Page Address\n");
-  lcd->sendcmd(lcd, ILI9341_PAGE_ADDRESS_SET);
-  lcd->sendparam(lcd, 0);
-  lcd->sendparam(lcd, 0);
-  lcd->sendparam(lcd, (ILI9341_YRES >> 8));
-  lcd->sendparam(lcd, (ILI9341_YRES & 0xff));
+	lcdinfo("ili9341 LCD driver: Set Page Address\n");
+	lcd->sendcmd(lcd, ILI9341_PAGE_ADDRESS_SET);
+	lcd->sendparam(lcd, 0);
+	lcd->sendparam(lcd, 0);
+	lcd->sendparam(lcd, (ILI9341_YRES >> 8));
+	lcd->sendparam(lcd, (ILI9341_YRES & 0xff));
 
-  /* RGB Interface signal control */
+	/* RGB Interface signal control */
 
-  lcdinfo("ili9341 LCD driver: Set RGB Interface signal control: %02x\n",
-          STM32_ILI9341_IFMODE_PARAM);
-  lcd->sendcmd(lcd, ILI9341_RGB_SIGNAL_CONTROL);
-  lcd->sendparam(lcd, STM32_ILI9341_IFMODE_PARAM);
+	lcdinfo("ili9341 LCD driver: Set RGB Interface signal control: %02x\n", STM32_ILI9341_IFMODE_PARAM);
+	lcd->sendcmd(lcd, ILI9341_RGB_SIGNAL_CONTROL);
+	lcd->sendparam(lcd, STM32_ILI9341_IFMODE_PARAM);
 
-  /* Interface control */
+	/* Interface control */
 
-  lcdinfo("ili9341 LCD driver: Set Interface control: %d:%d:%d\n",
-          STM32_ILI9341_IFCTL_PARAM1,
-          STM32_ILI9341_IFCTL_PARAM2,
-          STM32_ILI9341_IFCTL_PARAM3);
+	lcdinfo("ili9341 LCD driver: Set Interface control: %d:%d:%d\n", STM32_ILI9341_IFCTL_PARAM1, STM32_ILI9341_IFCTL_PARAM2, STM32_ILI9341_IFCTL_PARAM3);
 
-  lcd->sendcmd(lcd, ILI9341_INTERFACE_CONTROL);
-  lcd->sendparam(lcd, STM32_ILI9341_IFCTL_PARAM1);
-  lcd->sendparam(lcd, STM32_ILI9341_IFCTL_PARAM2);
-  lcd->sendparam(lcd, STM32_ILI9341_IFCTL_PARAM3);
+	lcd->sendcmd(lcd, ILI9341_INTERFACE_CONTROL);
+	lcd->sendparam(lcd, STM32_ILI9341_IFCTL_PARAM1);
+	lcd->sendparam(lcd, STM32_ILI9341_IFCTL_PARAM2);
+	lcd->sendparam(lcd, STM32_ILI9341_IFCTL_PARAM3);
 
-  /* Sleep out set to the end */
+	/* Sleep out set to the end */
 
-  lcdinfo("ili9341 LCD driver: Sleep Out\n");
-  lcd->sendcmd(lcd, ILI9341_SLEEP_OUT);
-  up_mdelay(5); /* 120? */
+	lcdinfo("ili9341 LCD driver: Sleep Out\n");
+	lcd->sendcmd(lcd, ILI9341_SLEEP_OUT);
+	up_mdelay(5);				/* 120? */
 
-  /* Display on */
+	/* Display on */
 
-  lcdinfo("ili9341 LCD driver: Display On\n");
-  lcd->sendcmd(lcd, ILI9341_DISPLAY_ON);
+	lcdinfo("ili9341 LCD driver: Display On\n");
+	lcd->sendcmd(lcd, ILI9341_DISPLAY_ON);
 
-  /* Deselect spi device */
+	/* Deselect spi device */
 
-  lcd->deselect(lcd);
+	lcd->deselect(lcd);
 
-  return OK;
+	return OK;
 }
 #endif
 
@@ -427,13 +419,12 @@ static int stm32_ili9341_initialize(void)
 
 void board_lcd_uninitialize(void)
 {
-  /* Set display off */
+	/* Set display off */
 
-  g_lcd->setpower(g_lcd, 0);
+	g_lcd->setpower(g_lcd, 0);
 
-  g_lcd = NULL;
+	g_lcd = NULL;
 }
-
 
 /************************************************************************************
  * Name: board_lcd_getdev
@@ -452,12 +443,11 @@ void board_lcd_uninitialize(void)
 
 FAR struct lcd_dev_s *board_lcd_getdev(int lcddev)
 {
-  if (lcddev == ILI9341_LCD_DEVICE)
-    {
-      return g_lcd;
-    }
+	if (lcddev == ILI9341_LCD_DEVICE) {
+		return g_lcd;
+	}
 
-  return NULL;
+	return NULL;
 }
 
 /************************************************************************************
@@ -478,36 +468,33 @@ FAR struct lcd_dev_s *board_lcd_getdev(int lcddev)
 
 int board_lcd_initialize(void)
 {
-  /* check if always initialized */
+	/* check if always initialized */
 
-  if (!g_lcd)
-    {
-      /* Initialize the sub driver structure */
+	if (!g_lcd) {
+		/* Initialize the sub driver structure */
 
-      FAR struct ili9341_lcd_s *dev = stm32_ili93414ws_initialize();
+		FAR struct ili9341_lcd_s *dev = stm32_ili93414ws_initialize();
 
-      /* Initialize public lcd driver structure */
+		/* Initialize public lcd driver structure */
 
-      if (dev)
-        {
-          /* Get a reference to valid lcd driver structure to avoid repeated
-           * initialization of the LCD Device. Also enables uninitializing of
-           * the LCD Device.
-           */
+		if (dev) {
+			/* Get a reference to valid lcd driver structure to avoid repeated
+			 * initialization of the LCD Device. Also enables uninitializing of
+			 * the LCD Device.
+			 */
 
-          g_lcd = ili9341_initialize(dev, ILI9341_LCD_DEVICE);
-          if (g_lcd)
-            {
-              return OK;
-            }
-        }
+			g_lcd = ili9341_initialize(dev, ILI9341_LCD_DEVICE);
+			if (g_lcd) {
+				return OK;
+			}
+		}
 
-      return -errno;
-    }
+		return -errno;
+	}
 
-  return OK;
+	return OK;
 }
-#endif /* CONFIG_STM32F429I_DISCO_ILI9341_LCDIFACE */
+#endif							/* CONFIG_STM32F429I_DISCO_ILI9341_LCDIFACE */
 
 #ifdef CONFIG_STM32_LTDC
 /****************************************************************************
@@ -529,23 +516,22 @@ int board_lcd_initialize(void)
 int up_fbinitialize(int display)
 {
 #ifdef CONFIG_STM32F429I_DISCO_ILI9341_FBIFACE
-  int ret;
+	int ret;
 
-  /* Initialize the ili9341 LCD controller */
+	/* Initialize the ili9341 LCD controller */
 
-  ret = stm32_ili9341_initialize();
+	ret = stm32_ili9341_initialize();
 
-  if (ret == OK)
-    {
-      ret = stm32_ltdcinitialize();
-    }
+	if (ret == OK) {
+		ret = stm32_ltdcinitialize();
+	}
 
-  return ret;
+	return ret;
 
 #else
-  /* Custom LCD display with RGB interface */
+	/* Custom LCD display with RGB interface */
 
-  return stm32_ltdcinitialize();
+	return stm32_ltdcinitialize();
 #endif
 }
 
@@ -569,7 +555,7 @@ int up_fbinitialize(int display)
 
 FAR struct fb_vtable_s *up_fbgetvplane(int display, int vplane)
 {
-  return stm32_ltdcgetvplane(vplane);
+	return stm32_ltdcgetvplane(vplane);
 }
 
 /****************************************************************************
@@ -589,7 +575,7 @@ FAR struct fb_vtable_s *up_fbgetvplane(int display, int vplane)
 
 void up_fbuninitialize(int display)
 {
-  stm32_ltdcuninitialize();
+	stm32_ltdcuninitialize();
 }
 
 /************************************************************************************
@@ -607,8 +593,8 @@ void up_fbuninitialize(int display)
 #ifdef CONFIG_STM32_LTDC_INTERFACE
 FAR struct ltdc_layer_s *up_ltdcgetlayer(int lid)
 {
-  return stm32_ltdcgetlayer(lid);
+	return stm32_ltdcgetlayer(lid);
 }
 #endif
 
-#endif /* CONFIG_STM32_LTDC */
+#endif							/* CONFIG_STM32_LTDC */

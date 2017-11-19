@@ -58,9 +58,8 @@
  * the BUTTON_* definitions in board.h
  */
 
-static const uint32_t g_buttons[NUM_BUTTONS] =
-{
-  GPIO_BTN_USER
+static const uint32_t g_buttons[NUM_BUTTONS] = {
+	GPIO_BTN_USER
 };
 
 /****************************************************************************
@@ -80,16 +79,15 @@ static const uint32_t g_buttons[NUM_BUTTONS] =
 
 void board_button_initialize(void)
 {
-  int i;
+	int i;
 
-  /* Configure the GPIO pins as inputs.  NOTE that EXTI interrupts are
-   * configured for all pins.
-   */
+	/* Configure the GPIO pins as inputs.  NOTE that EXTI interrupts are
+	 * configured for all pins.
+	 */
 
-  for (i = 0; i < NUM_BUTTONS; i++)
-    {
-      stm32_configgpio(g_buttons[i]);
-    }
+	for (i = 0; i < NUM_BUTTONS; i++) {
+		stm32_configgpio(g_buttons[i]);
+	}
 }
 
 /****************************************************************************
@@ -98,27 +96,25 @@ void board_button_initialize(void)
 
 uint32_t board_buttons(void)
 {
-  uint32_t ret = 0;
-  int i;
+	uint32_t ret = 0;
+	int i;
 
-  /* Check that state of each key */
+	/* Check that state of each key */
 
-  for (i = 0; i < NUM_BUTTONS; i++)
-    {
-       /* A LOW value means that the key is pressed.
-        */
+	for (i = 0; i < NUM_BUTTONS; i++) {
+		/* A LOW value means that the key is pressed.
+		 */
 
-       bool released = stm32_gpioread(g_buttons[i]);
+		bool released = stm32_gpioread(g_buttons[i]);
 
-       /* Accumulate the set of depressed (not released) keys */
+		/* Accumulate the set of depressed (not released) keys */
 
-       if (!released)
-         {
-            ret |= (1 << i);
-         }
-    }
+		if (!released) {
+			ret |= (1 << i);
+		}
+	}
 
-  return ret;
+	return ret;
 }
 
 /************************************************************************************
@@ -146,16 +142,15 @@ uint32_t board_buttons(void)
 #ifdef CONFIG_ARCH_IRQBUTTONS
 int board_button_irq(int id, xcpt_t irqhandler, FAR void *arg)
 {
-  int ret = -EINVAL;
+	int ret = -EINVAL;
 
-  /* The following should be atomic */
+	/* The following should be atomic */
 
-  if (id >= MIN_IRQBUTTON && id <= MAX_IRQBUTTON)
-    {
-      ret = stm32_gpiosetevent(g_buttons[id], true, true, true, irqhandler, arg);
-    }
+	if (id >= MIN_IRQBUTTON && id <= MAX_IRQBUTTON) {
+		ret = stm32_gpiosetevent(g_buttons[id], true, true, true, irqhandler, arg);
+	}
 
-  return ret;
+	return ret;
 }
 #endif
-#endif /* CONFIG_ARCH_BUTTONS */
+#endif							/* CONFIG_ARCH_BUTTONS */

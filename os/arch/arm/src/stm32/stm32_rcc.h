@@ -46,19 +46,19 @@
 #include "chip.h"
 
 #if defined(CONFIG_STM32_STM32L15XX)
-#  include "chip/stm32l15xxx_rcc.h"
+#include "chip/stm32l15xxx_rcc.h"
 #elif defined(CONFIG_STM32_STM32F10XX)
-#  include "chip/stm32f10xxx_rcc.h"
+#include "chip/stm32f10xxx_rcc.h"
 #elif defined(CONFIG_STM32_STM32F20XX)
-#  include "chip/stm32f20xxx_rcc.h"
+#include "chip/stm32f20xxx_rcc.h"
 #elif defined(CONFIG_STM32_STM32F30XX)
-#  include "chip/stm32f30xxx_rcc.h"
+#include "chip/stm32f30xxx_rcc.h"
 #elif defined(CONFIG_STM32_STM32F33XX)
-#  include "chip/stm32f33xxx_rcc.h"
+#include "chip/stm32f33xxx_rcc.h"
 #elif defined(CONFIG_STM32_STM32F37XX)
-#  include "chip/stm32f37xxx_rcc.h"
+#include "chip/stm32f37xxx_rcc.h"
 #elif defined(CONFIG_STM32_STM32F4XXX)
-#  include "chip/stm32f40xxx_rcc.h"
+#include "chip/stm32f40xxx_rcc.h"
 #endif
 
 /************************************************************************************
@@ -70,8 +70,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -87,7 +86,7 @@ extern "C"
  * and we will need to set the NVIC vector location to this alternative location.
  */
 
-extern uint32_t _vectors[];  /* See stm32_vectors.S */
+extern uint32_t _vectors[];		/* See stm32_vectors.S */
 
 /************************************************************************************
  * Inline Functions
@@ -116,12 +115,12 @@ extern uint32_t _vectors[];  /* See stm32_vectors.S */
 #if defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX)
 static inline void stm32_mco1config(uint32_t source, uint32_t div)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  regval = getreg32(STM32_RCC_CFGR);
-  regval &= ~(RCC_CFGR_MCO1_MASK|RCC_CFGR_MCO1PRE_MASK);
-  regval |= (source | div);
-  putreg32(regval, STM32_RCC_CFGR);
+	regval = getreg32(STM32_RCC_CFGR);
+	regval &= ~(RCC_CFGR_MCO1_MASK | RCC_CFGR_MCO1PRE_MASK);
+	regval |= (source | div);
+	putreg32(regval, STM32_RCC_CFGR);
 }
 #endif
 
@@ -146,14 +145,14 @@ static inline void stm32_mco1config(uint32_t source, uint32_t div)
 #if defined(CONFIG_STM32_CONNECTIVITYLINE)
 static inline void stm32_mcoconfig(uint32_t source)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Set MCO source */
+	/* Set MCO source */
 
-  regval = getreg32(STM32_RCC_CFGR);
-  regval &= ~(RCC_CFGR_MCO_MASK);
-  regval |= (source & RCC_CFGR_MCO_MASK);
-  putreg32(regval, STM32_RCC_CFGR);
+	regval = getreg32(STM32_RCC_CFGR);
+	regval &= ~(RCC_CFGR_MCO_MASK);
+	regval |= (source & RCC_CFGR_MCO_MASK);
+	putreg32(regval, STM32_RCC_CFGR);
 }
 #endif
 
@@ -181,16 +180,16 @@ static inline void stm32_mcoconfig(uint32_t source)
 #if defined(CONFIG_STM32_STM32L15XX)
 static inline void stm32_mcodivconfig(uint32_t source, uint32_t divider)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Set MCO source */
+	/* Set MCO source */
 
-  regval = getreg32(STM32_RCC_CFGR);
-  regval &= ~(RCC_CFGR_MCOSEL_MASK);
-  regval |= (source & RCC_CFGR_MCOSEL_MASK);
-  regval &= ~(RCC_CFGR_MCOPRE_MASK);
-  regval |= (divider & RCC_CFGR_MCOPRE_MASK);
-  putreg32(regval, STM32_RCC_CFGR);
+	regval = getreg32(STM32_RCC_CFGR);
+	regval &= ~(RCC_CFGR_MCOSEL_MASK);
+	regval |= (source & RCC_CFGR_MCOSEL_MASK);
+	regval &= ~(RCC_CFGR_MCOPRE_MASK);
+	regval |= (divider & RCC_CFGR_MCOPRE_MASK);
+	putreg32(regval, STM32_RCC_CFGR);
 }
 #endif
 
@@ -217,12 +216,12 @@ static inline void stm32_mcodivconfig(uint32_t source, uint32_t divider)
 #if defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX)
 static inline void stm32_mco2config(uint32_t source, uint32_t div)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  regval = getreg32(STM32_RCC_CFGR);
-  regval &= ~(RCC_CFGR_MCO2_MASK|RCC_CFGR_MCO2PRE_MASK);
-  regval |= (source | div);
-  putreg32(regval, STM32_RCC_CFGR);
+	regval = getreg32(STM32_RCC_CFGR);
+	regval &= ~(RCC_CFGR_MCO2_MASK | RCC_CFGR_MCO2PRE_MASK);
+	regval |= (source | div);
+	putreg32(regval, STM32_RCC_CFGR);
 }
 #endif
 
@@ -335,5 +334,5 @@ void stm32_rcc_disablelsi(void);
 #if defined(__cplusplus)
 }
 #endif
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_RCC_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_RCC_H */

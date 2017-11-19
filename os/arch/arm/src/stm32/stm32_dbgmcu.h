@@ -61,4 +61,4 @@
  * Public Functions
  ************************************************************************************/
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_DBGMCU_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_DBGMCU_H */

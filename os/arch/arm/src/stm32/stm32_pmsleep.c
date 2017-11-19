@@ -86,32 +86,29 @@
 
 void stm32_pmsleep(bool sleeponexit)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Clear SLEEPDEEP bit of Cortex System Control Register */
+	/* Clear SLEEPDEEP bit of Cortex System Control Register */
 
-  regval  = getreg32(NVIC_SYSCON);
-  regval &= ~NVIC_SYSCON_SLEEPDEEP;
-  if (sleeponexit)
-    {
-      regval |= NVIC_SYSCON_SLEEPONEXIT;
-    }
-  else
-    {
-      regval &= ~NVIC_SYSCON_SLEEPONEXIT;
-    }
+	regval = getreg32(NVIC_SYSCON);
+	regval &= ~NVIC_SYSCON_SLEEPDEEP;
+	if (sleeponexit) {
+		regval |= NVIC_SYSCON_SLEEPONEXIT;
+	} else {
+		regval &= ~NVIC_SYSCON_SLEEPONEXIT;
+	}
 
-  putreg32(regval, NVIC_SYSCON);
+	putreg32(regval, NVIC_SYSCON);
 
-  /* Sleep until the wakeup interrupt or event occurs */
+	/* Sleep until the wakeup interrupt or event occurs */
 
 #ifdef CONFIG_PM_WFE
-  /* Mode: SLEEP + Entry with WFE */
+	/* Mode: SLEEP + Entry with WFE */
 
-  asm("wfe");
+	asm("wfe");
 #else
-  /* Mode: SLEEP + Entry with WFI */
+	/* Mode: SLEEP + Entry with WFI */
 
-  asm("wfi");
+	asm("wfi");
 #endif
 }

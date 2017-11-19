@@ -54,8 +54,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -173,33 +172,27 @@ int stm32_spi6cmddata(FAR struct spi_dev_s *dev, uint32_t devid, bool cmd);
 
 #ifdef CONFIG_SPI_CALLBACK
 #ifdef CONFIG_STM32_SPI1
-int stm32_spi1register(FAR struct spi_dev_s *dev, spi_mediachange_t callback,
-                       FAR void *arg);
+int stm32_spi1register(FAR struct spi_dev_s *dev, spi_mediachange_t callback, FAR void *arg);
 #endif
 
 #ifdef CONFIG_STM32_SPI2
-int stm32_spi2register(FAR struct spi_dev_s *dev, spi_mediachange_t callback,
-                       FAR void *arg);
+int stm32_spi2register(FAR struct spi_dev_s *dev, spi_mediachange_t callback, FAR void *arg);
 #endif
 
 #ifdef CONFIG_STM32_SPI3
-int stm32_spi3register(FAR struct spi_dev_s *dev, spi_mediachange_t callback,
-                       FAR void *arg);
+int stm32_spi3register(FAR struct spi_dev_s *dev, spi_mediachange_t callback, FAR void *arg);
 #endif
 
 #ifdef CONFIG_STM32_SPI4
-int stm32_spi4register(FAR struct spi_dev_s *dev, spi_mediachange_t callback,
-                       FAR void *arg);
+int stm32_spi4register(FAR struct spi_dev_s *dev, spi_mediachange_t callback, FAR void *arg);
 #endif
 
 #ifdef CONFIG_STM32_SPI5
-int stm32_spi5register(FAR struct spi_dev_s *dev, spi_mediachange_t callback,
-                       FAR void *arg);
+int stm32_spi5register(FAR struct spi_dev_s *dev, spi_mediachange_t callback, FAR void *arg);
 #endif
 
 #ifdef CONFIG_STM32_SPI6
-int stm32_spi6register(FAR struct spi_dev_s *dev, spi_mediachange_t callback,
-                       FAR void *arg);
+int stm32_spi6register(FAR struct spi_dev_s *dev, spi_mediachange_t callback, FAR void *arg);
 #endif
 #endif
 
@@ -208,6 +201,5 @@ int stm32_spi6register(FAR struct spi_dev_s *dev, spi_mediachange_t callback,
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_STC_STM32_STM32_SPI_H */
-
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_STC_STM32_STM32_SPI_H */

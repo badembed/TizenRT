@@ -46,9 +46,9 @@
 #include "chip.h"
 #if defined(CONFIG_STM32_STM32F30XX) || defined(CONFIG_STM32_STM32F37XX) || \
     defined(CONFIG_STM32_STM32F33XX)
-#  include "chip/stm32f30xxx_i2c.h"
+#include "chip/stm32f30xxx_i2c.h"
 #else
-#  include "chip/stm32_i2c.h"
+#include "chip/stm32_i2c.h"
 #endif
 
 /****************************************************************************
@@ -60,10 +60,10 @@
  */
 
 #ifdef CONFIG_STM32_I2C_DYNTIMEO
-#  if CONFIG_STM32_I2C_DYNTIMEO_USECPERBYTE < 1
-#    warning "Ignoring CONFIG_STM32_I2C_DYNTIMEO because of CONFIG_STM32_I2C_DYNTIMEO_USECPERBYTE"
-#    undef CONFIG_STM32_I2C_DYNTIMEO
-#  endif
+#if CONFIG_STM32_I2C_DYNTIMEO_USECPERBYTE < 1
+#warning "Ignoring CONFIG_STM32_I2C_DYNTIMEO because of CONFIG_STM32_I2C_DYNTIMEO_USECPERBYTE"
+#undef CONFIG_STM32_I2C_DYNTIMEO
+#endif
 #endif
 
 /****************************************************************************
@@ -106,4 +106,4 @@ FAR struct i2c_master_s *stm32_i2cbus_initialize(int port);
 
 int stm32_i2cbus_uninitialize(FAR struct i2c_master_s *dev);
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_I2C_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_I2C_H */

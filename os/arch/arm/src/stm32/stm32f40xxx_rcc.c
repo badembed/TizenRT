@@ -83,37 +83,37 @@
 
 static inline void rcc_reset(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Enable the Internal High Speed clock (HSI) */
+	/* Enable the Internal High Speed clock (HSI) */
 
-  regval = getreg32(STM32_RCC_CR);
-  regval |= RCC_CR_HSION;
-  putreg32(regval, STM32_RCC_CR);
+	regval = getreg32(STM32_RCC_CR);
+	regval |= RCC_CR_HSION;
+	putreg32(regval, STM32_RCC_CR);
 
-  /* Reset CFGR register */
+	/* Reset CFGR register */
 
-  putreg32(0x00000000, STM32_RCC_CFGR);
+	putreg32(0x00000000, STM32_RCC_CFGR);
 
-  /* Reset HSEON, CSSON and PLLON bits */
+	/* Reset HSEON, CSSON and PLLON bits */
 
-  regval  = getreg32(STM32_RCC_CR);
-  regval &= ~(RCC_CR_HSEON | RCC_CR_CSSON | RCC_CR_PLLON);
-  putreg32(regval, STM32_RCC_CR);
+	regval = getreg32(STM32_RCC_CR);
+	regval &= ~(RCC_CR_HSEON | RCC_CR_CSSON | RCC_CR_PLLON);
+	putreg32(regval, STM32_RCC_CR);
 
-  /* Reset PLLCFGR register to reset default */
+	/* Reset PLLCFGR register to reset default */
 
-  putreg32(RCC_PLLCFG_RESET, STM32_RCC_PLLCFG);
+	putreg32(RCC_PLLCFG_RESET, STM32_RCC_PLLCFG);
 
-  /* Reset HSEBYP bit */
+	/* Reset HSEBYP bit */
 
-  regval  = getreg32(STM32_RCC_CR);
-  regval &= ~RCC_CR_HSEBYP;
-  putreg32(regval, STM32_RCC_CR);
+	regval = getreg32(STM32_RCC_CR);
+	regval &= ~RCC_CR_HSEBYP;
+	putreg32(regval, STM32_RCC_CR);
 
-  /* Disable all interrupts */
+	/* Disable all interrupts */
 
-  putreg32(0x00000000, STM32_RCC_CIR);
+	putreg32(0x00000000, STM32_RCC_CIR);
 }
 
 /****************************************************************************
@@ -126,113 +126,113 @@ static inline void rcc_reset(void)
 
 static inline void rcc_enableahb1(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Set the appropriate bits in the AHB1ENR register to enabled the
-   * selected AHB1 peripherals.
-   */
+	/* Set the appropriate bits in the AHB1ENR register to enabled the
+	 * selected AHB1 peripherals.
+	 */
 
-  regval = getreg32(STM32_RCC_AHB1ENR);
+	regval = getreg32(STM32_RCC_AHB1ENR);
 
-  /* Enable GPIOA, GPIOB, .... GPIOI */
+	/* Enable GPIOA, GPIOB, .... GPIOI */
 
 #if STM32_NGPIO_PORTS > 0
-  regval |= (RCC_AHB1ENR_GPIOAEN
+	regval |= (RCC_AHB1ENR_GPIOAEN
 #if STM32_NGPIO_PORTS > 1
-             | RCC_AHB1ENR_GPIOBEN
+			   | RCC_AHB1ENR_GPIOBEN
 #endif
 #if STM32_NGPIO_PORTS > 2
-             | RCC_AHB1ENR_GPIOCEN
+			   | RCC_AHB1ENR_GPIOCEN
 #endif
 #if STM32_NGPIO_PORTS > 3
-             | RCC_AHB1ENR_GPIODEN
+			   | RCC_AHB1ENR_GPIODEN
 #endif
 #if STM32_NGPIO_PORTS > 4
-             | RCC_AHB1ENR_GPIOEEN
+			   | RCC_AHB1ENR_GPIOEEN
 #endif
 #if STM32_NGPIO_PORTS > 5
-             | RCC_AHB1ENR_GPIOFEN
+			   | RCC_AHB1ENR_GPIOFEN
 #endif
 #if STM32_NGPIO_PORTS > 6
-             | RCC_AHB1ENR_GPIOGEN
+			   | RCC_AHB1ENR_GPIOGEN
 #endif
 #if STM32_NGPIO_PORTS > 7
-             | RCC_AHB1ENR_GPIOHEN
+			   | RCC_AHB1ENR_GPIOHEN
 #endif
 #if STM32_NGPIO_PORTS > 8
-             | RCC_AHB1ENR_GPIOIEN
+			   | RCC_AHB1ENR_GPIOIEN
 #endif
 #if STM32_NGPIO_PORTS > 9
-             | RCC_AHB1ENR_GPIOJEN
+			   | RCC_AHB1ENR_GPIOJEN
 #endif
 #if STM32_NGPIO_PORTS > 10
-             | RCC_AHB1ENR_GPIOKEN
+			   | RCC_AHB1ENR_GPIOKEN
 #endif
-             );
+			  );
 #endif
 
 #ifdef CONFIG_STM32_CRC
-  /* CRC clock enable */
+	/* CRC clock enable */
 
-  regval |= RCC_AHB1ENR_CRCEN;
+	regval |= RCC_AHB1ENR_CRCEN;
 #endif
 
 #ifdef CONFIG_STM32_BKPSRAM
-  /* Backup SRAM clock enable */
+	/* Backup SRAM clock enable */
 
-  regval |= RCC_AHB1ENR_BKPSRAMEN;
+	regval |= RCC_AHB1ENR_BKPSRAMEN;
 #endif
 
 #ifdef CONFIG_STM32_CCMDATARAM
-  /* CCM data RAM clock enable */
+	/* CCM data RAM clock enable */
 
-  regval |= RCC_AHB1ENR_CCMDATARAMEN;
+	regval |= RCC_AHB1ENR_CCMDATARAMEN;
 #endif
 
 #ifdef CONFIG_STM32_DMA1
-  /* DMA 1 clock enable */
+	/* DMA 1 clock enable */
 
-  regval |= RCC_AHB1ENR_DMA1EN;
+	regval |= RCC_AHB1ENR_DMA1EN;
 #endif
 
 #ifdef CONFIG_STM32_DMA2
-  /* DMA 2 clock enable */
+	/* DMA 2 clock enable */
 
-  regval |= RCC_AHB1ENR_DMA2EN;
+	regval |= RCC_AHB1ENR_DMA2EN;
 #endif
 
 #ifdef CONFIG_STM32_ETHMAC
-  /* Ethernet MAC clocking */
+	/* Ethernet MAC clocking */
 
-  regval |= (RCC_AHB1ENR_ETHMACEN | RCC_AHB1ENR_ETHMACTXEN | RCC_AHB1ENR_ETHMACRXEN);
+	regval |= (RCC_AHB1ENR_ETHMACEN | RCC_AHB1ENR_ETHMACTXEN | RCC_AHB1ENR_ETHMACRXEN);
 
 #ifdef CONFIG_STM32_ETH_PTP
-  /* Precision Time Protocol (PTP) */
+	/* Precision Time Protocol (PTP) */
 
-  regval |= RCC_AHB1ENR_ETHMACPTPEN;
+	regval |= RCC_AHB1ENR_ETHMACPTPEN;
 
 #endif
 #endif
 
 #ifdef CONFIG_STM32_OTGHS
 #ifdef BOARD_ENABLE_USBOTG_HSULPI
-  /* Enable clocking for  USB OTG HS and external PHY */
+	/* Enable clocking for  USB OTG HS and external PHY */
 
-  regval |= (RCC_AHB1ENR_OTGHSEN | RCC_AHB1ENR_OTGHSULPIEN);
+	regval |= (RCC_AHB1ENR_OTGHSEN | RCC_AHB1ENR_OTGHSULPIEN);
 #else
-  /* Enable only clocking for USB OTG HS */
+	/* Enable only clocking for USB OTG HS */
 
-  regval |= RCC_AHB1ENR_OTGHSEN;
+	regval |= RCC_AHB1ENR_OTGHSEN;
 #endif
-#endif  /* CONFIG_STM32_OTGHS */
+#endif							/* CONFIG_STM32_OTGHS */
 
 #ifdef CONFIG_STM32_DMA2D
-  /* DMA2D clock */
+	/* DMA2D clock */
 
-  regval |= RCC_AHB1ENR_DMA2DEN;
+	regval |= RCC_AHB1ENR_DMA2DEN;
 #endif
 
-  putreg32(regval, STM32_RCC_AHB1ENR);   /* Enable peripherals */
+	putreg32(regval, STM32_RCC_AHB1ENR);	/* Enable peripherals */
 }
 
 /****************************************************************************
@@ -245,45 +245,45 @@ static inline void rcc_enableahb1(void)
 
 static inline void rcc_enableahb2(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Set the appropriate bits in the AHB2ENR register to enabled the
-   * selected AHB2 peripherals.
-   */
+	/* Set the appropriate bits in the AHB2ENR register to enabled the
+	 * selected AHB2 peripherals.
+	 */
 
-  regval = getreg32(STM32_RCC_AHB2ENR);
+	regval = getreg32(STM32_RCC_AHB2ENR);
 
 #ifdef CONFIG_STM32_DCMI
-  /* Camera interface enable */
+	/* Camera interface enable */
 
-  regval |= RCC_AHB2ENR_DCMIEN;
+	regval |= RCC_AHB2ENR_DCMIEN;
 #endif
 
 #ifdef CONFIG_STM32_CRYP
-  /* Cryptographic modules clock enable */
+	/* Cryptographic modules clock enable */
 
-  regval |= RCC_AHB2ENR_CRYPEN;
+	regval |= RCC_AHB2ENR_CRYPEN;
 #endif
 
 #ifdef CONFIG_STM32_HASH
-  /* Hash modules clock enable */
+	/* Hash modules clock enable */
 
-  regval |= RCC_AHB2ENR_HASHEN;
+	regval |= RCC_AHB2ENR_HASHEN;
 #endif
 
 #ifdef CONFIG_STM32_RNG
-  /* Random number generator clock enable */
+	/* Random number generator clock enable */
 
-  regval |= RCC_AHB2ENR_RNGEN;
+	regval |= RCC_AHB2ENR_RNGEN;
 #endif
 
 #ifdef CONFIG_STM32_OTGFS
-  /* USB OTG FS clock enable */
+	/* USB OTG FS clock enable */
 
-  regval |= RCC_AHB2ENR_OTGFSEN;
+	regval |= RCC_AHB2ENR_OTGFSEN;
 #endif
 
-  putreg32(regval, STM32_RCC_AHB2ENR);   /* Enable peripherals */
+	putreg32(regval, STM32_RCC_AHB2ENR);	/* Enable peripherals */
 }
 
 /****************************************************************************
@@ -297,19 +297,19 @@ static inline void rcc_enableahb2(void)
 static inline void rcc_enableahb3(void)
 {
 #ifdef CONFIG_STM32_FSMC
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Set the appropriate bits in the AHB3ENR register to enabled the
-   * selected AHB3 peripherals.
-   */
+	/* Set the appropriate bits in the AHB3ENR register to enabled the
+	 * selected AHB3 peripherals.
+	 */
 
-  regval = getreg32(STM32_RCC_AHB3ENR);
+	regval = getreg32(STM32_RCC_AHB3ENR);
 
-  /* Flexible static memory controller module clock enable */
+	/* Flexible static memory controller module clock enable */
 
-  regval |= RCC_AHB3ENR_FSMCEN;
+	regval |= RCC_AHB3ENR_FSMCEN;
 
-  putreg32(regval, STM32_RCC_AHB3ENR);   /* Enable peripherals */
+	putreg32(regval, STM32_RCC_AHB3ENR);	/* Enable peripherals */
 #endif
 }
 
@@ -323,165 +323,165 @@ static inline void rcc_enableahb3(void)
 
 static inline void rcc_enableapb1(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Set the appropriate bits in the APB1ENR register to enabled the
-   * selected APB1 peripherals.
-   */
+	/* Set the appropriate bits in the APB1ENR register to enabled the
+	 * selected APB1 peripherals.
+	 */
 
-  regval = getreg32(STM32_RCC_APB1ENR);
+	regval = getreg32(STM32_RCC_APB1ENR);
 
 #ifdef CONFIG_STM32_TIM2
-  /* TIM2 clock enable */
+	/* TIM2 clock enable */
 
-  regval |= RCC_APB1ENR_TIM2EN;
+	regval |= RCC_APB1ENR_TIM2EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM3
-  /* TIM3 clock enable */
+	/* TIM3 clock enable */
 
-  regval |= RCC_APB1ENR_TIM3EN;
+	regval |= RCC_APB1ENR_TIM3EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM4
-  /* TIM4 clock enable */
+	/* TIM4 clock enable */
 
-  regval |= RCC_APB1ENR_TIM4EN;
+	regval |= RCC_APB1ENR_TIM4EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM5
-  /* TIM5 clock enable */
+	/* TIM5 clock enable */
 
-  regval |= RCC_APB1ENR_TIM5EN;
+	regval |= RCC_APB1ENR_TIM5EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM6
-  /* TIM6 clock enable */
+	/* TIM6 clock enable */
 
-  regval |= RCC_APB1ENR_TIM6EN;
+	regval |= RCC_APB1ENR_TIM6EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM7
-  /* TIM7 clock enable */
+	/* TIM7 clock enable */
 
-  regval |= RCC_APB1ENR_TIM7EN;
+	regval |= RCC_APB1ENR_TIM7EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM12
-  /* TIM12 clock enable */
+	/* TIM12 clock enable */
 
-  regval |= RCC_APB1ENR_TIM12EN;
+	regval |= RCC_APB1ENR_TIM12EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM13
-  /* TIM13 clock enable */
+	/* TIM13 clock enable */
 
-  regval |= RCC_APB1ENR_TIM13EN;
+	regval |= RCC_APB1ENR_TIM13EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM14
-  /* TIM14 clock enable */
+	/* TIM14 clock enable */
 
-  regval |= RCC_APB1ENR_TIM14EN;
+	regval |= RCC_APB1ENR_TIM14EN;
 #endif
 
 #ifdef CONFIG_STM32_WWDG
-  /* Window watchdog clock enable */
+	/* Window watchdog clock enable */
 
-  regval |= RCC_APB1ENR_WWDGEN;
+	regval |= RCC_APB1ENR_WWDGEN;
 #endif
 
 #ifdef CONFIG_STM32_SPI2
-  /* SPI2 clock enable */
+	/* SPI2 clock enable */
 
-  regval |= RCC_APB1ENR_SPI2EN;
+	regval |= RCC_APB1ENR_SPI2EN;
 #endif
 
 #ifdef CONFIG_STM32_SPI3
-  /* SPI3 clock enable */
+	/* SPI3 clock enable */
 
-  regval |= RCC_APB1ENR_SPI3EN;
+	regval |= RCC_APB1ENR_SPI3EN;
 #endif
 
 #ifdef CONFIG_STM32_USART2
-  /* USART 2 clock enable */
+	/* USART 2 clock enable */
 
-  regval |= RCC_APB1ENR_USART2EN;
+	regval |= RCC_APB1ENR_USART2EN;
 #endif
 
 #ifdef CONFIG_STM32_USART3
-  /* USART3 clock enable */
+	/* USART3 clock enable */
 
-  regval |= RCC_APB1ENR_USART3EN;
+	regval |= RCC_APB1ENR_USART3EN;
 #endif
 
 #ifdef CONFIG_STM32_UART4
-  /* UART4 clock enable */
+	/* UART4 clock enable */
 
-  regval |= RCC_APB1ENR_UART4EN;
+	regval |= RCC_APB1ENR_UART4EN;
 #endif
 
 #ifdef CONFIG_STM32_UART5
-  /* UART5 clock enable */
+	/* UART5 clock enable */
 
-  regval |= RCC_APB1ENR_UART5EN;
+	regval |= RCC_APB1ENR_UART5EN;
 #endif
 
 #ifdef CONFIG_STM32_I2C1
-  /* I2C1 clock enable */
+	/* I2C1 clock enable */
 
-  regval |= RCC_APB1ENR_I2C1EN;
+	regval |= RCC_APB1ENR_I2C1EN;
 #endif
 
 #ifdef CONFIG_STM32_I2C2
-  /* I2C2 clock enable */
+	/* I2C2 clock enable */
 
-  regval |= RCC_APB1ENR_I2C2EN;
+	regval |= RCC_APB1ENR_I2C2EN;
 #endif
 
 #ifdef CONFIG_STM32_I2C3
-  /* I2C3 clock enable */
+	/* I2C3 clock enable */
 
-  regval |= RCC_APB1ENR_I2C3EN;
+	regval |= RCC_APB1ENR_I2C3EN;
 #endif
 
 #ifdef CONFIG_STM32_CAN1
-  /* CAN 1 clock enable */
+	/* CAN 1 clock enable */
 
-  regval |= RCC_APB1ENR_CAN1EN;
+	regval |= RCC_APB1ENR_CAN1EN;
 #endif
 
 #ifdef CONFIG_STM32_CAN2
-  /* CAN2 clock enable.  NOTE: CAN2 needs CAN1 clock as well. */
+	/* CAN2 clock enable.  NOTE: CAN2 needs CAN1 clock as well. */
 
-  regval |= (RCC_APB1ENR_CAN1EN | RCC_APB1ENR_CAN2EN);
+	regval |= (RCC_APB1ENR_CAN1EN | RCC_APB1ENR_CAN2EN);
 #endif
 
-  /* Power interface clock enable.  The PWR block is always enabled so that
-   * we can set the internal voltage regulator for maximum performance.
-   */
+	/* Power interface clock enable.  The PWR block is always enabled so that
+	 * we can set the internal voltage regulator for maximum performance.
+	 */
 
-  regval |= RCC_APB1ENR_PWREN;
+	regval |= RCC_APB1ENR_PWREN;
 
 #if defined (CONFIG_STM32_DAC1) || defined(CONFIG_STM32_DAC2)
-  /* DAC interface clock enable */
+	/* DAC interface clock enable */
 
-  regval |= RCC_APB1ENR_DACEN;
+	regval |= RCC_APB1ENR_DACEN;
 #endif
 
 #ifdef CONFIG_STM32_UART7
-  /* UART7 clock enable */
+	/* UART7 clock enable */
 
-  regval |= RCC_APB1ENR_UART7EN;
+	regval |= RCC_APB1ENR_UART7EN;
 #endif
 
 #ifdef CONFIG_STM32_UART8
-  /* UART8 clock enable */
+	/* UART8 clock enable */
 
-  regval |= RCC_APB1ENR_UART8EN;
+	regval |= RCC_APB1ENR_UART8EN;
 #endif
 
-  putreg32(regval, STM32_RCC_APB1ENR);   /* Enable peripherals */
+	putreg32(regval, STM32_RCC_APB1ENR);	/* Enable peripherals */
 }
 
 /****************************************************************************
@@ -494,117 +494,117 @@ static inline void rcc_enableapb1(void)
 
 static inline void rcc_enableapb2(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Set the appropriate bits in the APB2ENR register to enabled the
-   * selected APB2 peripherals.
-   */
+	/* Set the appropriate bits in the APB2ENR register to enabled the
+	 * selected APB2 peripherals.
+	 */
 
-  regval = getreg32(STM32_RCC_APB2ENR);
+	regval = getreg32(STM32_RCC_APB2ENR);
 
 #ifdef CONFIG_STM32_TIM1
-  /* TIM1 clock enable */
+	/* TIM1 clock enable */
 
-  regval |= RCC_APB2ENR_TIM1EN;
+	regval |= RCC_APB2ENR_TIM1EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM8
-  /* TIM8 clock enable */
+	/* TIM8 clock enable */
 
-  regval |= RCC_APB2ENR_TIM8EN;
+	regval |= RCC_APB2ENR_TIM8EN;
 #endif
 
 #ifdef CONFIG_STM32_USART1
-  /* USART1 clock enable */
+	/* USART1 clock enable */
 
-  regval |= RCC_APB2ENR_USART1EN;
+	regval |= RCC_APB2ENR_USART1EN;
 #endif
 
 #ifdef CONFIG_STM32_USART6
-  /* USART6 clock enable */
+	/* USART6 clock enable */
 
-  regval |= RCC_APB2ENR_USART6EN;
+	regval |= RCC_APB2ENR_USART6EN;
 #endif
 
 #ifdef CONFIG_STM32_ADC1
-  /* ADC1 clock enable */
+	/* ADC1 clock enable */
 
-  regval |= RCC_APB2ENR_ADC1EN;
+	regval |= RCC_APB2ENR_ADC1EN;
 #endif
 
 #ifdef CONFIG_STM32_ADC2
-  /* ADC2 clock enable */
+	/* ADC2 clock enable */
 
-  regval |= RCC_APB2ENR_ADC2EN;
+	regval |= RCC_APB2ENR_ADC2EN;
 #endif
 
 #ifdef CONFIG_STM32_ADC3
-  /* ADC3 clock enable */
+	/* ADC3 clock enable */
 
-  regval |= RCC_APB2ENR_ADC3EN;
+	regval |= RCC_APB2ENR_ADC3EN;
 #endif
 
 #ifdef CONFIG_STM32_SDIO
-  /* SDIO clock enable */
+	/* SDIO clock enable */
 
-  regval |= RCC_APB2ENR_SDIOEN;
+	regval |= RCC_APB2ENR_SDIOEN;
 #endif
 
 #ifdef CONFIG_STM32_SPI1
-  /* SPI1 clock enable */
+	/* SPI1 clock enable */
 
-  regval |= RCC_APB2ENR_SPI1EN;
+	regval |= RCC_APB2ENR_SPI1EN;
 #endif
 
 #ifdef CONFIG_STM32_SPI4
-  /* SPI4 clock enable */
+	/* SPI4 clock enable */
 
-  regval |= RCC_APB2ENR_SPI4EN;
+	regval |= RCC_APB2ENR_SPI4EN;
 #endif
 
 #ifdef CONFIG_STM32_SYSCFG
-  /* System configuration controller clock enable */
+	/* System configuration controller clock enable */
 
-  regval |= RCC_APB2ENR_SYSCFGEN;
+	regval |= RCC_APB2ENR_SYSCFGEN;
 #endif
 
 #ifdef CONFIG_STM32_TIM9
-  /* TIM9 clock enable */
+	/* TIM9 clock enable */
 
-  regval |= RCC_APB2ENR_TIM9EN;
+	regval |= RCC_APB2ENR_TIM9EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM10
-  /* TIM10 clock enable */
+	/* TIM10 clock enable */
 
-  regval |= RCC_APB2ENR_TIM10EN;
+	regval |= RCC_APB2ENR_TIM10EN;
 #endif
 
 #ifdef CONFIG_STM32_TIM11
-  /* TIM11 clock enable */
+	/* TIM11 clock enable */
 
-  regval |= RCC_APB2ENR_TIM11EN;
+	regval |= RCC_APB2ENR_TIM11EN;
 #endif
 
 #ifdef CONFIG_STM32_SPI5
-  /* SPI5 clock enable */
+	/* SPI5 clock enable */
 
-  regval |= RCC_APB2ENR_SPI5EN;
+	regval |= RCC_APB2ENR_SPI5EN;
 #endif
 
 #ifdef CONFIG_STM32_SPI6
-  /* SPI6 clock enable */
+	/* SPI6 clock enable */
 
-  regval |= RCC_APB2ENR_SPI6EN;
+	regval |= RCC_APB2ENR_SPI6EN;
 #endif
 
 #ifdef CONFIG_STM32_LTDC
-  /* LTDC clock enable */
+	/* LTDC clock enable */
 
-  regval |= RCC_APB2ENR_LTDCEN;
+	regval |= RCC_APB2ENR_LTDCEN;
 #endif
 
-  putreg32(regval, STM32_RCC_APB2ENR);   /* Enable peripherals */
+	putreg32(regval, STM32_RCC_APB2ENR);	/* Enable peripherals */
 }
 
 /****************************************************************************
@@ -620,346 +620,270 @@ static inline void rcc_enableapb2(void)
 #ifndef CONFIG_ARCH_BOARD_STM32_CUSTOM_CLOCKCONFIG
 static void stm32_stdclockconfig(void)
 {
-  uint32_t regval;
-  volatile int32_t timeout;
+	uint32_t regval;
+	volatile int32_t timeout;
 
 #ifdef STM32_BOARD_USEHSI
 
-  /* Wait until the HSI is ready (or until a timeout elapsed) */
+	/* Wait until the HSI is ready (or until a timeout elapsed) */
 
-  for (timeout = HSIRDY_TIMEOUT; timeout > 0; timeout--)
-    {
-      /* Check if the HSIRDY flag is the set in the CR */
+	for (timeout = HSIRDY_TIMEOUT; timeout > 0; timeout--) {
+		/* Check if the HSIRDY flag is the set in the CR */
 
-      if ((getreg32(STM32_RCC_CR) & RCC_CR_HSIRDY) != 0)
-        {
-          /* If so, then break-out with timeout > 0 */
+		if ((getreg32(STM32_RCC_CR) & RCC_CR_HSIRDY) != 0) {
+			/* If so, then break-out with timeout > 0 */
 
-          break;
-        }
-    }
+			break;
+		}
+	}
 
-#else /* if STM32_BOARD_USEHSE */
-  /* Enable External High-Speed Clock (HSE) */
+#else							/* if STM32_BOARD_USEHSE */
+	/* Enable External High-Speed Clock (HSE) */
 
 #ifdef STM32_RCC_CR_HSEBYP
-  /* Bypass HSE oscillator when using an external oscillator module
-   * Do NOT define STM32_RCC_CR_HSEBYP when using a crystal with HSE
-   */
+	/* Bypass HSE oscillator when using an external oscillator module
+	 * Do NOT define STM32_RCC_CR_HSEBYP when using a crystal with HSE
+	 */
 
-  regval  = getreg32(STM32_RCC_CR);
-  regval |= RCC_CR_HSEBYP;
-  putreg32(regval, STM32_RCC_CR);
+	regval = getreg32(STM32_RCC_CR);
+	regval |= RCC_CR_HSEBYP;
+	putreg32(regval, STM32_RCC_CR);
 #endif
 
-  regval  = getreg32(STM32_RCC_CR);
-  regval |= RCC_CR_HSEON;           /* Enable HSE */
-  putreg32(regval, STM32_RCC_CR);
+	regval = getreg32(STM32_RCC_CR);
+	regval |= RCC_CR_HSEON;		/* Enable HSE */
+	putreg32(regval, STM32_RCC_CR);
 
-  /* Wait until the HSE is ready (or until a timeout elapsed) */
+	/* Wait until the HSE is ready (or until a timeout elapsed) */
 
-  for (timeout = HSERDY_TIMEOUT; timeout > 0; timeout--)
-    {
-      /* Check if the HSERDY flag is the set in the CR */
+	for (timeout = HSERDY_TIMEOUT; timeout > 0; timeout--) {
+		/* Check if the HSERDY flag is the set in the CR */
 
-      if ((getreg32(STM32_RCC_CR) & RCC_CR_HSERDY) != 0)
-        {
-          /* If so, then break-out with timeout > 0 */
+		if ((getreg32(STM32_RCC_CR) & RCC_CR_HSERDY) != 0) {
+			/* If so, then break-out with timeout > 0 */
 
-          break;
-        }
-    }
+			break;
+		}
+	}
 #endif
 
-  /* Check for a timeout.  If this timeout occurs, then we are hosed.  We
-   * have no real back-up plan, although the following logic makes it look
-   * as though we do.
-   */
+	/* Check for a timeout.  If this timeout occurs, then we are hosed.  We
+	 * have no real back-up plan, although the following logic makes it look
+	 * as though we do.
+	 */
 
-  if (timeout > 0)
-    {
-      /* Select regulator voltage output Scale 1 mode to support system
-       * frequencies up to 168 MHz.
-       */
+	if (timeout > 0) {
+		/* Select regulator voltage output Scale 1 mode to support system
+		 * frequencies up to 168 MHz.
+		 */
 
-      regval  = getreg32(STM32_RCC_APB1ENR);
-      regval |= RCC_APB1ENR_PWREN;
-      putreg32(regval, STM32_RCC_APB1ENR);
+		regval = getreg32(STM32_RCC_APB1ENR);
+		regval |= RCC_APB1ENR_PWREN;
+		putreg32(regval, STM32_RCC_APB1ENR);
 
-      regval  = getreg32(STM32_PWR_CR);
+		regval = getreg32(STM32_PWR_CR);
 #if defined(CONFIG_STM32_STM32F427) || defined(CONFIG_STM32_STM32F429) || \
     defined(CONFIG_STM32_STM32F446) || defined(CONFIG_STM32_STM32F469)
-      regval &= ~PWR_CR_VOS_MASK;
-      regval |= PWR_CR_VOS_SCALE_1;
+		regval &= ~PWR_CR_VOS_MASK;
+		regval |= PWR_CR_VOS_SCALE_1;
 #else
-      regval |= PWR_CR_VOS;
+		regval |= PWR_CR_VOS;
 #endif
-      putreg32(regval, STM32_PWR_CR);
+		putreg32(regval, STM32_PWR_CR);
 
-      /* Set the HCLK source/divider */
+		/* Set the HCLK source/divider */
 
-      regval  = getreg32(STM32_RCC_CFGR);
-      regval &= ~RCC_CFGR_HPRE_MASK;
-      regval |= STM32_RCC_CFGR_HPRE;
-      putreg32(regval, STM32_RCC_CFGR);
+		regval = getreg32(STM32_RCC_CFGR);
+		regval &= ~RCC_CFGR_HPRE_MASK;
+		regval |= STM32_RCC_CFGR_HPRE;
+		putreg32(regval, STM32_RCC_CFGR);
 
-      /* Set the PCLK2 divider */
+		/* Set the PCLK2 divider */
 
-      regval  = getreg32(STM32_RCC_CFGR);
-      regval &= ~RCC_CFGR_PPRE2_MASK;
-      regval |= STM32_RCC_CFGR_PPRE2;
-      putreg32(regval, STM32_RCC_CFGR);
+		regval = getreg32(STM32_RCC_CFGR);
+		regval &= ~RCC_CFGR_PPRE2_MASK;
+		regval |= STM32_RCC_CFGR_PPRE2;
+		putreg32(regval, STM32_RCC_CFGR);
 
-      /* Set the PCLK1 divider */
+		/* Set the PCLK1 divider */
 
-      regval  = getreg32(STM32_RCC_CFGR);
-      regval &= ~RCC_CFGR_PPRE1_MASK;
-      regval |= STM32_RCC_CFGR_PPRE1;
-      putreg32(regval, STM32_RCC_CFGR);
+		regval = getreg32(STM32_RCC_CFGR);
+		regval &= ~RCC_CFGR_PPRE1_MASK;
+		regval |= STM32_RCC_CFGR_PPRE1;
+		putreg32(regval, STM32_RCC_CFGR);
 
 #ifdef CONFIG_RTC_HSECLOCK
-      /* Set the RTC clock divisor */
+		/* Set the RTC clock divisor */
 
-      regval  = getreg32(STM32_RCC_CFGR);
-      regval &= ~RCC_CFGR_RTCPRE_MASK;
-      regval |= RCC_CFGR_RTCPRE(HSE_DIVISOR);
-      putreg32(regval, STM32_RCC_CFGR);
+		regval = getreg32(STM32_RCC_CFGR);
+		regval &= ~RCC_CFGR_RTCPRE_MASK;
+		regval |= RCC_CFGR_RTCPRE(HSE_DIVISOR);
+		putreg32(regval, STM32_RCC_CFGR);
 #endif
 
-      /* Set the PLL dividers and multipliers to configure the main PLL */
+		/* Set the PLL dividers and multipliers to configure the main PLL */
 
-      regval = (STM32_PLLCFG_PLLM | STM32_PLLCFG_PLLN | STM32_PLLCFG_PLLP
-                | STM32_PLLCFG_PLLQ
+		regval = (STM32_PLLCFG_PLLM | STM32_PLLCFG_PLLN | STM32_PLLCFG_PLLP | STM32_PLLCFG_PLLQ
 #ifdef STM32_BOARD_USEHSI
-                | RCC_PLLCFG_PLLSRC_HSI
-#else /* if STM32_BOARD_USEHSE */
-                | RCC_PLLCFG_PLLSRC_HSE
+				  | RCC_PLLCFG_PLLSRC_HSI
+#else							/* if STM32_BOARD_USEHSE */
+				  | RCC_PLLCFG_PLLSRC_HSE
 #endif
 #if defined(STM32_PLLCFG_PLLR)
-                | STM32_PLLCFG_PLLR
+				  | STM32_PLLCFG_PLLR
 #endif
-                );
-      putreg32(regval, STM32_RCC_PLLCFG);
+				 );
+		putreg32(regval, STM32_RCC_PLLCFG);
 
-      /* Enable the main PLL */
+		/* Enable the main PLL */
 
-      regval  = getreg32(STM32_RCC_CR);
-      regval |= RCC_CR_PLLON;
-      putreg32(regval, STM32_RCC_CR);
+		regval = getreg32(STM32_RCC_CR);
+		regval |= RCC_CR_PLLON;
+		putreg32(regval, STM32_RCC_CR);
 
-      /* Wait until the PLL is ready */
+		/* Wait until the PLL is ready */
 
-      while ((getreg32(STM32_RCC_CR) & RCC_CR_PLLRDY) == 0)
-        {
-        }
+		while ((getreg32(STM32_RCC_CR) & RCC_CR_PLLRDY) == 0) {
+		}
 
 #if defined(CONFIG_STM32_STM32F429) || defined(CONFIG_STM32_STM32F446) || \
     defined(CONFIG_STM32_STM32F469)
 
-      /* Enable the Over-drive to extend the clock frequency to 180 Mhz */
+		/* Enable the Over-drive to extend the clock frequency to 180 Mhz */
 
-      regval  = getreg32(STM32_PWR_CR);
-      regval |= PWR_CR_ODEN;
-      putreg32(regval, STM32_PWR_CR);
-      while ((getreg32(STM32_PWR_CSR) & PWR_CSR_ODRDY) == 0)
-        {
-        }
+		regval = getreg32(STM32_PWR_CR);
+		regval |= PWR_CR_ODEN;
+		putreg32(regval, STM32_PWR_CR);
+		while ((getreg32(STM32_PWR_CSR) & PWR_CSR_ODRDY) == 0) {
+		}
 
-      regval  = getreg32(STM32_PWR_CR);
-      regval |= PWR_CR_ODSWEN;
-      putreg32(regval, STM32_PWR_CR);
-      while ((getreg32(STM32_PWR_CSR) & PWR_CSR_ODSWRDY) == 0)
-        {
-        }
+		regval = getreg32(STM32_PWR_CR);
+		regval |= PWR_CR_ODSWEN;
+		putreg32(regval, STM32_PWR_CR);
+		while ((getreg32(STM32_PWR_CSR) & PWR_CSR_ODSWRDY) == 0) {
+		}
 #endif
 
-      /* Enable FLASH prefetch, instruction cache, data cache, and 5 wait states */
+		/* Enable FLASH prefetch, instruction cache, data cache, and 5 wait states */
 
-      regval = (FLASH_ACR_LATENCY_5 | FLASH_ACR_ICEN | FLASH_ACR_DCEN
+		regval = (FLASH_ACR_LATENCY_5 | FLASH_ACR_ICEN | FLASH_ACR_DCEN
 #ifdef CONFIG_STM32_FLASH_PREFETCH
-                | FLASH_ACR_PRFTEN
+				  | FLASH_ACR_PRFTEN
 #endif
-                );
-      putreg32(regval, STM32_FLASH_ACR);
+				 );
+		putreg32(regval, STM32_FLASH_ACR);
 
-      /* Select the main PLL as system clock source */
+		/* Select the main PLL as system clock source */
 
-      regval  = getreg32(STM32_RCC_CFGR);
-      regval &= ~RCC_CFGR_SW_MASK;
-      regval |= RCC_CFGR_SW_PLL;
-      putreg32(regval, STM32_RCC_CFGR);
+		regval = getreg32(STM32_RCC_CFGR);
+		regval &= ~RCC_CFGR_SW_MASK;
+		regval |= RCC_CFGR_SW_PLL;
+		putreg32(regval, STM32_RCC_CFGR);
 
-      /* Wait until the PLL source is used as the system clock source */
+		/* Wait until the PLL source is used as the system clock source */
 
-      while ((getreg32(STM32_RCC_CFGR) & RCC_CFGR_SWS_MASK) != RCC_CFGR_SWS_PLL)
-        {
-        }
+		while ((getreg32(STM32_RCC_CFGR) & RCC_CFGR_SWS_MASK) != RCC_CFGR_SWS_PLL) {
+		}
 
 #if defined(CONFIG_STM32_LTDC) || defined(CONFIG_STM32_SAIPLL)
 
-      /* Configure PLLSAI */
+		/* Configure PLLSAI */
 
-      regval  = getreg32(STM32_RCC_PLLSAICFGR);
-#  if defined(CONFIG_STM32_STM32F446)
-      regval &= ~(RCC_PLLSAICFGR_PLLSAIM_MASK
-                  | RCC_PLLSAICFGR_PLLSAIN_MASK
-                  | RCC_PLLSAICFGR_PLLSAIP_MASK
-                  | RCC_PLLSAICFGR_PLLSAIQ_MASK);
-      regval |= (STM32_RCC_PLLSAICFGR_PLLSAIM
-                 | STM32_RCC_PLLSAICFGR_PLLSAIN
-                 | STM32_RCC_PLLSAICFGR_PLLSAIP
-                 | STM32_RCC_PLLSAICFGR_PLLSAIQ);
-#  elif defined(CONFIG_STM32_STM32F469)
-      regval &= ~(RCC_PLLSAICFGR_PLLSAIN_MASK
-                 | RCC_PLLSAICFGR_PLLSAIP_MASK
-                 | RCC_PLLSAICFGR_PLLSAIQ_MASK
-                 | RCC_PLLSAICFGR_PLLSAIR_MASK);
-      regval |= (STM32_RCC_PLLSAICFGR_PLLSAIN
-                | STM32_RCC_PLLSAICFGR_PLLSAIP
-                | STM32_RCC_PLLSAICFGR_PLLSAIQ
-                | STM32_RCC_PLLSAICFGR_PLLSAIR);
-#  else
-      regval &= ~(RCC_PLLSAICFGR_PLLSAIN_MASK
-                 | RCC_PLLSAICFGR_PLLSAIQ_MASK
-                 | RCC_PLLSAICFGR_PLLSAIR_MASK);
-      regval |= (STM32_RCC_PLLSAICFGR_PLLSAIN
-                | STM32_RCC_PLLSAICFGR_PLLSAIQ
-                | STM32_RCC_PLLSAICFGR_PLLSAIR);
-#  endif
-      putreg32(regval, STM32_RCC_PLLSAICFGR);
+		regval = getreg32(STM32_RCC_PLLSAICFGR);
+#if defined(CONFIG_STM32_STM32F446)
+		regval &= ~(RCC_PLLSAICFGR_PLLSAIM_MASK | RCC_PLLSAICFGR_PLLSAIN_MASK | RCC_PLLSAICFGR_PLLSAIP_MASK | RCC_PLLSAICFGR_PLLSAIQ_MASK);
+		regval |= (STM32_RCC_PLLSAICFGR_PLLSAIM | STM32_RCC_PLLSAICFGR_PLLSAIN | STM32_RCC_PLLSAICFGR_PLLSAIP | STM32_RCC_PLLSAICFGR_PLLSAIQ);
+#elif defined(CONFIG_STM32_STM32F469)
+		regval &= ~(RCC_PLLSAICFGR_PLLSAIN_MASK | RCC_PLLSAICFGR_PLLSAIP_MASK | RCC_PLLSAICFGR_PLLSAIQ_MASK | RCC_PLLSAICFGR_PLLSAIR_MASK);
+		regval |= (STM32_RCC_PLLSAICFGR_PLLSAIN | STM32_RCC_PLLSAICFGR_PLLSAIP | STM32_RCC_PLLSAICFGR_PLLSAIQ | STM32_RCC_PLLSAICFGR_PLLSAIR);
+#else
+		regval &= ~(RCC_PLLSAICFGR_PLLSAIN_MASK | RCC_PLLSAICFGR_PLLSAIQ_MASK | RCC_PLLSAICFGR_PLLSAIR_MASK);
+		regval |= (STM32_RCC_PLLSAICFGR_PLLSAIN | STM32_RCC_PLLSAICFGR_PLLSAIQ | STM32_RCC_PLLSAICFGR_PLLSAIR);
+#endif
+		putreg32(regval, STM32_RCC_PLLSAICFGR);
 
-      regval  = getreg32(STM32_RCC_DCKCFGR);
-#  if defined(CONFIG_STM32_STM32F446)
-      regval &= ~(RCC_DCKCFGR_PLLI2SDIVQ_MASK
-                 | RCC_DCKCFGR_PLLSAIDIVQ_MASK
-                 | RCC_DCKCFGR_SAI1SRC_MASK
-                 | RCC_DCKCFGR_SAI2SRC_MASK
-                 | RCC_DCKCFGR_TIMPRE
-                 | RCC_DCKCFGR_I2S1SRC_MASK
-                 | RCC_DCKCFGR_I2S2SRC_MASK);
-      regval |= (STM32_RCC_DCKCFGR_PLLI2SDIVQ
-                | STM32_RCC_DCKCFGR_PLLSAIDIVQ
-                | STM32_RCC_DCKCFGR_SAI1SRC
-                | STM32_RCC_DCKCFGR_SAI2SRC
-                | STM32_RCC_DCKCFGR_TIMPRE
-                | STM32_RCC_DCKCFGR_I2S1SRC
-                | STM32_RCC_DCKCFGR_I2S2SRC);
-#  elif defined(CONFIG_STM32_STM32F469)
-      regval &= ~(RCC_DCKCFGR_PLLI2SDIVQ_MASK
-                 | RCC_DCKCFGR_PLLSAIDIVQ_MASK
-                 | RCC_DCKCFGR_PLLSAIDIVR_MASK
-                 | RCC_DCKCFGR_SAI1ASRC_MASK
-                 | RCC_DCKCFGR_SAI1BSRC_MASK
-                 | RCC_DCKCFGR_TIMPRE
-                 | RCC_DCKCFGR_48MSEL_MASK
-                 | RCC_DCKCFGR_SDMMCSEL_MASK
-                 | RCC_DCKCFGR_DSISEL_MASK);
-      regval |= (STM32_RCC_DCKCFGR_PLLI2SDIVQ
-                | STM32_RCC_DCKCFGR_PLLSAIDIVQ
-                | STM32_RCC_DCKCFGR_PLLSAIDIVR
-                | STM32_RCC_DCKCFGR_SAI1ASRC
-                | STM32_RCC_DCKCFGR_SAI1BSRC
-                | STM32_RCC_DCKCFGR_TIMPRE
-                | STM32_RCC_DCKCFGR_48MSEL
-                | STM32_RCC_DCKCFGR_SDMMCSEL
-                | STM32_RCC_DCKCFGR_DSISEL);
-#  else
-      regval &= ~RCC_DCKCFGR_PLLSAIDIVR_MASK;
-      regval |= STM32_RCC_DCKCFGR_PLLSAIDIVR;
-#  endif
-      putreg32(regval, STM32_RCC_DCKCFGR);
+		regval = getreg32(STM32_RCC_DCKCFGR);
+#if defined(CONFIG_STM32_STM32F446)
+		regval &= ~(RCC_DCKCFGR_PLLI2SDIVQ_MASK | RCC_DCKCFGR_PLLSAIDIVQ_MASK | RCC_DCKCFGR_SAI1SRC_MASK | RCC_DCKCFGR_SAI2SRC_MASK | RCC_DCKCFGR_TIMPRE | RCC_DCKCFGR_I2S1SRC_MASK | RCC_DCKCFGR_I2S2SRC_MASK);
+		regval |= (STM32_RCC_DCKCFGR_PLLI2SDIVQ | STM32_RCC_DCKCFGR_PLLSAIDIVQ | STM32_RCC_DCKCFGR_SAI1SRC | STM32_RCC_DCKCFGR_SAI2SRC | STM32_RCC_DCKCFGR_TIMPRE | STM32_RCC_DCKCFGR_I2S1SRC | STM32_RCC_DCKCFGR_I2S2SRC);
+#elif defined(CONFIG_STM32_STM32F469)
+		regval &= ~(RCC_DCKCFGR_PLLI2SDIVQ_MASK | RCC_DCKCFGR_PLLSAIDIVQ_MASK | RCC_DCKCFGR_PLLSAIDIVR_MASK | RCC_DCKCFGR_SAI1ASRC_MASK | RCC_DCKCFGR_SAI1BSRC_MASK | RCC_DCKCFGR_TIMPRE | RCC_DCKCFGR_48MSEL_MASK | RCC_DCKCFGR_SDMMCSEL_MASK | RCC_DCKCFGR_DSISEL_MASK);
+		regval |= (STM32_RCC_DCKCFGR_PLLI2SDIVQ | STM32_RCC_DCKCFGR_PLLSAIDIVQ | STM32_RCC_DCKCFGR_PLLSAIDIVR | STM32_RCC_DCKCFGR_SAI1ASRC | STM32_RCC_DCKCFGR_SAI1BSRC | STM32_RCC_DCKCFGR_TIMPRE | STM32_RCC_DCKCFGR_48MSEL | STM32_RCC_DCKCFGR_SDMMCSEL | STM32_RCC_DCKCFGR_DSISEL);
+#else
+		regval &= ~RCC_DCKCFGR_PLLSAIDIVR_MASK;
+		regval |= STM32_RCC_DCKCFGR_PLLSAIDIVR;
+#endif
+		putreg32(regval, STM32_RCC_DCKCFGR);
 
-      /* Enable PLLSAI */
+		/* Enable PLLSAI */
 
-      regval  = getreg32(STM32_RCC_CR);
-      regval |= RCC_CR_PLLSAION;
-      putreg32(regval, STM32_RCC_CR);
+		regval = getreg32(STM32_RCC_CR);
+		regval |= RCC_CR_PLLSAION;
+		putreg32(regval, STM32_RCC_CR);
 
-      /* Wait until the PLLSAI is ready */
+		/* Wait until the PLLSAI is ready */
 
-      while ((getreg32(STM32_RCC_CR) & RCC_CR_PLLSAIRDY) == 0)
-        {
-        }
+		while ((getreg32(STM32_RCC_CR) & RCC_CR_PLLSAIRDY) == 0) {
+		}
 #endif
 
 #if defined(CONFIG_STM32_I2SPLL)
 
-      /* Configure PLLI2S */
+		/* Configure PLLI2S */
 
-      regval  = getreg32(STM32_RCC_PLLI2SCFGR);
+		regval = getreg32(STM32_RCC_PLLI2SCFGR);
 
-#  if defined(CONFIG_STM32_STM32F446)
+#if defined(CONFIG_STM32_STM32F446)
 
-      regval &= ~(RCC_PLLI2SCFGR_PLLI2SM_MASK
-                 | RCC_PLLI2SCFGR_PLLI2SN_MASK
-                 | RCC_PLLI2SCFGR_PLLI2SP_MASK
-                 | RCC_PLLI2SCFGR_PLLI2SQ_MASK
-                 | RCC_PLLI2SCFGR_PLLI2SR_MASK);
-      regval |= (STM32_RCC_PLLI2SCFGR_PLLI2SM
-                | STM32_RCC_PLLI2SCFGR_PLLI2SN
-                | STM32_RCC_PLLI2SCFGR_PLLI2SP
-                | STM32_RCC_PLLI2SCFGR_PLLI2SQ
-                | STM32_RCC_PLLI2SCFGR_PLLI2SR);
+		regval &= ~(RCC_PLLI2SCFGR_PLLI2SM_MASK | RCC_PLLI2SCFGR_PLLI2SN_MASK | RCC_PLLI2SCFGR_PLLI2SP_MASK | RCC_PLLI2SCFGR_PLLI2SQ_MASK | RCC_PLLI2SCFGR_PLLI2SR_MASK);
+		regval |= (STM32_RCC_PLLI2SCFGR_PLLI2SM | STM32_RCC_PLLI2SCFGR_PLLI2SN | STM32_RCC_PLLI2SCFGR_PLLI2SP | STM32_RCC_PLLI2SCFGR_PLLI2SQ | STM32_RCC_PLLI2SCFGR_PLLI2SR);
 
-#  elif defined(CONFIG_STM32_STM32F469)
+#elif defined(CONFIG_STM32_STM32F469)
 
-      regval &= ~(RCC_PLLI2SCFGR_PLLI2SN_MASK
-                 | RCC_PLLI2SCFGR_PLLI2SQ_MASK
-                 | RCC_PLLI2SCFGR_PLLI2SR_MASK);
-      regval |= (STM32_RCC_PLLI2SCFGR_PLLI2SN
-                | STM32_RCC_PLLI2SCFGR_PLLI2SQ
-                | STM32_RCC_PLLI2SCFGR_PLLI2SR);
-#  endif
+		regval &= ~(RCC_PLLI2SCFGR_PLLI2SN_MASK | RCC_PLLI2SCFGR_PLLI2SQ_MASK | RCC_PLLI2SCFGR_PLLI2SR_MASK);
+		regval |= (STM32_RCC_PLLI2SCFGR_PLLI2SN | STM32_RCC_PLLI2SCFGR_PLLI2SQ | STM32_RCC_PLLI2SCFGR_PLLI2SR);
+#endif
 
-      putreg32(regval, STM32_RCC_PLLI2SCFGR);
+		putreg32(regval, STM32_RCC_PLLI2SCFGR);
 
-#  if defined(STM32_RCC_DCKCFGR2)
+#if defined(STM32_RCC_DCKCFGR2)
 
-      regval  = getreg32(STM32_RCC_DCKCFGR2);
+		regval = getreg32(STM32_RCC_DCKCFGR2);
 
-      regval &= ~(RCC_DCKCFGR2_FMPI2C1SEL_MASK
-                 | RCC_DCKCFGR2_CECSEL_MASK
-                 | RCC_DCKCFGR2_CK48MSEL_MASK
-                 | RCC_DCKCFGR2_SDIOSEL_MASK
-                 | RCC_DCKCFGR2_SPDIFRXSEL_MASK);
-      regval |= (STM32_RCC_DCKCFGR2_FMPI2C1SEL
-                | STM32_RCC_DCKCFGR2_CECSEL
-                | STM32_RCC_DCKCFGR2_CK48MSEL
-                | STM32_RCC_DCKCFGR2_SDIOSEL
-                | STM32_RCC_DCKCFGR2_SPDIFRXSEL);
+		regval &= ~(RCC_DCKCFGR2_FMPI2C1SEL_MASK | RCC_DCKCFGR2_CECSEL_MASK | RCC_DCKCFGR2_CK48MSEL_MASK | RCC_DCKCFGR2_SDIOSEL_MASK | RCC_DCKCFGR2_SPDIFRXSEL_MASK);
+		regval |= (STM32_RCC_DCKCFGR2_FMPI2C1SEL | STM32_RCC_DCKCFGR2_CECSEL | STM32_RCC_DCKCFGR2_CK48MSEL | STM32_RCC_DCKCFGR2_SDIOSEL | STM32_RCC_DCKCFGR2_SPDIFRXSEL);
 
-      putreg32(regval, STM32_RCC_DCKCFGR2);
-#  endif
+		putreg32(regval, STM32_RCC_DCKCFGR2);
+#endif
 
-      /* Enable PLLI2S */
+		/* Enable PLLI2S */
 
-      regval  = getreg32(STM32_RCC_CR);
-      regval |= RCC_CR_PLLI2SON;
-      putreg32(regval, STM32_RCC_CR);
+		regval = getreg32(STM32_RCC_CR);
+		regval |= RCC_CR_PLLI2SON;
+		putreg32(regval, STM32_RCC_CR);
 
-      /* Wait until the PLLI2S is ready */
+		/* Wait until the PLLI2S is ready */
 
-      while ((getreg32(STM32_RCC_CR) & RCC_CR_PLLI2SRDY) == 0)
-        {
-        }
+		while ((getreg32(STM32_RCC_CR) & RCC_CR_PLLI2SRDY) == 0) {
+		}
 #endif
 
 #if defined(CONFIG_STM32_IWDG) || defined(CONFIG_RTC_LSICLOCK)
-      /* Low speed internal clock source LSI */
+		/* Low speed internal clock source LSI */
 
-      stm32_rcc_enablelsi();
+		stm32_rcc_enablelsi();
 #endif
 
 #if defined(CONFIG_RTC_LSECLOCK)
-      /* Low speed external clock source LSE
-       *
-       * TODO: There is another case where the LSE needs to
-       * be enabled: if the MCO1 pin selects LSE as source.
-       */
+		/* Low speed external clock source LSE
+		 *
+		 * TODO: There is another case where the LSE needs to
+		 * be enabled: if the MCO1 pin selects LSE as source.
+		 */
 
-      stm32_rcc_enablelse();
+		stm32_rcc_enablelse();
 #endif
-    }
+	}
 }
 #endif
 
@@ -975,14 +899,13 @@ static void stm32_stdclockconfig(void)
 #ifdef CONFIG_ARMV7M_ITMSYSLOG
 static inline void rcc_itm_syslog(void)
 {
-  /* Enable SWO output */
+	/* Enable SWO output */
 
-  modifyreg32(STM32_DBGMCU_CR, DBGMCU_CR_TRACEMODE_MASK, DBGMCU_CR_ASYNCH |
-              DBGMCU_CR_TRACEIOEN);
+	modifyreg32(STM32_DBGMCU_CR, DBGMCU_CR_TRACEMODE_MASK, DBGMCU_CR_ASYNCH | DBGMCU_CR_TRACEIOEN);
 
 }
 #else
-#  define rcc_itm_syslog()
+#define rcc_itm_syslog()
 #endif
 
 /****************************************************************************
@@ -991,12 +914,12 @@ static inline void rcc_itm_syslog(void)
 
 static inline void rcc_enableperipherals(void)
 {
-  rcc_enableahb1();
-  rcc_enableahb2();
-  rcc_enableahb3();
-  rcc_enableapb1();
-  rcc_enableapb2();
-  rcc_itm_syslog();
+	rcc_enableahb1();
+	rcc_enableahb2();
+	rcc_enableahb3();
+	rcc_enableapb1();
+	rcc_enableapb2();
+	rcc_itm_syslog();
 }
 
 /****************************************************************************

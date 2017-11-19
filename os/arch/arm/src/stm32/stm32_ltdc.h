@@ -63,36 +63,35 @@
 
 /* Common layer state structure for the LTDC and DMA2D controller */
 
-struct stm32_ltdc_s
-{
-  /* Fixed settings */
+struct stm32_ltdc_s {
+	/* Fixed settings */
 
-  int lid;                      /* Layer identifier */
-  struct fb_videoinfo_s vinfo;  /* Layer videoinfo */
-  struct fb_planeinfo_s pinfo;  /* Layer planeinfo */
+	int lid;					/* Layer identifier */
+	struct fb_videoinfo_s vinfo;	/* Layer videoinfo */
+	struct fb_planeinfo_s pinfo;	/* Layer planeinfo */
 
-  /* Positioning */
+	/* Positioning */
 
-  struct ltdc_area_s area;      /* Active layer area */
-  fb_coord_t xpos;              /* Reference x position */
-  fb_coord_t ypos;              /* Reference y position */
+	struct ltdc_area_s area;	/* Active layer area */
+	fb_coord_t xpos;			/* Reference x position */
+	fb_coord_t ypos;			/* Reference y position */
 
-  /* Coloring */
+	/* Coloring */
 
-  uint32_t color;               /* Layer color definition */
+	uint32_t color;				/* Layer color definition */
 #ifdef CONFIG_FB_CMAP
-  uint32_t *clut;               /* 32-bit aligned clut color table */
+	uint32_t *clut;				/* 32-bit aligned clut color table */
 #endif
 
-  /* Blending */
+	/* Blending */
 
-  uint8_t  alpha;               /* Layer constant alpha value */
-  uint32_t colorkey;            /* Layer colorkey */
-  uint32_t blendmode;           /* Layer blend factor */
+	uint8_t alpha;				/* Layer constant alpha value */
+	uint32_t colorkey;			/* Layer colorkey */
+	uint32_t blendmode;			/* Layer blend factor */
 
-  /* Operation */
+	/* Operation */
 
-  sem_t     *lock;              /* Ensure mutually exclusive access */
+	sem_t *lock;				/* Ensure mutually exclusive access */
 };
 
 /************************************************************************************
@@ -153,5 +152,5 @@ void stm32_lcdclear(nxgl_mxpixel_t color);
 void stm32_backlight(bool blon);
 #endif
 
-#endif /* CONFIG_STM32_LTDC */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_LTDC_H */
+#endif							/* CONFIG_STM32_LTDC */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_LTDC_H */

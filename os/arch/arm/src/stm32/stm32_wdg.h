@@ -56,8 +56,7 @@
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -114,6 +113,6 @@ void stm32_wwdginitialize(FAR const char *devpath);
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* CONFIG_WATCHDOG */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_WDG_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* CONFIG_WATCHDOG */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_WDG_H */

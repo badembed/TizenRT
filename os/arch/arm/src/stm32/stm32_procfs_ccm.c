@@ -79,11 +79,10 @@
 
 /* This structure describes one open "file" */
 
-struct ccm_file_s
-{
-  struct procfs_file_s  base;    /* Base open file structure */
-  unsigned int linesize;         /* Number of valid characters in line[] */
-  char line[CCM_LINELEN];        /* Pre-allocated buffer for formatted lines */
+struct ccm_file_s {
+	struct procfs_file_s base;	/* Base open file structure */
+	unsigned int linesize;		/* Number of valid characters in line[] */
+	char line[CCM_LINELEN];		/* Pre-allocated buffer for formatted lines */
 };
 
 /****************************************************************************
@@ -91,14 +90,11 @@ struct ccm_file_s
  ****************************************************************************/
 /* File system methods */
 
-static int     ccm_open(FAR struct file *filep, FAR const char *relpath,
-                        int oflags, mode_t mode);
-static int     ccm_close(FAR struct file *filep);
-static ssize_t ccm_read(FAR struct file *filep, FAR char *buffer,
-                        size_t buflen);
-static int     ccm_dup(FAR const struct file *oldp,
-                       FAR struct file *newp);
-static int     ccm_stat(FAR const char *relpath, FAR struct stat *buf);
+static int ccm_open(FAR struct file *filep, FAR const char *relpath, int oflags, mode_t mode);
+static int ccm_close(FAR struct file *filep);
+static ssize_t ccm_read(FAR struct file *filep, FAR char *buffer, size_t buflen);
+static int ccm_dup(FAR const struct file *oldp, FAR struct file *newp);
+static int ccm_stat(FAR const char *relpath, FAR struct stat *buf);
 
 /****************************************************************************
  * Private Data
@@ -109,24 +105,22 @@ static int     ccm_stat(FAR const char *relpath, FAR struct stat *buf);
  * with any compiler.
  */
 
-static const struct procfs_operations ccm_procfsoperations =
-{
-  ccm_open,       /* open */
-  ccm_close,      /* close */
-  ccm_read,       /* read */
-  NULL,           /* write */
-  ccm_dup,        /* dup */
-  NULL,           /* opendir */
-  NULL,           /* closedir */
-  NULL,           /* readdir */
-  NULL,           /* rewinddir */
-  ccm_stat        /* stat */
+static const struct procfs_operations ccm_procfsoperations = {
+	ccm_open,					/* open */
+	ccm_close,					/* close */
+	ccm_read,					/* read */
+	NULL,						/* write */
+	ccm_dup,					/* dup */
+	NULL,						/* opendir */
+	NULL,						/* closedir */
+	NULL,						/* readdir */
+	NULL,						/* rewinddir */
+	ccm_stat					/* stat */
 };
 
-static const struct procfs_entry_s g_procfs_ccm =
-{
-  "ccm",
-  &ccm_procfsoperations
+static const struct procfs_entry_s g_procfs_ccm = {
+	"ccm",
+	&ccm_procfsoperations
 };
 
 /****************************************************************************
@@ -137,46 +131,42 @@ static const struct procfs_entry_s g_procfs_ccm =
  * Name: ccm_open
  ****************************************************************************/
 
-static int ccm_open(FAR struct file *filep, FAR const char *relpath,
-                    int oflags, mode_t mode)
+static int ccm_open(FAR struct file *filep, FAR const char *relpath, int oflags, mode_t mode)
 {
-  FAR struct ccm_file_s *priv;
+	FAR struct ccm_file_s *priv;
 
-  finfo("Open '%s'\n", relpath);
+	finfo("Open '%s'\n", relpath);
 
-  /* PROCFS is read-only.  Any attempt to open with any kind of write
-   * access is not permitted.
-   *
-   * REVISIT:  Write-able proc files could be quite useful.
-   */
+	/* PROCFS is read-only.  Any attempt to open with any kind of write
+	 * access is not permitted.
+	 *
+	 * REVISIT:  Write-able proc files could be quite useful.
+	 */
 
-  if ((oflags & O_WRONLY) != 0 || (oflags & O_RDONLY) == 0)
-    {
-      ferr("ERROR: Only O_RDONLY supported\n");
-      return -EACCES;
-    }
+	if ((oflags & O_WRONLY) != 0 || (oflags & O_RDONLY) == 0) {
+		ferr("ERROR: Only O_RDONLY supported\n");
+		return -EACCES;
+	}
 
-  /* "cpuload" is the only acceptable value for the relpath */
+	/* "cpuload" is the only acceptable value for the relpath */
 
-  if (strcmp(relpath, "ccm") != 0)
-    {
-      ferr("ERROR: relpath is '%s'\n", relpath);
-      return -ENOENT;
-    }
+	if (strcmp(relpath, "ccm") != 0) {
+		ferr("ERROR: relpath is '%s'\n", relpath);
+		return -ENOENT;
+	}
 
-  /* Allocate a container to hold the task and attribute selection */
+	/* Allocate a container to hold the task and attribute selection */
 
-  priv = (FAR struct ccm_file_s *)kmm_zalloc(sizeof(struct ccm_file_s));
-  if (!priv)
-    {
-      ferr("ERROR: Failed to allocate file attributes\n");
-      return -ENOMEM;
-    }
+	priv = (FAR struct ccm_file_s *)kmm_zalloc(sizeof(struct ccm_file_s));
+	if (!priv) {
+		ferr("ERROR: Failed to allocate file attributes\n");
+		return -ENOMEM;
+	}
 
-  /* Save the index as the open-specific state in filep->f_priv */
+	/* Save the index as the open-specific state in filep->f_priv */
 
-  filep->f_priv = (FAR void *)priv;
-  return OK;
+	filep->f_priv = (FAR void *)priv;
+	return OK;
 }
 
 /****************************************************************************
@@ -185,79 +175,67 @@ static int ccm_open(FAR struct file *filep, FAR const char *relpath,
 
 static int ccm_close(FAR struct file *filep)
 {
-  FAR struct ccm_file_s *priv;
+	FAR struct ccm_file_s *priv;
 
-  /* Recover our private data from the struct file instance */
+	/* Recover our private data from the struct file instance */
 
-  priv = (FAR struct ccm_file_s *)filep->f_priv;
-  DEBUGASSERT(priv);
+	priv = (FAR struct ccm_file_s *)filep->f_priv;
+	DEBUGASSERT(priv);
 
-  /* Release the file attributes structure */
+	/* Release the file attributes structure */
 
-  kmm_free(priv);
-  filep->f_priv = NULL;
-  return OK;
+	kmm_free(priv);
+	filep->f_priv = NULL;
+	return OK;
 }
 
 /****************************************************************************
  * Name: ccm_read
  ****************************************************************************/
 
-static ssize_t ccm_read(FAR struct file *filep, FAR char *buffer,
-                        size_t buflen)
+static ssize_t ccm_read(FAR struct file *filep, FAR char *buffer, size_t buflen)
 {
-  FAR struct ccm_file_s *priv;
-  size_t linesize;
-  size_t copysize;
-  size_t remaining;
-  size_t totalsize;
-  struct mallinfo mem;
-  off_t offset = filep->f_pos;
+	FAR struct ccm_file_s *priv;
+	size_t linesize;
+	size_t copysize;
+	size_t remaining;
+	size_t totalsize;
+	struct mallinfo mem;
+	off_t offset = filep->f_pos;
 
-  finfo("buffer=%p buflen=%d\n", buffer, (int)buflen);
+	finfo("buffer=%p buflen=%d\n", buffer, (int)buflen);
 
-  /* Recover our private data from the struct file instance */
+	/* Recover our private data from the struct file instance */
 
-  priv = (FAR struct ccm_file_s *)filep->f_priv;
-  DEBUGASSERT(priv);
+	priv = (FAR struct ccm_file_s *)filep->f_priv;
+	DEBUGASSERT(priv);
 
+	mm_mallinfo(&g_ccm_heap, &mem);
 
-  mm_mallinfo(&g_ccm_heap, &mem);
+	remaining = buflen;
+	totalsize = 0;
 
-  remaining = buflen;
-  totalsize = 0;
+	linesize = snprintf(priv->line, CCM_LINELEN, "             total       used       free    largest\n");
+	copysize = procfs_memcpy(priv->line, linesize, buffer, remaining, &offset);
+	totalsize += copysize;
+	buffer += copysize;
+	remaining -= copysize;
 
-  linesize = snprintf(priv->line,
-                      CCM_LINELEN,
-                      "             total       used       free    largest\n");
-  copysize = procfs_memcpy(priv->line, linesize, buffer, remaining, &offset);
-  totalsize += copysize;
-  buffer    += copysize;
-  remaining -= copysize;
+	if (totalsize >= buflen) {
+		return totalsize;
+	}
 
-  if (totalsize >= buflen)
-    {
-      return totalsize;
-    }
+	linesize = snprintf(priv->line, CCM_LINELEN, "Mem:   %11d%11d%11d%11d\n", mem.arena, mem.uordblks, mem.fordblks, mem.mxordblk);
+	copysize = procfs_memcpy(priv->line, linesize, buffer, remaining, &offset);
+	totalsize += copysize;
 
-  linesize = snprintf(priv->line,
-                      CCM_LINELEN,
-                      "Mem:   %11d%11d%11d%11d\n",
-                      mem.arena,
-                      mem.uordblks,
-                      mem.fordblks,
-                      mem.mxordblk);
-  copysize = procfs_memcpy(priv->line, linesize, buffer, remaining, &offset);
-  totalsize += copysize;
+	/* Update the file offset */
 
-  /* Update the file offset */
+	if (totalsize > 0) {
+		filep->f_pos += totalsize;
+	}
 
-  if (totalsize > 0)
-    {
-      filep->f_pos += totalsize;
-    }
-
-  return totalsize;
+	return totalsize;
 }
 
 /****************************************************************************
@@ -270,49 +248,47 @@ static ssize_t ccm_read(FAR struct file *filep, FAR char *buffer,
 
 static int ccm_dup(FAR const struct file *oldp, FAR struct file *newp)
 {
-  FAR struct ccm_file_s *oldpriv;
-  FAR struct ccm_file_s *newpriv;
+	FAR struct ccm_file_s *oldpriv;
+	FAR struct ccm_file_s *newpriv;
 
-  finfo("Dup %p->%p\n", oldp, newp);
+	finfo("Dup %p->%p\n", oldp, newp);
 
-  /* Recover our private data from the old struct file instance */
+	/* Recover our private data from the old struct file instance */
 
-  oldpriv = (FAR struct ccm_file_s *)oldp->f_priv;
-  DEBUGASSERT(oldpriv);
+	oldpriv = (FAR struct ccm_file_s *)oldp->f_priv;
+	DEBUGASSERT(oldpriv);
 
-  /* Allocate a new container to hold the task and attribute selection */
+	/* Allocate a new container to hold the task and attribute selection */
 
-  newpriv = (FAR struct ccm_file_s *)kmm_zalloc(sizeof(struct ccm_file_s));
-  if (!newpriv)
-    {
-      ferr("ERROR: Failed to allocate file attributes\n");
-      return -ENOMEM;
-    }
+	newpriv = (FAR struct ccm_file_s *)kmm_zalloc(sizeof(struct ccm_file_s));
+	if (!newpriv) {
+		ferr("ERROR: Failed to allocate file attributes\n");
+		return -ENOMEM;
+	}
 
-  /* The copy the file attributes from the old attributes to the new */
+	/* The copy the file attributes from the old attributes to the new */
 
-  memcpy(newpriv, oldpriv, sizeof(struct ccm_file_s));
+	memcpy(newpriv, oldpriv, sizeof(struct ccm_file_s));
 
-  /* Save the new attributes in the new file structure */
+	/* Save the new attributes in the new file structure */
 
-  newp->f_priv = (FAR void *)newpriv;
-  return OK;
+	newp->f_priv = (FAR void *)newpriv;
+	return OK;
 }
 
 static int ccm_stat(const char *relpath, struct stat *buf)
 {
-  if (strcmp(relpath, "ccm") != 0)
-    {
-      ferr("ERROR: relpath is '%s'\n", relpath);
-      return -ENOENT;
-    }
+	if (strcmp(relpath, "ccm") != 0) {
+		ferr("ERROR: relpath is '%s'\n", relpath);
+		return -ENOENT;
+	}
 
-  buf->st_mode    = S_IFREG | S_IROTH | S_IRGRP | S_IRUSR;
-  buf->st_size    = 0;
-  buf->st_blksize = 0;
-  buf->st_blocks  = 0;
+	buf->st_mode = S_IFREG | S_IROTH | S_IRGRP | S_IRUSR;
+	buf->st_size = 0;
+	buf->st_blksize = 0;
+	buf->st_blocks = 0;
 
-  return OK;
+	return OK;
 }
 
 /****************************************************************************
@@ -329,8 +305,8 @@ static int ccm_stat(const char *relpath, struct stat *buf)
 
 int ccm_procfs_register(void)
 {
-  return procfs_register(&g_procfs_ccm);
+	return procfs_register(&g_procfs_ccm);
 }
 
-#endif /* !CONFIG_DISABLE_MOUNTPOINT && CONFIG_FS_PROCFS &&
-        * CONFIG_FS_PROCFS_REGISTER && CONFIG_STM32_CCM_PROCFS */
+#endif							/* !CONFIG_DISABLE_MOUNTPOINT && CONFIG_FS_PROCFS &&
+								 * CONFIG_FS_PROCFS_REGISTER && CONFIG_STM32_CCM_PROCFS */

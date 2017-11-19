@@ -55,7 +55,6 @@
 #include "stm32_dma.h"
 #include "stm32.h"
 
-
 #if defined(CONFIG_STM32_STM32F10XX) || defined(CONFIG_STM32_STM32F30XX) || \
     defined(CONFIG_STM32_STM32F33XX) || defined(CONFIG_STM32_STM32F37XX) || \
     defined(CONFIG_STM32_STM32L15XX)
@@ -66,14 +65,14 @@
 
 #define DMA1_NCHANNELS   7
 #if STM32_NDMA > 1
-#  define DMA2_NCHANNELS 5
-#  define DMA_NCHANNELS  (DMA1_NCHANNELS+DMA2_NCHANNELS)
+#define DMA2_NCHANNELS 5
+#define DMA_NCHANNELS  (DMA1_NCHANNELS+DMA2_NCHANNELS)
 #else
-#  define DMA_NCHANNELS  DMA1_NCHANNELS
+#define DMA_NCHANNELS  DMA1_NCHANNELS
 #endif
 
 #ifndef CONFIG_DMA_PRI
-#  define CONFIG_DMA_PRI NVIC_SYSH_PRIORITY_DEFAULT
+#define CONFIG_DMA_PRI NVIC_SYSH_PRIORITY_DEFAULT
 #endif
 
 /* Convert the DMA channel base address to the DMA register block address */
@@ -86,14 +85,13 @@
 
 /* This structure descibes one DMA channel */
 
-struct stm32_dma_s
-{
-  uint8_t        chan;     /* DMA channel number (0-6) */
-  uint8_t        irq;      /* DMA channel IRQ number */
-  sem_t          sem;      /* Used to wait for DMA channel to become available */
-  uint32_t       base;     /* DMA register channel base address */
-  dma_callback_t callback; /* Callback invoked when the DMA completes */
-  void          *arg;      /* Argument passed to callback function */
+struct stm32_dma_s {
+	uint8_t chan;				/* DMA channel number (0-6) */
+	uint8_t irq;				/* DMA channel IRQ number */
+	sem_t sem;					/* Used to wait for DMA channel to become available */
+	uint32_t base;				/* DMA register channel base address */
+	dma_callback_t callback;	/* Callback invoked when the DMA completes */
+	void *arg;					/* Argument passed to callback function */
 };
 
 /****************************************************************************
@@ -102,79 +100,78 @@ struct stm32_dma_s
 
 /* This array describes the state of each DMA */
 
-static struct stm32_dma_s g_dma[DMA_NCHANNELS] =
-{
-  {
-    .chan     = 0,
-    .irq      = STM32_IRQ_DMA1CH1,
-    .base     = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(0),
-  },
-  {
-    .chan     = 1,
-    .irq      = STM32_IRQ_DMA1CH2,
-    .base     = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(1),
-  },
-  {
-    .chan     = 2,
-    .irq      = STM32_IRQ_DMA1CH3,
-    .base     = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(2),
-  },
-  {
-    .chan     = 3,
-    .irq      = STM32_IRQ_DMA1CH4,
-    .base     = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(3),
-  },
-  {
-    .chan     = 4,
-    .irq      = STM32_IRQ_DMA1CH5,
-    .base     = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(4),
-  },
-  {
-    .chan     = 5,
-    .irq      = STM32_IRQ_DMA1CH6,
-    .base     = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(5),
-  },
-  {
-    .chan     = 6,
-    .irq      = STM32_IRQ_DMA1CH7,
-    .base     = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(6),
-  },
+static struct stm32_dma_s g_dma[DMA_NCHANNELS] = {
+	{
+		.chan = 0,
+		.irq = STM32_IRQ_DMA1CH1,
+		.base = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(0),
+	},
+	{
+		.chan = 1,
+		.irq = STM32_IRQ_DMA1CH2,
+		.base = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(1),
+	},
+	{
+		.chan = 2,
+		.irq = STM32_IRQ_DMA1CH3,
+		.base = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(2),
+	},
+	{
+		.chan = 3,
+		.irq = STM32_IRQ_DMA1CH4,
+		.base = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(3),
+	},
+	{
+		.chan = 4,
+		.irq = STM32_IRQ_DMA1CH5,
+		.base = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(4),
+	},
+	{
+		.chan = 5,
+		.irq = STM32_IRQ_DMA1CH6,
+		.base = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(5),
+	},
+	{
+		.chan = 6,
+		.irq = STM32_IRQ_DMA1CH7,
+		.base = STM32_DMA1_BASE + STM32_DMACHAN_OFFSET(6),
+	},
 #if STM32_NDMA > 1
-  {
-    .chan     = 0,
-    .irq      = STM32_IRQ_DMA2CH1,
-    .base     = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(0),
-  },
-  {
-    .chan     = 1,
-    .irq      = STM32_IRQ_DMA2CH2,
-    .base     = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(1),
-  },
-  {
-    .chan     = 2,
-    .irq      = STM32_IRQ_DMA2CH3,
-    .base     = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(2),
-  },
-  {
-    .chan     = 3,
+	{
+		.chan = 0,
+		.irq = STM32_IRQ_DMA2CH1,
+		.base = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(0),
+	},
+	{
+		.chan = 1,
+		.irq = STM32_IRQ_DMA2CH2,
+		.base = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(1),
+	},
+	{
+		.chan = 2,
+		.irq = STM32_IRQ_DMA2CH3,
+		.base = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(2),
+	},
+	{
+		.chan = 3,
 #if defined(CONFIG_STM32_CONNECTIVITYLINE) || defined(CONFIG_STM32_STM32F30XX) || \
     defined(CONFIG_STM32_STM32F37XX) || defined(CONFIG_STM32_STM32L15XX)
-    .irq      = STM32_IRQ_DMA2CH4,
+		.irq = STM32_IRQ_DMA2CH4,
 #else
-    .irq      = STM32_IRQ_DMA2CH45,
+		.irq = STM32_IRQ_DMA2CH45,
 #endif
-    .base     = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(3),
-  },
-  {
-    .chan     = 4,
+		.base = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(3),
+	},
+	{
+		.chan = 4,
 #if defined(CONFIG_STM32_CONNECTIVITYLINE) || defined(CONFIG_STM32_STM32F30XX) || \
     defined(CONFIG_STM32_STM32F37XX) || defined(CONFIG_STM32_STM32L15XX)
-    .irq      = STM32_IRQ_DMA2CH5,
+		.irq = STM32_IRQ_DMA2CH5,
 #else
-    .irq      = STM32_IRQ_DMA2CH45,
+		.irq = STM32_IRQ_DMA2CH45,
 #endif
-    .base     = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(4),
-  },
+		.base = STM32_DMA2_BASE + STM32_DMACHAN_OFFSET(4),
+	},
 #endif
 };
 
@@ -190,28 +187,28 @@ static struct stm32_dma_s g_dma[DMA_NCHANNELS] =
 
 static inline uint32_t dmabase_getreg(struct stm32_dma_s *dmach, uint32_t offset)
 {
-  return getreg32(DMA_BASE(dmach->base) + offset);
+	return getreg32(DMA_BASE(dmach->base) + offset);
 }
 
 /* Write to non-channel register in DMA1 or DMA2 */
 
 static inline void dmabase_putreg(struct stm32_dma_s *dmach, uint32_t offset, uint32_t value)
 {
-  putreg32(value, DMA_BASE(dmach->base) + offset);
+	putreg32(value, DMA_BASE(dmach->base) + offset);
 }
 
 /* Get channel register from DMA1 or DMA2 */
 
 static inline uint32_t dmachan_getreg(struct stm32_dma_s *dmach, uint32_t offset)
 {
-  return getreg32(dmach->base + offset);
+	return getreg32(dmach->base + offset);
 }
 
 /* Write to channel register in DMA1 or DMA2 */
 
 static inline void dmachan_putreg(struct stm32_dma_s *dmach, uint32_t offset, uint32_t value)
 {
-  putreg32(value, dmach->base + offset);
+	putreg32(value, dmach->base + offset);
 }
 
 /************************************************************************************
@@ -224,21 +221,20 @@ static inline void dmachan_putreg(struct stm32_dma_s *dmach, uint32_t offset, ui
 
 static void stm32_dmatake(FAR struct stm32_dma_s *dmach)
 {
-  /* Take the semaphore (perhaps waiting) */
+	/* Take the semaphore (perhaps waiting) */
 
-  while (sem_wait(&dmach->sem) != 0)
-    {
-      /* The only case that an error should occur here is if the wait was awakened
-       * by a signal.
-       */
+	while (sem_wait(&dmach->sem) != 0) {
+		/* The only case that an error should occur here is if the wait was awakened
+		 * by a signal.
+		 */
 
-      ASSERT(errno == EINTR);
-    }
+		ASSERT(errno == EINTR);
+	}
 }
 
 static inline void stm32_dmagive(FAR struct stm32_dma_s *dmach)
 {
-  (void)sem_post(&dmach->sem);
+	(void)sem_post(&dmach->sem);
 }
 
 /************************************************************************************
@@ -251,21 +247,21 @@ static inline void stm32_dmagive(FAR struct stm32_dma_s *dmach)
 
 static void stm32_dmachandisable(struct stm32_dma_s *dmach)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Disable all interrupts at the DMA controller */
+	/* Disable all interrupts at the DMA controller */
 
-  regval = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
-  regval &= ~DMA_CCR_ALLINTS;
+	regval = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
+	regval &= ~DMA_CCR_ALLINTS;
 
-  /* Disable the DMA channel */
+	/* Disable the DMA channel */
 
-  regval &= ~DMA_CCR_EN;
-  dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, regval);
+	regval &= ~DMA_CCR_EN;
+	dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, regval);
 
-  /* Clear pending channel interrupts */
+	/* Clear pending channel interrupts */
 
-  dmabase_putreg(dmach, STM32_DMA_IFCR_OFFSET, DMA_ISR_CHAN_MASK(dmach->chan));
+	dmabase_putreg(dmach, STM32_DMA_IFCR_OFFSET, DMA_ISR_CHAN_MASK(dmach->chan));
 }
 
 /************************************************************************************
@@ -278,49 +274,45 @@ static void stm32_dmachandisable(struct stm32_dma_s *dmach)
 
 static int stm32_dmainterrupt(int irq, void *context, FAR void *arg)
 {
-  struct stm32_dma_s *dmach;
-  uint32_t isr;
-  int chndx = 0;
+	struct stm32_dma_s *dmach;
+	uint32_t isr;
+	int chndx = 0;
 
-  /* Get the channel structure from the interrupt number */
+	/* Get the channel structure from the interrupt number */
 
-  if (irq >= STM32_IRQ_DMA1CH1 && irq <= STM32_IRQ_DMA1CH7)
-    {
-      chndx = irq - STM32_IRQ_DMA1CH1;
-    }
-  else
+	if (irq >= STM32_IRQ_DMA1CH1 && irq <= STM32_IRQ_DMA1CH7) {
+		chndx = irq - STM32_IRQ_DMA1CH1;
+	} else
 #if STM32_NDMA > 1
 #if defined(CONFIG_STM32_CONNECTIVITYLINE) || defined(CONFIG_STM32_STM32F30XX) || \
     defined(CONFIG_STM32_STM32F37XX) || defined(CONFIG_STM32_STM32L15XX)
-  if (irq >= STM32_IRQ_DMA2CH1 && irq <= STM32_IRQ_DMA2CH5)
+		if (irq >= STM32_IRQ_DMA2CH1 && irq <= STM32_IRQ_DMA2CH5)
 #else
-  if (irq >= STM32_IRQ_DMA2CH1 && irq <= STM32_IRQ_DMA2CH45)
+		if (irq >= STM32_IRQ_DMA2CH1 && irq <= STM32_IRQ_DMA2CH45)
 #endif
-    {
-      chndx = irq - STM32_IRQ_DMA2CH1 + DMA1_NCHANNELS;
-    }
-  else
+		{
+			chndx = irq - STM32_IRQ_DMA2CH1 + DMA1_NCHANNELS;
+		} else
 #endif
-    {
-      PANIC();
-    }
-  dmach = &g_dma[chndx];
+		{
+			PANIC();
+		}
+	dmach = &g_dma[chndx];
 
-  /* Get the interrupt status (for this channel only) */
+	/* Get the interrupt status (for this channel only) */
 
-  isr = dmabase_getreg(dmach, STM32_DMA_ISR_OFFSET) & DMA_ISR_CHAN_MASK(dmach->chan);
+	isr = dmabase_getreg(dmach, STM32_DMA_ISR_OFFSET) & DMA_ISR_CHAN_MASK(dmach->chan);
 
-  /* Clear the interrupts we are handling */
+	/* Clear the interrupts we are handling */
 
-  dmabase_putreg(dmach, STM32_DMA_IFCR_OFFSET, isr);
+	dmabase_putreg(dmach, STM32_DMA_IFCR_OFFSET, isr);
 
-  /* Invoke the callback */
+	/* Invoke the callback */
 
-  if (dmach->callback)
-    {
-      dmach->callback(dmach, isr >> DMA_ISR_CHAN_SHIFT(dmach->chan), dmach->arg);
-    }
-  return OK;
+	if (dmach->callback) {
+		dmach->callback(dmach, isr >> DMA_ISR_CHAN_SHIFT(dmach->chan), dmach->arg);
+	}
+	return OK;
 }
 
 /****************************************************************************
@@ -340,34 +332,33 @@ static int stm32_dmainterrupt(int irq, void *context, FAR void *arg)
 
 void weak_function up_dmainitialize(void)
 {
-  struct stm32_dma_s *dmach;
-  int chndx;
+	struct stm32_dma_s *dmach;
+	int chndx;
 
-  /* Initialize each DMA channel */
+	/* Initialize each DMA channel */
 
-  for (chndx = 0; chndx < DMA_NCHANNELS; chndx++)
-    {
-      dmach = &g_dma[chndx];
-      sem_init(&dmach->sem, 0, 1);
+	for (chndx = 0; chndx < DMA_NCHANNELS; chndx++) {
+		dmach = &g_dma[chndx];
+		sem_init(&dmach->sem, 0, 1);
 
-      /* Attach DMA interrupt vectors */
+		/* Attach DMA interrupt vectors */
 
-      (void)irq_attach(dmach->irq, stm32_dmainterrupt, NULL);
+		(void)irq_attach(dmach->irq, stm32_dmainterrupt, NULL);
 
-      /* Disable the DMA channel */
+		/* Disable the DMA channel */
 
-      stm32_dmachandisable(dmach);
+		stm32_dmachandisable(dmach);
 
-      /* Enable the IRQ at the NVIC (still disabled at the DMA controller) */
+		/* Enable the IRQ at the NVIC (still disabled at the DMA controller) */
 
-      up_enable_irq(dmach->irq);
+		up_enable_irq(dmach->irq);
 
 #ifdef CONFIG_ARCH_IRQPRIO
-      /* Set the interrupt priority */
+		/* Set the interrupt priority */
 
-      up_prioritize_irq(dmach->irq, CONFIG_DMA_PRI);
+		up_prioritize_irq(dmach->irq, CONFIG_DMA_PRI);
 #endif
-    }
+	}
 }
 
 /****************************************************************************
@@ -409,19 +400,19 @@ void weak_function up_dmainitialize(void)
 
 DMA_HANDLE stm32_dmachannel(unsigned int chndx)
 {
-  struct stm32_dma_s *dmach = &g_dma[chndx];
+	struct stm32_dma_s *dmach = &g_dma[chndx];
 
-  DEBUGASSERT(chndx < DMA_NCHANNELS);
+	DEBUGASSERT(chndx < DMA_NCHANNELS);
 
-  /* Get exclusive access to the DMA channel -- OR wait until the channel
-   * is available if it is currently being used by another driver
-   */
+	/* Get exclusive access to the DMA channel -- OR wait until the channel
+	 * is available if it is currently being used by another driver
+	 */
 
-  stm32_dmatake(dmach);
+	stm32_dmatake(dmach);
 
-  /* The caller now has exclusive use of the DMA channel */
+	/* The caller now has exclusive use of the DMA channel */
 
-  return (DMA_HANDLE)dmach;
+	return (DMA_HANDLE) dmach;
 }
 
 /****************************************************************************
@@ -445,13 +436,13 @@ DMA_HANDLE stm32_dmachannel(unsigned int chndx)
 
 void stm32_dmafree(DMA_HANDLE handle)
 {
-  struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
+	struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
 
-  DEBUGASSERT(handle != NULL);
+	DEBUGASSERT(handle != NULL);
 
-  /* Release the channel */
+	/* Release the channel */
 
-  stm32_dmagive(dmach);
+	stm32_dmagive(dmach);
 }
 
 /****************************************************************************
@@ -462,54 +453,49 @@ void stm32_dmafree(DMA_HANDLE handle)
  *
  ****************************************************************************/
 
-void stm32_dmasetup(DMA_HANDLE handle, uint32_t paddr, uint32_t maddr,
-                    size_t ntransfers, uint32_t ccr)
+void stm32_dmasetup(DMA_HANDLE handle, uint32_t paddr, uint32_t maddr, size_t ntransfers, uint32_t ccr)
 {
-  struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
-  uint32_t regval;
+	struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
+	uint32_t regval;
 
-  /* Then DMA_CNDTRx register can only be modified if the DMA channel is
-   * disabled.
-   */
+	/* Then DMA_CNDTRx register can only be modified if the DMA channel is
+	 * disabled.
+	 */
 
-  regval  = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
-  regval &= ~(DMA_CCR_EN);
-  dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, regval);
+	regval = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
+	regval &= ~(DMA_CCR_EN);
+	dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, regval);
 
-  /* Set the peripheral register address in the DMA_CPARx register. The data
-   * will be moved from/to this address to/from the memory after the
-   * peripheral event.
-   */
+	/* Set the peripheral register address in the DMA_CPARx register. The data
+	 * will be moved from/to this address to/from the memory after the
+	 * peripheral event.
+	 */
 
-  dmachan_putreg(dmach, STM32_DMACHAN_CPAR_OFFSET, paddr);
+	dmachan_putreg(dmach, STM32_DMACHAN_CPAR_OFFSET, paddr);
 
-  /* Set the memory address in the DMA_CMARx register. The data will be
-   * written to or read from this memory after the peripheral event.
-   */
+	/* Set the memory address in the DMA_CMARx register. The data will be
+	 * written to or read from this memory after the peripheral event.
+	 */
 
-  dmachan_putreg(dmach, STM32_DMACHAN_CMAR_OFFSET, maddr);
+	dmachan_putreg(dmach, STM32_DMACHAN_CMAR_OFFSET, maddr);
 
-  /* Configure the total number of data to be transferred in the DMA_CNDTRx
-   * register.  After each peripheral event, this value will be decremented.
-   */
+	/* Configure the total number of data to be transferred in the DMA_CNDTRx
+	 * register.  After each peripheral event, this value will be decremented.
+	 */
 
-  dmachan_putreg(dmach, STM32_DMACHAN_CNDTR_OFFSET, ntransfers);
+	dmachan_putreg(dmach, STM32_DMACHAN_CNDTR_OFFSET, ntransfers);
 
-  /* Configure the channel priority using the PL[1:0] bits in the DMA_CCRx
-   * register.  Configure data transfer direction, circular mode, peripheral & memory
-   * incremented mode, peripheral & memory data size, and interrupt after
-   * half and/or full transfer in the DMA_CCRx register.
-   */
+	/* Configure the channel priority using the PL[1:0] bits in the DMA_CCRx
+	 * register.  Configure data transfer direction, circular mode, peripheral & memory
+	 * incremented mode, peripheral & memory data size, and interrupt after
+	 * half and/or full transfer in the DMA_CCRx register.
+	 */
 
-  regval  = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
-  regval &= ~(DMA_CCR_MEM2MEM | DMA_CCR_PL_MASK | DMA_CCR_MSIZE_MASK |
-              DMA_CCR_PSIZE_MASK | DMA_CCR_MINC | DMA_CCR_PINC | DMA_CCR_CIRC |
-              DMA_CCR_DIR);
-  ccr    &=  (DMA_CCR_MEM2MEM | DMA_CCR_PL_MASK | DMA_CCR_MSIZE_MASK |
-              DMA_CCR_PSIZE_MASK | DMA_CCR_MINC | DMA_CCR_PINC | DMA_CCR_CIRC |
-              DMA_CCR_DIR);
-  regval |= ccr;
-  dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, regval);
+	regval = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
+	regval &= ~(DMA_CCR_MEM2MEM | DMA_CCR_PL_MASK | DMA_CCR_MSIZE_MASK | DMA_CCR_PSIZE_MASK | DMA_CCR_MINC | DMA_CCR_PINC | DMA_CCR_CIRC | DMA_CCR_DIR);
+	ccr &= (DMA_CCR_MEM2MEM | DMA_CCR_PL_MASK | DMA_CCR_MSIZE_MASK | DMA_CCR_PSIZE_MASK | DMA_CCR_MINC | DMA_CCR_PINC | DMA_CCR_CIRC | DMA_CCR_DIR);
+	regval |= ccr;
+	dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, regval);
 }
 
 /****************************************************************************
@@ -524,55 +510,51 @@ void stm32_dmasetup(DMA_HANDLE handle, uint32_t paddr, uint32_t maddr,
  *
  ****************************************************************************/
 
-void stm32_dmastart(DMA_HANDLE handle, dma_callback_t callback,
-                    void *arg, bool half)
+void stm32_dmastart(DMA_HANDLE handle, dma_callback_t callback, void *arg, bool half)
 {
-  struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
-  uint32_t ccr;
+	struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
+	uint32_t ccr;
 
-  DEBUGASSERT(handle != NULL);
+	DEBUGASSERT(handle != NULL);
 
-  /* Save the callback info.  This will be invoked whent the DMA commpletes */
+	/* Save the callback info.  This will be invoked whent the DMA commpletes */
 
-  dmach->callback = callback;
-  dmach->arg      = arg;
+	dmach->callback = callback;
+	dmach->arg = arg;
 
-  /* Activate the channel by setting the ENABLE bit in the DMA_CCRx register.
-   * As soon as the channel is enabled, it can serve any DMA request from the
-   * peripheral connected on the channel.
-   */
+	/* Activate the channel by setting the ENABLE bit in the DMA_CCRx register.
+	 * As soon as the channel is enabled, it can serve any DMA request from the
+	 * peripheral connected on the channel.
+	 */
 
-  ccr  = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
-  ccr |= DMA_CCR_EN;
+	ccr = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
+	ccr |= DMA_CCR_EN;
 
-  /* In normal mode, interrupt at either half or full completion. In circular mode,
-   * always interrupt on buffer wrap, and optionally interrupt at the halfway point.
-   */
+	/* In normal mode, interrupt at either half or full completion. In circular mode,
+	 * always interrupt on buffer wrap, and optionally interrupt at the halfway point.
+	 */
 
-  if ((ccr & DMA_CCR_CIRC) == 0)
-    {
-      /* Once half of the bytes are transferred, the half-transfer flag (HTIF) is
-       * set and an interrupt is generated if the Half-Transfer Interrupt Enable
-       * bit (HTIE) is set. At the end of the transfer, the Transfer Complete Flag
-       * (TCIF) is set and an interrupt is generated if the Transfer Complete
-       * Interrupt Enable bit (TCIE) is set.
-       */
+	if ((ccr & DMA_CCR_CIRC) == 0) {
+		/* Once half of the bytes are transferred, the half-transfer flag (HTIF) is
+		 * set and an interrupt is generated if the Half-Transfer Interrupt Enable
+		 * bit (HTIE) is set. At the end of the transfer, the Transfer Complete Flag
+		 * (TCIF) is set and an interrupt is generated if the Transfer Complete
+		 * Interrupt Enable bit (TCIE) is set.
+		 */
 
-      ccr |= (half ? (DMA_CCR_HTIE | DMA_CCR_TEIE) : (DMA_CCR_TCIE | DMA_CCR_TEIE));
-    }
-  else
-    {
-      /* In nonstop mode, when the transfer completes it immediately resets
-       * and starts again.  The transfer-complete interrupt is thus always
-       * enabled, and the half-complete interrupt can be used in circular
-       * mode to determine when the buffer is half-full, or in double-buffered
-       * mode to determine when one of the two buffers is full.
-       */
+		ccr |= (half ? (DMA_CCR_HTIE | DMA_CCR_TEIE) : (DMA_CCR_TCIE | DMA_CCR_TEIE));
+	} else {
+		/* In nonstop mode, when the transfer completes it immediately resets
+		 * and starts again.  The transfer-complete interrupt is thus always
+		 * enabled, and the half-complete interrupt can be used in circular
+		 * mode to determine when the buffer is half-full, or in double-buffered
+		 * mode to determine when one of the two buffers is full.
+		 */
 
-      ccr |= (half ? DMA_CCR_HTIE : 0) | DMA_CCR_TCIE | DMA_CCR_TEIE;
-    }
+		ccr |= (half ? DMA_CCR_HTIE : 0) | DMA_CCR_TCIE | DMA_CCR_TEIE;
+	}
 
-  dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, ccr);
+	dmachan_putreg(dmach, STM32_DMACHAN_CCR_OFFSET, ccr);
 }
 
 /****************************************************************************
@@ -590,8 +572,8 @@ void stm32_dmastart(DMA_HANDLE handle, dma_callback_t callback,
 
 void stm32_dmastop(DMA_HANDLE handle)
 {
-  struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
-  stm32_dmachandisable(dmach);
+	struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
+	stm32_dmachandisable(dmach);
 }
 
 /****************************************************************************
@@ -607,9 +589,9 @@ void stm32_dmastop(DMA_HANDLE handle)
 
 size_t stm32_dmaresidual(DMA_HANDLE handle)
 {
-  struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
+	struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
 
-  return dmachan_getreg(dmach, STM32_DMACHAN_CNDTR_OFFSET);
+	return dmachan_getreg(dmach, STM32_DMACHAN_CNDTR_OFFSET);
 }
 
 /****************************************************************************
@@ -629,71 +611,67 @@ size_t stm32_dmaresidual(DMA_HANDLE handle)
 #ifdef CONFIG_STM32_DMACAPABLE
 bool stm32_dmacapable(uint32_t maddr, uint32_t count, uint32_t ccr)
 {
-  uint32_t transfer_size;
-  uint32_t mend;
+	uint32_t transfer_size;
+	uint32_t mend;
 
-  /* Verify that the address conforms to the memory transfer size.
-   * Transfers to/from memory performed by the DMA controller are
-   * required to be aligned to their size.
-   *
-   * See ST RM0090 rev4, section 9.3.11
-   *
-   * Compute mend inline to avoid a possible non-constant integer
-   * multiply.
-   */
+	/* Verify that the address conforms to the memory transfer size.
+	 * Transfers to/from memory performed by the DMA controller are
+	 * required to be aligned to their size.
+	 *
+	 * See ST RM0090 rev4, section 9.3.11
+	 *
+	 * Compute mend inline to avoid a possible non-constant integer
+	 * multiply.
+	 */
 
-  switch (ccr & DMA_CCR_MSIZE_MASK)
-    {
-      case DMA_CCR_MSIZE_8BITS:
-        transfer_size = 1;
-        mend = maddr + count - 1;
-        break;
+	switch (ccr & DMA_CCR_MSIZE_MASK) {
+	case DMA_CCR_MSIZE_8BITS:
+		transfer_size = 1;
+		mend = maddr + count - 1;
+		break;
 
-      case DMA_CCR_MSIZE_16BITS:
-        transfer_size = 2;
-        mend = maddr + (count << 1) - 1;
-        break;
+	case DMA_CCR_MSIZE_16BITS:
+		transfer_size = 2;
+		mend = maddr + (count << 1) - 1;
+		break;
 
-      case DMA_CCR_MSIZE_32BITS:
-        transfer_size = 4;
-        mend = maddr + (count << 2) - 1;
-        break;
+	case DMA_CCR_MSIZE_32BITS:
+		transfer_size = 4;
+		mend = maddr + (count << 2) - 1;
+		break;
 
-      default:
-        return false;
-    }
+	default:
+		return false;
+	}
 
-  if ((maddr & (transfer_size - 1)) != 0)
-    {
-      return false;
-    }
+	if ((maddr & (transfer_size - 1)) != 0) {
+		return false;
+	}
 
-  /* Verify that the transfer is to a memory region that supports DMA. */
+	/* Verify that the transfer is to a memory region that supports DMA. */
 
-  if ((maddr & STM32_REGION_MASK) != (mend & STM32_REGION_MASK))
-    {
-      return false;
-    }
+	if ((maddr & STM32_REGION_MASK) != (mend & STM32_REGION_MASK)) {
+		return false;
+	}
 
-  switch (maddr & STM32_REGION_MASK)
-    {
+	switch (maddr & STM32_REGION_MASK) {
 #if defined(CONFIG_STM32_STM32F10XX)
-      case STM32_FSMC_BANK1:
-      case STM32_FSMC_BANK2:
-      case STM32_FSMC_BANK3:
-      case STM32_FSMC_BANK4:
+	case STM32_FSMC_BANK1:
+	case STM32_FSMC_BANK2:
+	case STM32_FSMC_BANK3:
+	case STM32_FSMC_BANK4:
 #endif
-      case STM32_SRAM_BASE:
-      case STM32_CODE_BASE:
-        /* All RAM and flash is supported */
+	case STM32_SRAM_BASE:
+	case STM32_CODE_BASE:
+		/* All RAM and flash is supported */
 
-        return true;
+		return true;
 
-      default:
-        /* Everything else is unsupported by DMA */
+	default:
+		/* Everything else is unsupported by DMA */
 
-        return false;
-    }
+		return false;
+	}
 }
 #endif
 
@@ -711,16 +689,16 @@ bool stm32_dmacapable(uint32_t maddr, uint32_t count, uint32_t ccr)
 #ifdef CONFIG_DEBUG_DMA_INFO
 void stm32_dmasample(DMA_HANDLE handle, struct stm32_dmaregs_s *regs)
 {
-  struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
-  irqstate_t flags;
+	struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
+	irqstate_t flags;
 
-  flags       = irqsave();
-  regs->isr   = dmabase_getreg(dmach, STM32_DMA_ISR_OFFSET);
-  regs->ccr   = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
-  regs->cndtr = dmachan_getreg(dmach, STM32_DMACHAN_CNDTR_OFFSET);
-  regs->cpar  = dmachan_getreg(dmach, STM32_DMACHAN_CPAR_OFFSET);
-  regs->cmar  = dmachan_getreg(dmach, STM32_DMACHAN_CMAR_OFFSET);
-  irqrestore(flags);
+	flags = irqsave();
+	regs->isr = dmabase_getreg(dmach, STM32_DMA_ISR_OFFSET);
+	regs->ccr = dmachan_getreg(dmach, STM32_DMACHAN_CCR_OFFSET);
+	regs->cndtr = dmachan_getreg(dmach, STM32_DMACHAN_CNDTR_OFFSET);
+	regs->cpar = dmachan_getreg(dmach, STM32_DMACHAN_CPAR_OFFSET);
+	regs->cmar = dmachan_getreg(dmach, STM32_DMACHAN_CMAR_OFFSET);
+	irqrestore(flags);
 }
 #endif
 
@@ -736,19 +714,18 @@ void stm32_dmasample(DMA_HANDLE handle, struct stm32_dmaregs_s *regs)
  ****************************************************************************/
 
 #ifdef CONFIG_DEBUG_DMA_INFO
-void stm32_dmadump(DMA_HANDLE handle, const struct stm32_dmaregs_s *regs,
-                   const char *msg)
+void stm32_dmadump(DMA_HANDLE handle, const struct stm32_dmaregs_s *regs, const char *msg)
 {
-  struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
-  uint32_t dmabase = DMA_BASE(dmach->base);
+	struct stm32_dma_s *dmach = (struct stm32_dma_s *)handle;
+	uint32_t dmabase = DMA_BASE(dmach->base);
 
-  dmainfo("DMA Registers: %s\n", msg);
-  dmainfo("   ISRC[%08x]: %08x\n", dmabase + STM32_DMA_ISR_OFFSET, regs->isr);
-  dmainfo("    CCR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CCR_OFFSET, regs->ccr);
-  dmainfo("  CNDTR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CNDTR_OFFSET, regs->cndtr);
-  dmainfo("   CPAR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CPAR_OFFSET, regs->cpar);
-  dmainfo("   CMAR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CMAR_OFFSET, regs->cmar);
+	dmainfo("DMA Registers: %s\n", msg);
+	dmainfo("   ISRC[%08x]: %08x\n", dmabase + STM32_DMA_ISR_OFFSET, regs->isr);
+	dmainfo("    CCR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CCR_OFFSET, regs->ccr);
+	dmainfo("  CNDTR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CNDTR_OFFSET, regs->cndtr);
+	dmainfo("   CPAR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CPAR_OFFSET, regs->cpar);
+	dmainfo("   CMAR[%08x]: %08x\n", dmach->base + STM32_DMACHAN_CMAR_OFFSET, regs->cmar);
 }
 #endif
 
-#endif /* CONFIG_STM32_STM32F10XX */
+#endif							/* CONFIG_STM32_STM32F10XX */

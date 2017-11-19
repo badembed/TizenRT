@@ -49,15 +49,15 @@
 
 #if defined(CONFIG_STM32_STM32L15XX) || defined(CONFIG_STM32_STM32F10XX) || \
     defined(CONFIG_STM32_STM32F30XX) || defined(CONFIG_STM32_STM32F37XX)
-#  include "chip/stm32f10xxx_dma.h"
+#include "chip/stm32f10xxx_dma.h"
 #elif defined(CONFIG_STM32_STM32F33XX)
-#  include "chip/stm32f33xxx_dma.h"
+#include "chip/stm32f33xxx_dma.h"
 #elif defined(CONFIG_STM32_STM32F20XX)
-#  include "chip/stm32f20xxx_dma.h"
+#include "chip/stm32f20xxx_dma.h"
 #elif defined(CONFIG_STM32_STM32F4XXX)
-#  include "chip/stm32f40xxx_dma.h"
+#include "chip/stm32f40xxx_dma.h"
 #else
-#  error "Unknown STM32 DMA"
+#error "Unknown STM32 DMA"
 #endif
 
 /* These definitions provide the bit encoding of the 'status' parameter passed to the
@@ -67,17 +67,17 @@
 #if defined(CONFIG_STM32_STM32L15XX) || defined(CONFIG_STM32_STM32F10XX) || \
     defined(CONFIG_STM32_STM32F30XX) || defined(CONFIG_STM32_STM32F33XX) || \
     defined(CONFIG_STM32_STM32F37XX)
-#  define DMA_STATUS_FEIF         0                     /* (Not available in F1) */
-#  define DMA_STATUS_DMEIF        0                     /* (Not available in F1) */
-#  define DMA_STATUS_TEIF         DMA_CHAN_TEIF_BIT     /* Channel Transfer Error */
-#  define DMA_STATUS_HTIF         DMA_CHAN_HTIF_BIT     /* Channel Half Transfer */
-#  define DMA_STATUS_TCIF         DMA_CHAN_TCIF_BIT     /* Channel Transfer Complete */
+#define DMA_STATUS_FEIF         0	/* (Not available in F1) */
+#define DMA_STATUS_DMEIF        0	/* (Not available in F1) */
+#define DMA_STATUS_TEIF         DMA_CHAN_TEIF_BIT	/* Channel Transfer Error */
+#define DMA_STATUS_HTIF         DMA_CHAN_HTIF_BIT	/* Channel Half Transfer */
+#define DMA_STATUS_TCIF         DMA_CHAN_TCIF_BIT	/* Channel Transfer Complete */
 #elif defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX)
-#  define DMA_STATUS_FEIF         0                    /* Stream FIFO error (ignored) */
-#  define DMA_STATUS_DMEIF        DMA_STREAM_DMEIF_BIT /* Stream direct mode error */
-#  define DMA_STATUS_TEIF         DMA_STREAM_TEIF_BIT  /* Stream Transfer Error */
-#  define DMA_STATUS_HTIF         DMA_STREAM_HTIF_BIT  /* Stream Half Transfer */
-#  define DMA_STATUS_TCIF         DMA_STREAM_TCIF_BIT  /* Stream Transfer Complete */
+#define DMA_STATUS_FEIF         0	/* Stream FIFO error (ignored) */
+#define DMA_STATUS_DMEIF        DMA_STREAM_DMEIF_BIT	/* Stream direct mode error */
+#define DMA_STATUS_TEIF         DMA_STREAM_TEIF_BIT	/* Stream Transfer Error */
+#define DMA_STATUS_HTIF         DMA_STREAM_HTIF_BIT	/* Stream Half Transfer */
+#define DMA_STATUS_TCIF         DMA_STREAM_TCIF_BIT	/* Stream Transfer Complete */
 #endif
 
 #define DMA_STATUS_ERROR          (DMA_STATUS_FEIF|DMA_STATUS_DMEIF|DMA_STATUS_TEIF)
@@ -111,28 +111,26 @@ typedef void (*dma_callback_t)(DMA_HANDLE handle, uint8_t status, void *arg);
 #if defined(CONFIG_STM32_STM32L15XX) || defined(CONFIG_STM32_STM32F10XX) || \
     defined(CONFIG_STM32_STM32F30XX) || defined(CONFIG_STM32_STM32F33XX) || \
     defined(CONFIG_STM32_STM32F37XX)
-struct stm32_dmaregs_s
-{
-  uint32_t isr;
-  uint32_t ccr;
-  uint32_t cndtr;
-  uint32_t cpar;
-  uint32_t cmar;
+struct stm32_dmaregs_s {
+	uint32_t isr;
+	uint32_t ccr;
+	uint32_t cndtr;
+	uint32_t cpar;
+	uint32_t cmar;
 };
 #elif defined(CONFIG_STM32_STM32F20XX) || defined(CONFIG_STM32_STM32F4XXX)
-struct stm32_dmaregs_s
-{
-  uint32_t lisr;
-  uint32_t hisr;
-  uint32_t scr;
-  uint32_t sndtr;
-  uint32_t spar;
-  uint32_t sm0ar;
-  uint32_t sm1ar;
-  uint32_t sfcr;
+struct stm32_dmaregs_s {
+	uint32_t lisr;
+	uint32_t hisr;
+	uint32_t scr;
+	uint32_t sndtr;
+	uint32_t spar;
+	uint32_t sm0ar;
+	uint32_t sm1ar;
+	uint32_t sfcr;
 };
 #else
-#  error "Unknown STM32 DMA"
+#error "Unknown STM32 DMA"
 #endif
 #endif
 
@@ -145,8 +143,7 @@ struct stm32_dmaregs_s
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -225,8 +222,7 @@ void stm32_dmafree(DMA_HANDLE handle);
  *
  ****************************************************************************/
 
-void stm32_dmasetup(DMA_HANDLE handle, uint32_t paddr, uint32_t maddr,
-                    size_t ntransfers, uint32_t ccr);
+void stm32_dmasetup(DMA_HANDLE handle, uint32_t paddr, uint32_t maddr, size_t ntransfers, uint32_t ccr);
 
 /****************************************************************************
  * Name: stm32_dmastart
@@ -240,8 +236,7 @@ void stm32_dmasetup(DMA_HANDLE handle, uint32_t paddr, uint32_t maddr,
  *
  ****************************************************************************/
 
-void stm32_dmastart(DMA_HANDLE handle, dma_callback_t callback, void *arg,
-                    bool half);
+void stm32_dmastart(DMA_HANDLE handle, dma_callback_t callback, void *arg, bool half);
 
 /****************************************************************************
  * Name: stm32_dmastop
@@ -289,7 +284,7 @@ size_t stm32_dmaresidual(DMA_HANDLE handle);
 #ifdef CONFIG_STM32_DMACAPABLE
 bool stm32_dmacapable(uintptr_t maddr, uint32_t count, uint32_t ccr);
 #else
-#  define stm32_dmacapable(maddr, count, ccr) (true)
+#define stm32_dmacapable(maddr, count, ccr) (true)
 #endif
 
 /****************************************************************************
@@ -306,7 +301,7 @@ bool stm32_dmacapable(uintptr_t maddr, uint32_t count, uint32_t ccr);
 #ifdef CONFIG_DEBUG_DMA_INFO
 void stm32_dmasample(DMA_HANDLE handle, struct stm32_dmaregs_s *regs);
 #else
-#  define stm32_dmasample(handle,regs)
+#define stm32_dmasample(handle,regs)
 #endif
 
 /****************************************************************************
@@ -321,10 +316,9 @@ void stm32_dmasample(DMA_HANDLE handle, struct stm32_dmaregs_s *regs);
  ****************************************************************************/
 
 #ifdef CONFIG_DEBUG_DMA_INFO
-void stm32_dmadump(DMA_HANDLE handle, const struct stm32_dmaregs_s *regs,
-                   const char *msg);
+void stm32_dmadump(DMA_HANDLE handle, const struct stm32_dmaregs_s *regs, const char *msg);
 #else
-#  define stm32_dmadump(handle,regs,msg)
+#define stm32_dmadump(handle,regs,msg)
 #endif
 
 #undef EXTERN
@@ -332,5 +326,5 @@ void stm32_dmadump(DMA_HANDLE handle, const struct stm32_dmaregs_s *regs,
 }
 #endif
 
-#endif /* __ASSEMBLY__ */
-#endif /* __ARCH_ARM_SRC_STM32_STM32_DMA_H */
+#endif							/* __ASSEMBLY__ */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_DMA_H */

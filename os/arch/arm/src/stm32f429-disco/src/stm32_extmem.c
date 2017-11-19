@@ -58,11 +58,11 @@
  ************************************************************************************/
 
 #ifndef CONFIG_STM32_FSMC
-#  warning "FSMC is not enabled"
+#warning "FSMC is not enabled"
 #endif
 
 #if STM32_NGPIO_PORTS < 6
-#  error "Required GPIO ports not enabled"
+#error "Required GPIO ports not enabled"
 #endif
 
 #define STM32_FSMC_NADDRCONFIGS 22
@@ -78,28 +78,25 @@
                                 FSMC_SDRAM_MODEREG_CAS_LATENCY_3 |\
                                 FSMC_SDRAM_MODEREG_WRITEBURST_MODE_SINGLE
 
-
 /************************************************************************************
  * Public Data
  ************************************************************************************/
 
 /* GPIO configurations common to most external memories */
 
-static const uint32_t g_addressconfig[STM32_FSMC_NADDRCONFIGS] =
-{
-  GPIO_FSMC_A0,  GPIO_FSMC_A1 , GPIO_FSMC_A2,  GPIO_FSMC_A3,  GPIO_FSMC_A4 , GPIO_FSMC_A5,
-  GPIO_FSMC_A6,  GPIO_FSMC_A7,  GPIO_FSMC_A8,  GPIO_FSMC_A9,  GPIO_FSMC_A10, GPIO_FSMC_A11,
+static const uint32_t g_addressconfig[STM32_FSMC_NADDRCONFIGS] = {
+	GPIO_FSMC_A0, GPIO_FSMC_A1, GPIO_FSMC_A2, GPIO_FSMC_A3, GPIO_FSMC_A4, GPIO_FSMC_A5,
+	GPIO_FSMC_A6, GPIO_FSMC_A7, GPIO_FSMC_A8, GPIO_FSMC_A9, GPIO_FSMC_A10, GPIO_FSMC_A11,
 
-  GPIO_FSMC_SDCKE1, GPIO_FSMC_SDNE1, GPIO_FSMC_SDNWE, GPIO_FSMC_NBL0,
-  GPIO_FSMC_SDNRAS, GPIO_FSMC_NBL1,  GPIO_FSMC_BA0,   GPIO_FSMC_BA1,
-  GPIO_FSMC_SDCLK,  GPIO_FSMC_SDNCAS
+	GPIO_FSMC_SDCKE1, GPIO_FSMC_SDNE1, GPIO_FSMC_SDNWE, GPIO_FSMC_NBL0,
+	GPIO_FSMC_SDNRAS, GPIO_FSMC_NBL1, GPIO_FSMC_BA0, GPIO_FSMC_BA1,
+	GPIO_FSMC_SDCLK, GPIO_FSMC_SDNCAS
 };
 
-static const uint32_t g_dataconfig[STM32_FSMC_NDATACONFIGS] =
-{
-  GPIO_FSMC_D0,  GPIO_FSMC_D1 , GPIO_FSMC_D2,  GPIO_FSMC_D3,  GPIO_FSMC_D4 , GPIO_FSMC_D5,
-  GPIO_FSMC_D6,  GPIO_FSMC_D7,  GPIO_FSMC_D8,  GPIO_FSMC_D9,  GPIO_FSMC_D10, GPIO_FSMC_D11,
-  GPIO_FSMC_D12, GPIO_FSMC_D13, GPIO_FSMC_D14, GPIO_FSMC_D15
+static const uint32_t g_dataconfig[STM32_FSMC_NDATACONFIGS] = {
+	GPIO_FSMC_D0, GPIO_FSMC_D1, GPIO_FSMC_D2, GPIO_FSMC_D3, GPIO_FSMC_D4, GPIO_FSMC_D5,
+	GPIO_FSMC_D6, GPIO_FSMC_D7, GPIO_FSMC_D8, GPIO_FSMC_D9, GPIO_FSMC_D10, GPIO_FSMC_D11,
+	GPIO_FSMC_D12, GPIO_FSMC_D13, GPIO_FSMC_D14, GPIO_FSMC_D15
 };
 
 /************************************************************************************
@@ -124,14 +121,13 @@ static const uint32_t g_dataconfig[STM32_FSMC_NDATACONFIGS] =
 
 static void stm32_extmemgpios(const uint32_t *gpios, int ngpios)
 {
-  int i;
+	int i;
 
-  /* Configure GPIOs */
+	/* Configure GPIOs */
 
-  for (i = 0; i < ngpios; i++)
-    {
-      stm32_configgpio(gpios[i]);
-    }
+	for (i = 0; i < ngpios; i++) {
+		stm32_configgpio(gpios[i]);
+	}
 }
 
 /************************************************************************************
@@ -144,21 +140,19 @@ static void stm32_extmemgpios(const uint32_t *gpios, int ngpios)
 
 static void stm32_sdramcommand(uint32_t command)
 {
-  uint32_t  regval;
-  volatile  uint32_t timeout = 0xFFFF;
+	uint32_t regval;
+	volatile uint32_t timeout = 0xFFFF;
 
-  regval = getreg32( STM32_FSMC_SDSR ) & 0x00000020;
-  while ((regval != 0) && timeout-- > 0)
-    {
-      regval = getreg32( STM32_FSMC_SDSR ) & 0x00000020;
-    }
-  putreg32(command, STM32_FSMC_SDCMR);
-  timeout = 0xFFFF;
-  regval = getreg32( STM32_FSMC_SDSR ) & 0x00000020;
-  while ((regval != 0) && timeout-- > 0)
-    {
-      regval = getreg32( STM32_FSMC_SDSR ) & 0x00000020;
-    }
+	regval = getreg32(STM32_FSMC_SDSR) & 0x00000020;
+	while ((regval != 0) && timeout-- > 0) {
+		regval = getreg32(STM32_FSMC_SDSR) & 0x00000020;
+	}
+	putreg32(command, STM32_FSMC_SDCMR);
+	timeout = 0xFFFF;
+	regval = getreg32(STM32_FSMC_SDSR) & 0x00000020;
+	while ((regval != 0) && timeout-- > 0) {
+		regval = getreg32(STM32_FSMC_SDSR) & 0x00000020;
+	}
 }
 
 /************************************************************************************
@@ -171,72 +165,58 @@ static void stm32_sdramcommand(uint32_t command)
 
 void stm32_enablefsmc(void)
 {
-  uint32_t regval;
-  volatile int count;
+	uint32_t regval;
+	volatile int count;
 
-  /* Enable GPIOs as FSMC / memory pins */
+	/* Enable GPIOs as FSMC / memory pins */
 
-  stm32_extmemgpios(g_addressconfig, STM32_FSMC_NADDRCONFIGS);
-  stm32_extmemgpios(g_dataconfig, STM32_FSMC_NDATACONFIGS);
+	stm32_extmemgpios(g_addressconfig, STM32_FSMC_NADDRCONFIGS);
+	stm32_extmemgpios(g_dataconfig, STM32_FSMC_NDATACONFIGS);
 
-  /* Enable AHB clocking to the FSMC */
+	/* Enable AHB clocking to the FSMC */
 
-  regval  = getreg32( STM32_RCC_AHB3ENR);
-  regval |= RCC_AHB3ENR_FSMCEN;
-  putreg32(regval, STM32_RCC_AHB3ENR);
+	regval = getreg32(STM32_RCC_AHB3ENR);
+	regval |= RCC_AHB3ENR_FSMCEN;
+	putreg32(regval, STM32_RCC_AHB3ENR);
 
-  /* Configure and enable the SDRAM bank1
-   *
-   *   FMC clock = 180MHz/2 = 90MHz
-   *   90MHz = 11,11 ns
-   *   All timings from the datasheet for Speedgrade -7 (=7ns)
-   */
+	/* Configure and enable the SDRAM bank1
+	 *
+	 *   FMC clock = 180MHz/2 = 90MHz
+	 *   90MHz = 11,11 ns
+	 *   All timings from the datasheet for Speedgrade -7 (=7ns)
+	 */
 
-  putreg32(FSMC_SDRAM_CR_RPIPE_1 |
-           FSMC_SDRAM_CR_SDCLK_2X |
-           FSMC_SDRAM_CR_CASLAT_3 |
-           FSMC_SDRAM_CR_BANKS_4 |
-           FSMC_SDRAM_CR_WIDTH_16 |
-           FSMC_SDRAM_CR_ROWBITS_12 |
-           FSMC_SDRAM_CR_COLBITS_8,
-      STM32_FSMC_SDCR1);
+	putreg32(FSMC_SDRAM_CR_RPIPE_1 | FSMC_SDRAM_CR_SDCLK_2X | FSMC_SDRAM_CR_CASLAT_3 | FSMC_SDRAM_CR_BANKS_4 | FSMC_SDRAM_CR_WIDTH_16 | FSMC_SDRAM_CR_ROWBITS_12 | FSMC_SDRAM_CR_COLBITS_8, STM32_FSMC_SDCR1);
 
-  putreg32(FSMC_SDRAM_CR_RPIPE_1 |
-           FSMC_SDRAM_CR_SDCLK_2X |
-           FSMC_SDRAM_CR_CASLAT_3 |
-           FSMC_SDRAM_CR_BANKS_4 |
-           FSMC_SDRAM_CR_WIDTH_16 |
-           FSMC_SDRAM_CR_ROWBITS_12 |
-           FSMC_SDRAM_CR_COLBITS_8,
-      STM32_FSMC_SDCR2);
+	putreg32(FSMC_SDRAM_CR_RPIPE_1 | FSMC_SDRAM_CR_SDCLK_2X | FSMC_SDRAM_CR_CASLAT_3 | FSMC_SDRAM_CR_BANKS_4 | FSMC_SDRAM_CR_WIDTH_16 | FSMC_SDRAM_CR_ROWBITS_12 | FSMC_SDRAM_CR_COLBITS_8, STM32_FSMC_SDCR2);
 
-  putreg32((2 << FSMC_SDRAM_TR_TRCD_SHIFT) |  /* tRCD min = 15ns */
-           (2 << FSMC_SDRAM_TR_TRP_SHIFT) |   /* tRP  min = 15ns */
-           (2 << FSMC_SDRAM_TR_TWR_SHIFT) |   /* tWR      = 2CLK */
-           (7 << FSMC_SDRAM_TR_TRC_SHIFT) |   /* tRC  min = 63ns */
-           (4 << FSMC_SDRAM_TR_TRAS_SHIFT) |  /* tRAS min = 42ns */
-           (7 << FSMC_SDRAM_TR_TXSR_SHIFT) |  /* tXSR min = 70ns */
-           (2 << FSMC_SDRAM_TR_TMRD_SHIFT),   /* tMRD     = 2CLK */
-      STM32_FSMC_SDTR2);
+	putreg32((2 << FSMC_SDRAM_TR_TRCD_SHIFT) |	/* tRCD min = 15ns */
+			 (2 << FSMC_SDRAM_TR_TRP_SHIFT) |	/* tRP  min = 15ns */
+			 (2 << FSMC_SDRAM_TR_TWR_SHIFT) |	/* tWR      = 2CLK */
+			 (7 << FSMC_SDRAM_TR_TRC_SHIFT) |	/* tRC  min = 63ns */
+			 (4 << FSMC_SDRAM_TR_TRAS_SHIFT) |	/* tRAS min = 42ns */
+			 (7 << FSMC_SDRAM_TR_TXSR_SHIFT) |	/* tXSR min = 70ns */
+			 (2 << FSMC_SDRAM_TR_TMRD_SHIFT),	/* tMRD     = 2CLK */
+			 STM32_FSMC_SDTR2);
 
-  /* SDRAM Initialization sequence */
+	/* SDRAM Initialization sequence */
 
-  stm32_sdramcommand(STM32_SDRAM_CLKEN);      /* Clock enable command */
-  for (count = 0; count < 10000; count++) ;    /* Delay */
-  stm32_sdramcommand(STM32_SDRAM_PALL);       /* Precharge ALL command */
-  stm32_sdramcommand(STM32_SDRAM_REFRESH);    /* Auto refresh command */
-  stm32_sdramcommand(STM32_SDRAM_MODEREG);    /* Mode Register program */
+	stm32_sdramcommand(STM32_SDRAM_CLKEN);	/* Clock enable command */
+	for (count = 0; count < 10000; count++) ;	/* Delay */
+	stm32_sdramcommand(STM32_SDRAM_PALL);	/* Precharge ALL command */
+	stm32_sdramcommand(STM32_SDRAM_REFRESH);	/* Auto refresh command */
+	stm32_sdramcommand(STM32_SDRAM_MODEREG);	/* Mode Register program */
 
-  /* Set refresh count
-   *
-   * FMC_CLK = 90MHz
-   * Refresh_Rate = 7.81us
-   * Counter = (FMC_CLK * Refresh_Rate) - 20
-   */
+	/* Set refresh count
+	 *
+	 * FMC_CLK = 90MHz
+	 * Refresh_Rate = 7.81us
+	 * Counter = (FMC_CLK * Refresh_Rate) - 20
+	 */
 
-  putreg32(683 << 1, STM32_FSMC_SDRTR);
+	putreg32(683 << 1, STM32_FSMC_SDRTR);
 
-  /* Disable write protection */
+	/* Disable write protection */
 
 //  regval = getreg32(STM32_FSMC_SDCR2);
 //  putreg32(regval & 0xFFFFFDFF, STM32_FSMC_SDCR2);
@@ -252,11 +232,11 @@ void stm32_enablefsmc(void)
 
 void stm32_disablefsmc(void)
 {
-  uint32_t regval;
+	uint32_t regval;
 
-  /* Disable AHB clocking to the FSMC */
+	/* Disable AHB clocking to the FSMC */
 
-  regval  = getreg32(STM32_RCC_AHB3ENR);
-  regval &= ~RCC_AHB3ENR_FSMCEN;
-  putreg32(regval, STM32_RCC_AHB3ENR);
+	regval = getreg32(STM32_RCC_AHB3ENR);
+	regval &= ~RCC_AHB3ENR_FSMCEN;
+	putreg32(regval, STM32_RCC_AHB3ENR);
 }

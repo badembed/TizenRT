@@ -60,20 +60,19 @@
  * contents are subject to change.
  */
 
-struct stm32_freerun_s
-{
-  uint8_t chan;                    /* The timer/counter in use */
-  uint8_t width;                   /* Width of timer (16- or 32-bits) */
-  bool running;                    /* True: the timer is running */
-  FAR struct stm32_tim_dev_s *tch; /* Handle returned by stm32_tim_init() */
-  uint32_t frequency;
+struct stm32_freerun_s {
+	uint8_t chan;				/* The timer/counter in use */
+	uint8_t width;				/* Width of timer (16- or 32-bits) */
+	bool running;				/* True: the timer is running */
+	FAR struct stm32_tim_dev_s *tch;	/* Handle returned by stm32_tim_init() */
+	uint32_t frequency;
 
 #ifndef CONFIG_CLOCK_TIMEKEEPING
-  uint32_t overflow;               /* Timer counter overflow */
+	uint32_t overflow;			/* Timer counter overflow */
 #endif
 
 #ifdef CONFIG_CLOCK_TIMEKEEPING
-  uint64_t counter_mask;
+	uint64_t counter_mask;
 #endif
 };
 
@@ -84,8 +83,7 @@ struct stm32_freerun_s
 #undef EXTERN
 #if defined(__cplusplus)
 #define EXTERN extern "C"
-extern "C"
-{
+extern "C" {
 #else
 #define EXTERN extern
 #endif
@@ -113,8 +111,7 @@ extern "C"
  *
  ****************************************************************************/
 
-int stm32_freerun_initialize(struct stm32_freerun_s *freerun, int chan,
-                             uint16_t resolution);
+int stm32_freerun_initialize(struct stm32_freerun_s *freerun, int chan, uint16_t resolution);
 
 /****************************************************************************
  * Name: stm32_freerun_counter
@@ -137,15 +134,13 @@ int stm32_freerun_initialize(struct stm32_freerun_s *freerun, int chan,
 
 #ifndef CONFIG_CLOCK_TIMEKEEPING
 
-int stm32_freerun_counter(struct stm32_freerun_s *freerun,
-                          struct timespec *ts);
+int stm32_freerun_counter(struct stm32_freerun_s *freerun, struct timespec *ts);
 
-#else /* CONFIG_CLOCK_TIMEKEEPING */
+#else							/* CONFIG_CLOCK_TIMEKEEPING */
 
-int stm32_freerun_counter(struct stm32_freerun_s *freerun,
-                          uint64_t *counter);
+int stm32_freerun_counter(struct stm32_freerun_s *freerun, uint64_t *counter);
 
-#endif /* CONFIG_CLOCK_TIMEKEEPING */
+#endif							/* CONFIG_CLOCK_TIMEKEEPING */
 
 /****************************************************************************
  * Name: stm32_freerun_uninitialize
@@ -171,5 +166,5 @@ int stm32_freerun_uninitialize(struct stm32_freerun_s *freerun);
 }
 #endif
 
-#endif /* CONFIG_STM32_FREERUN */
-#endif /* __ARCH_ARM_SRC_STM32_FREERUN_H */
+#endif							/* CONFIG_STM32_FREERUN */
+#endif							/* __ARCH_ARM_SRC_STM32_FREERUN_H */

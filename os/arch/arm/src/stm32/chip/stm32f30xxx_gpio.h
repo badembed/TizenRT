@@ -47,17 +47,17 @@
 
 /* Register Offsets *****************************************************************/
 
-#define STM32_GPIO_MODER_OFFSET    0x0000 /* GPIO port mode register */
-#define STM32_GPIO_OTYPER_OFFSET   0x0004 /* GPIO port output type register */
-#define STM32_GPIO_OSPEED_OFFSET   0x0008 /* GPIO port output speed register */
-#define STM32_GPIO_PUPDR_OFFSET    0x000c /* GPIO port pull-up/pull-down register */
-#define STM32_GPIO_IDR_OFFSET      0x0010 /* GPIO port input data register */
-#define STM32_GPIO_ODR_OFFSET      0x0014 /* GPIO port output data register */
-#define STM32_GPIO_BSRR_OFFSET     0x0018 /* GPIO port bit set/reset register */
-#define STM32_GPIO_LCKR_OFFSET     0x001c /* GPIO port configuration lock register */
-#define STM32_GPIO_AFRL_OFFSET     0x0020 /* GPIO alternate function low register */
-#define STM32_GPIO_AFRH_OFFSET     0x0024 /* GPIO alternate function high register */
-#define STM32_GPIO_BRR_OFFSET      0x0028 /* GPIO port bit reset register */
+#define STM32_GPIO_MODER_OFFSET    0x0000	/* GPIO port mode register */
+#define STM32_GPIO_OTYPER_OFFSET   0x0004	/* GPIO port output type register */
+#define STM32_GPIO_OSPEED_OFFSET   0x0008	/* GPIO port output speed register */
+#define STM32_GPIO_PUPDR_OFFSET    0x000c	/* GPIO port pull-up/pull-down register */
+#define STM32_GPIO_IDR_OFFSET      0x0010	/* GPIO port input data register */
+#define STM32_GPIO_ODR_OFFSET      0x0014	/* GPIO port output data register */
+#define STM32_GPIO_BSRR_OFFSET     0x0018	/* GPIO port bit set/reset register */
+#define STM32_GPIO_LCKR_OFFSET     0x001c	/* GPIO port configuration lock register */
+#define STM32_GPIO_AFRL_OFFSET     0x0020	/* GPIO alternate function low register */
+#define STM32_GPIO_AFRH_OFFSET     0x0024	/* GPIO alternate function high register */
+#define STM32_GPIO_BRR_OFFSET      0x0028	/* GPIO port bit reset register */
 
 /* Register Addresses ***************************************************************/
 
@@ -137,10 +137,10 @@
 
 /* GPIO port mode register */
 
-#define GPIO_MODER_INPUT           (0) /* Input */
-#define GPIO_MODER_OUTPUT          (1) /* General purpose output mode */
-#define GPIO_MODER_ALT             (2) /* Alternate mode */
-#define GPIO_MODER_ANALOG          (3) /* Analog mode */
+#define GPIO_MODER_INPUT           (0)	/* Input */
+#define GPIO_MODER_OUTPUT          (1)	/* General purpose output mode */
+#define GPIO_MODER_ALT             (2)	/* Alternate mode */
+#define GPIO_MODER_ANALOG          (3)	/* Analog mode */
 
 #define GPIO_MODER_SHIFT(n)        ((n) << 1)
 #define GPIO_MODER_MASK(n)         (3 << GPIO_MODER_SHIFT(n))
@@ -180,14 +180,14 @@
 
 /* GPIO port output type register */
 
-#define GPIO_OTYPER_OD(n)          (1 << (n)) /* 1=Output open-drain */
-#define GPIO_OTYPER_PP(n)          (0)        /* 0=OuTput push-pull */
+#define GPIO_OTYPER_OD(n)          (1 << (n))	/* 1=Output open-drain */
+#define GPIO_OTYPER_PP(n)          (0)	/* 0=OuTput push-pull */
 
 /* GPIO port output speed register */
 
-#define GPIO_OSPEED_2MHz           (0) /* 2 MHz Low speed */
-#define GPIO_OSPEED_25MHz          (1) /* 25 MHz Medium speed */
-#define GPIO_OSPEED_50MHz          (3) /* 50 MHz High speed */
+#define GPIO_OSPEED_2MHz           (0)	/* 2 MHz Low speed */
+#define GPIO_OSPEED_25MHz          (1)	/* 25 MHz Medium speed */
+#define GPIO_OSPEED_50MHz          (3)	/* 50 MHz High speed */
 
 #define GPIO_OSPEED_SHIFT(n)       ((n) << 1)
 #define GPIO_OSPEED_MASK(n)        (3 << GPIO_OSPEED_SHIFT(n))
@@ -227,9 +227,9 @@
 
 /* GPIO port pull-up/pull-down register */
 
-#define GPIO_PUPDR_NONE            (0) /* No pull-up, pull-down */
-#define GPIO_PUPDR_PULLUP          (1) /* Pull-up */
-#define GPIO_PUPDR_PULLDOWN        (2) /* Pull-down */
+#define GPIO_PUPDR_NONE            (0)	/* No pull-up, pull-down */
+#define GPIO_PUPDR_PULLUP          (1)	/* Pull-up */
+#define GPIO_PUPDR_PULLDOWN        (2)	/* Pull-down */
 
 #define GPIO_PUPDR_SHIFT(n)        ((n) << 1)
 #define GPIO_PUPDR_MASK(n)         (3 << GPIO_PUPDR_SHIFT(n))
@@ -283,7 +283,7 @@
 /* GPIO port configuration lock register */
 
 #define GPIO_LCKR(n)               (1 << (n))
-#define GPIO_LCKK                  (1 << 16)   /* Lock key */
+#define GPIO_LCKK                  (1 << 16)	/* Lock key */
 
 /* GPIO alternate function low/high register */
 
@@ -328,5 +328,4 @@
 
 #define GPIO_BRR(n)                (1 << (n))
 
-#endif /* __ARCH_ARM_SRC_STM32_CHIP_STM32F30XXX_GPIO_H */
-
+#endif							/* __ARCH_ARM_SRC_STM32_CHIP_STM32F30XXX_GPIO_H */

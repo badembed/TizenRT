@@ -84,4 +84,4 @@ FAR struct onewire_dev_s *stm32_1wireinitialize(int port);
 
 int stm32_1wireuninitialize(FAR struct onewire_dev_s *dev);
 
-#endif /* __ARCH_ARM_SRC_STM32_STM32_1WIRE_H */
+#endif							/* __ARCH_ARM_SRC_STM32_STM32_1WIRE_H */
