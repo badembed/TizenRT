@@ -1,77 +1,129 @@
 # Tizen RT
 
-[![License](https://img.shields.io/badge/licence-Apache%202.0-brightgreen.svg?style=flat)](LICENSE)
-[![Build Status](https://travis-ci.org/Samsung/TizenRT.svg?branch=master)](https://travis-ci.org/Samsung/TizenRT)
+This repository is a fork of the official Tizen RT github repository from 01.25.2018: https://github.com/Samsung/TizenRT .
 
-lightweight RTOS-based platform to support low-end IoT devices.  
-Please find project details at [Wiki](https://github.com/Samsung/TizenRT/wiki) especially [documentations page](https://github.com/Samsung/TizenRT/wiki/Documentations).
+It contains hastily porting of the Nuttx implementation of the stm32f429-disco board support and micropython.
 
-## Contents
+## STM32F429-Disco board support and Tizen RT
 
-> [Quick Start](#quick-start)  
-> [Supported Board / Emulator](#supported-board--emulator)  
-> [Configuration Sets](#configuration-sets)
+stm32f429-disco board support was tested only by loading of the simple Tizen RT configuration at the board. Serial port 1 was tested as main serial port for access to the Tizen RT TASH console. Other peripherials were not tested.
 
-## Quick Start
-### Getting the toolchain
-
-Get the build in binaries and libraries, [gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2](https://launchpad.net/gcc-arm-embedded/4.9/4.9-2015-q3-update)  
-Untar the gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2 and export the path like
-
-```bash
-tar xvjf gcc-arm-none-eabi-4_9-2015q3-20150921-linux.tar.bz2
-export PATH=<Your Toolchain PATH>:$PATH
+```
+os/arch/arm/src/stm32
+os/arch/arm/src/stm32f429-disco
+os/arch/arm/include/stm32
 ```
 
-### Getting the sources
+These folders contain a code for stm32f429-disco support. 
 
-```bash
-git clone https://github.com/Samsung/TizenRT.git
-cd TizenRT
-TIZENRT_BASEDIR="$PWD"
+*build/configs/stm32* folder contains default configurations, linker script and download script for stm32f429-disco board support.
+
+These default configuration uses serial port 1 as main serial port for the TASH console.
+
+Serial port 1 at the board:
+
+```
+PA9  - Tx
+PA10 - Rx
+GND
 ```
 
-### How to Build
+*stm32_download.sh* script contains a script to download Tizen RT image in the board. This script uses **stlink** utility to write image to the flash. So you should install this utility to use this script. You can download this utility from https://github.com/texane/stlink .
 
-Configure the build from *$TIZENRT_BASEDIR/os/tools* directory
-```bash
-cd os/tools
-./configure.sh <board>/<configuration_set>
+
+### Build and Run
+
 ```
-For list of boards and configuration set supported, refer belows.  
-Above copies the canned configuration-set for the particular board, into the *$TIZENRT_BASEDIR/os* directory.  
-Configuration can be modified through *make menuconfig* from *$TIZENRT_BASEDIR/os*.
-```bash
+cd TizenRT/os
+cd tools
+./configire.sh stm32/stm32f429_disco
 cd ..
 make menuconfig
-```
-
-Refer [kconfig-frontend installation](docs/HowtoInstallKconfigFrontend.md) to use *menuconfig*.
-
-Finally, initiate build by make from *$TIZENRT_BASEDIR/os*.
-```bash
 make
 ```
 
-Built binaries are in *$TIZENRT_BASEDIR/build/output/bin*.
+Install **stlink** utility and connect board to the USB.
 
-## Supported Board / Emulator
-
-ARTIK053 [[details]](build/configs/artik053/README.md)
-
-ARTIK053S [[details]](build/configs/artik053s/README.md)
-
-ARTIK055S [[details]](build/configs/artik055s/README.md)
-
-SIDK_S5JT200 [[details]](build/configs/sidk_s5jt200/README.md)
-
-QEMU [[details]](build/configs/qemu/README.md)
-
-## Configuration Sets
-
-To build a Tizen RT application, use the default configuration files named *defconfig* under *build/configs/\<board\>/\<configuration_set\>* folder.  
-To customize your application with specific configuration settings, using the menuconfig tool is recommended at *os* folder as shown:
-```bash
-make menuconfig
 ```
-Please keep in mind that we are actively working on board configurations, and will be posting our updates on the README files under each config.
+make download
+```
+
+Connect serial port to the serial port 1 of the board: *PA9, PA10, GND pins*.
+
+```
+minicom -D /dev/ttyUSBn
+```
+
+Reset the board by reset button. Then you should see:
+
+```
+System Information:
+        Version: 1.1
+        Commit Hash: c9b73b049d5b3812b39eeca9ead25eba2f3e7df8
+        Build User: alex@localhost.localdomain
+        Build Time: 2018-03-04 13:34:10
+        System Time: 08 Jun 2010, 00:00:00 [s] UTC 
+Hello, World!!
+
+TASH>>
+TASH>>help
+TASH>>   TASH command list 
+         --------------------
+cat              cd               date             df               
+exit             free             getenv           heapinfo         
+hello            help             kernel_sample    kill             
+killall          logm             ls               micropython      
+mkdir            mount            ps               pwd              
+rm               rmdir            setenv           sh               
+sleep            umount           unsetenv         uptime           
+
+TASH>>ps
+TASH>>
+  PID | PRIO | FLAG |  TYPE   | NP |  STATUS  | NAME
+------|------|------|---------|----|----------|----------
+    0 |    0 | FIFO | KTHREAD |    | READY    | Idle Task
+    1 |  224 | RR   | KTHREAD |    | WAITSIG  | hpwork
+    2 |   50 | RR   | KTHREAD |    | WAITSIG  | lpwork
+    3 |  110 | RR   | KTHREAD |    | WAITSIG  | logm
+    5 |  125 | RR   | TASK    |    | RUNNING  | tash
+
+```
+
+
+For a more detailed description of the process of building and launching, see https://github.com/Samsung/TizenRT .
+
+
+## micropython
+
+Tizen RT can use micropython. It uses micropython 1.3.8 from https://github.com/micropython/micropython .
+
+*/apps/system/micropython* contains micropython implementation.
+
+You can enable micropython by menuconfig:
+
+```
+CONFIG_INTERPRETERS_MICROPYTHON:
+Enable support for the Micro Python interpreter
+
+Symbol: INTERPRETERS_MICROPYTHON 
+Prompt: Micro Python support
+  Location:
+  -> Application Configuration
+  -> System Libraries and Add-Ons
+```
+
+Also you can use *artik053/nettest_micropython* and *stm32/stm32f429_disco_micropython* configuration with already enabled mycropython.
+
+
+```
+TASH>>micropython
+Micro Python 1.1_Public_Release-659-gc9b73b04 on 2018-03-04
+Type "help()" for more information.
+>>> 
+>>> 
+>>> 2 * 100
+200 
+>>> 10000 / 7
+1428.571
+
+```
