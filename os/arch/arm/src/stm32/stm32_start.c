@@ -237,20 +237,6 @@ void __start(void)
 	const uint32_t *src;
 	uint32_t *dest;
 
-#ifdef CONFIG_ARMV7M_STACKCHECK
-	/* Set the stack limit before we attempt to call any functions */
-
-	__asm__ volatile("sub r10, sp, %0"::"r"(CONFIG_IDLETHREAD_STACKSIZE - 64):);
-#endif
-
-	/* Configure the UART so that we can get debug output as soon as possible */
-
-	stm32_clockconfig();
-	stm32_fpuconfig();
-	stm32_lowsetup();
-	stm32_gpioinit();
-	showprogress('A');
-
 	/* Clear .bss.  We'll do this inline (vs. calling memset) just to be
 	 * certain that there are no issues with the state of global variables.
 	 */
@@ -258,8 +244,6 @@ void __start(void)
 	for (dest = &_sbss; dest < &_ebss;) {
 		*dest++ = 0;
 	}
-
-	showprogress('B');
 
 	/* Move the initialized data section from his temporary holding spot in
 	 * FLASH into the correct place in SRAM.  The correct place in SRAM is
@@ -271,47 +255,6 @@ void __start(void)
 		*dest++ = *src++;
 	}
 
-	showprogress('C');
-
-#ifdef CONFIG_ARMV7M_ITMSYSLOG
-	/* Perform ARMv7-M ITM SYSLOG initialization */
-
-	itm_syslog_initialize();
-#endif
-
-	/* Perform early serial initialization */
-
-#ifdef USE_EARLYSERIALINIT
-	up_earlyserialinit();
-#endif
-	showprogress('D');
-
-	/* For the case of the separate user-/kernel-space build, perform whatever
-	 * platform specific initialization of the user memory is required.
-	 * Normally this just means initializing the user space .data and .bss
-	 * segments.
-	 */
-
-#ifdef CONFIG_BUILD_PROTECTED
-	stm32_userspace();
-	showprogress('E');
-#endif
-
-	/* Initialize onboard resources */
-
-	stm32_boardinitialize();
-	showprogress('F');
-
-	/* Then start NuttX */
-
-	showprogress('\r');
-	showprogress('\n');
-
-#ifdef CONFIG_STACK_COLORATION
-	/* Set the IDLE stack to the coloration value and jump into os_start() */
-
-	go_os_start((FAR void *)&_ebss, CONFIG_IDLETHREAD_STACKSIZE);
-#else
 	/* Call os_start() */
 
 	os_start();
@@ -319,5 +262,4 @@ void __start(void)
 	/* Shoulnd't get here */
 
 	for (;;) ;
-#endif
 }
