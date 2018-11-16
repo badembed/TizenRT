@@ -276,30 +276,14 @@ void os_start(void)
 {
 	int i;
 
-	slldbg("Entry\n");
-
 	/* Initialize RTOS Data ************************************************** */
 	/* Initialize all task lists */
 
 	dq_init(&g_readytorun);
 	dq_init(&g_pendingtasks);
 	dq_init(&g_waitingforsemaphore);
-#ifndef CONFIG_DISABLE_SIGNALS
-	dq_init(&g_waitingforsignal);
-#endif
-#ifndef CONFIG_DISABLE_MQUEUE
-	dq_init(&g_waitingformqnotfull);
-	dq_init(&g_waitingformqnotempty);
-#endif
-#ifdef CONFIG_PAGING
-	dq_init(&g_waitingforfill);
-#endif
 	dq_init(&g_inactivetasks);
 	sq_init(&g_delayed_kufree);
-#if (defined(CONFIG_BUILD_PROTECTED) || defined(CONFIG_BUILD_KERNEL)) && \
-	 defined(CONFIG_MM_KERNEL_HEAP)
-	sq_init(&g_delayed_kfree);
-#endif
 
 	/* Initialize the logic that determine unique process IDs. */
 
@@ -330,13 +314,6 @@ void os_start(void)
 	g_idletcb.cmn.entry.main = (main_t)os_start;
 	g_idletcb.cmn.flags = TCB_FLAG_TTYPE_KERNEL;
 
-	/* Set the IDLE task name */
-
-#if CONFIG_TASK_NAME_SIZE > 0
-	strncpy(g_idletcb.cmn.name, g_idlename, CONFIG_TASK_NAME_SIZE);
-	g_idletcb.cmn.name[CONFIG_TASK_NAME_SIZE] = '\0';
-#endif							/* CONFIG_TASK_NAME_SIZE */
-
 	/* Configure the task name in the argument list.  The IDLE task does
 	 * not really have an argument list, but this name is still useful
 	 * for things like the TASH PS command.
@@ -345,11 +322,7 @@ void os_start(void)
 	 * and there is no support that yet.
 	 */
 
-#if CONFIG_TASK_NAME_SIZE > 0
-	g_idleargv[0]  = g_idletcb.cmn.name;
-#else
 	g_idleargv[0]  = (FAR char *)g_idlename;
-#endif							/* CONFIG_TASK_NAME_SIZE */
 	g_idleargv[1]  = NULL;
 	g_idletcb.argv = g_idleargv;
 
@@ -367,141 +340,9 @@ void os_start(void)
 	 */
 
 	sem_initialize();
-
-#if defined(MM_KERNEL_USRHEAP_INIT) || defined(CONFIG_MM_KERNEL_HEAP) || defined(CONFIG_MM_PGALLOC)
-	/* Initialize the memory manager */
-
-	{
-		FAR void *heap_start;
-		size_t heap_size;
-
-#ifdef MM_KERNEL_USRHEAP_INIT
-		/* Get the user-mode heap from the platform specific code and configure
-		 * the user-mode memory allocator.
-		 */
-
-		up_allocate_heap(&heap_start, &heap_size);
-		kumm_initialize(heap_start, heap_size);
-#endif
-
-#ifdef CONFIG_MM_KERNEL_HEAP
-		/* Get the kernel-mode heap from the platform specific code and configure
-		 * the kernel-mode memory allocator.
-		 */
-
-		up_allocate_kheap(&heap_start, &heap_size);
-		kmm_initialize(heap_start, heap_size);
-#endif
-
-#ifdef CONFIG_MM_PGALLOC
-		/* If there is a page allocator in the configuration, then get the page
-		 * heap information from the platform-specific code and configure the
-		 * page allocator.
-		 */
-
-		up_allocate_pgheap(&heap_start, &heap_size);
-		mm_pginitialize(heap_start, heap_size);
-#endif
-	}
-#endif
-
-#if defined(CONFIG_SCHED_HAVE_PARENT) && defined(CONFIG_SCHED_CHILD_STATUS)
-	/* Initialize tasking data structures */
-
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (task_initialize != NULL)
-#endif
-	{
-		task_initialize();
-	}
-#endif
-
-	/* Initialize the interrupt handling subsystem (if included) */
-
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (irq_initialize != NULL)
-#endif
-	{
-		irq_initialize();
-	}
-
-	/* Initialize the watchdog facility (if included in the link) */
-
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (wd_initialize != NULL)
-#endif
-	{
-		wd_initialize();
-	}
-
-	/* Initialize the POSIX timer facility (if included in the link) */
-
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (clock_initialize != NULL)
-#endif
-	{
-		clock_initialize();
-	}
-#ifndef CONFIG_DISABLE_POSIX_TIMERS
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (timer_initialize != NULL)
-#endif
-	{
-		timer_initialize();
-	}
-#endif
-
-#ifndef CONFIG_DISABLE_SIGNALS
-	/* Initialize the signal facility (if in link) */
-
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (sig_initialize != NULL)
-#endif
-	{
-		sig_initialize();
-	}
-#endif
-
-#ifndef CONFIG_DISABLE_MQUEUE
-	/* Initialize the named message queue facility (if in link) */
-
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (mq_initialize != NULL)
-#endif
-	{
-		mq_initialize();
-	}
-#endif
-
-#ifndef CONFIG_DISABLE_PTHREAD
-	/* Initialize the thread-specific data facility (if in link) */
-
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (pthread_initialize != NULL)
-#endif
-	{
-		pthread_initialize();
-	}
-#endif
-
-#if CONFIG_NFILE_DESCRIPTORS > 0
-	/* Initialize the file system (needed to support device drivers) */
-
-	fs_initialize();
-#endif
-
-#ifdef CONFIG_NET
-	/* Initialize the networking system.  Network initialization is
-	 * performed in two steps:  (1) net_setup() initializes static
-	 * configuration of the network support.  This must be done prior
-	 * to registering network drivers by up_initialize().  This step
-	 * cannot require upon any hardware-depending features such as
-	 * timers or interrupts.
-	 */
-
-	net_setup();
-
-#endif							/* CONFIG_NET */
+	irq_initialize();
+	wd_initialize();
+  clock_initialize();
 
 	/* The processor specific details of running the operating system
 	 * will be handled here.  Such things as setting up interrupt
@@ -511,88 +352,21 @@ void os_start(void)
 
 	up_initialize();
 
-#ifdef CONFIG_KERNEL_TEST_DRV
-	test_drv_register();
-#endif
-
-#if defined(CONFIG_DEBUG_SYSTEM)
-	sysdbg_init();
-#endif
-
-#if defined(CONFIG_TTRACE)
-	ttrace_init();
-#endif
-
-#ifdef CONFIG_MM_SHM
-	/* Initialize shared memory support */
-
-	shm_initialize();
-#endif
-
-	/* Initialize the C libraries.  This is done last because the libraries
-	 * may depend on the above.
-	 */
-
-	lib_initialize();
-
-	/* IDLE Group Initialization **********************************************/
-#ifdef HAVE_TASK_GROUP
-	/* Allocate the IDLE group */
-
-	DEBUGVERIFY(group_allocate(&g_idletcb, g_idletcb.cmn.flags));
-#endif
-
-#if CONFIG_NFILE_DESCRIPTORS > 0 || CONFIG_NSOCKET_DESCRIPTORS > 0
-	/* Create stdout, stderr, stdin on the IDLE task.  These will be
-	 * inherited by all of the threads created by the IDLE task.
-	 */
-
-	DEBUGVERIFY(group_setupidlefiles(&g_idletcb));
-#endif
-
-#ifdef HAVE_TASK_GROUP
-	/* Complete initialization of the IDLE group.  Suppress retention
-	 * of child status in the IDLE group.
-	 */
-
-	DEBUGVERIFY(group_initialize(&g_idletcb));
-	g_idletcb.cmn.group->tg_flags = GROUP_FLAG_NOCLDWAIT;
-#endif
-
 	/* Bring Up the System ****************************************************/
 	/* Create initial tasks and bring-up the system */
 
+  while(1);
 	DEBUGVERIFY(os_bringup());
 
 	/* The IDLE Loop **********************************************************/
 	/* When control is return to this point, the system is idle. */
 
-	svdbg("Beginning Idle Loop\n");
 	for (;;) {
 		/* Perform garbage collection (if it is not being done by the worker
 		 * thread).  This cleans-up memory de-allocations that were queued
 		 * because they could not be freed in that execution context (for
 		 * example, if the memory was freed from an interrupt handler).
 		 */
-
-#ifndef CONFIG_SCHED_WORKQUEUE
-		/* We must have exclusive access to the memory manager to do this
-		 * BUT the idle task cannot wait on a semaphore.  So we only do
-		 * the cleanup now if we can get the semaphore -- this should be
-		 * possible because if the IDLE thread is running, no other task is!
-		 *
-		 * WARNING: This logic could have undesirable side-effects if priority
-		 * inheritance is enabled.  Imaginee the possible issues if the
-		 * priority of the IDLE thread were to get boosted!  Moral: If you
-		 * use priority inheritance, then you should also enable the work
-		 * queue so that is done in a safer context.
-		 */
-
-		if (kmm_trysemaphore() == 0) {
-			sched_garbagecollection();
-			kmm_givesemaphore();
-		}
-#endif
 
 		/* Perform any processor-specific idle state operations */
 

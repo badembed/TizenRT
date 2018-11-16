@@ -85,48 +85,6 @@
 #undef HAVE_TASK_GROUP
 #undef HAVE_GROUP_MEMBERS
 
-/* We need a group an group members if we are supporting the parent/child
- * relationship.
- */
-
-#if defined(CONFIG_SCHED_HAVE_PARENT) && defined(CONFIG_SCHED_CHILD_STATUS)
-#define HAVE_TASK_GROUP     1
-#define HAVE_GROUP_MEMBERS  1
-
-/* We need a group (but not members) if any other resources are shared within
- * a task group.  NOTE: that we essentially always need a task group and that
- * managing this definition adds a lot of overhead just to handle a corner-
- * case very minimal system!
- */
-
-#else
-#if !defined(CONFIG_DISABLE_PTHREAD) && defined(CONFIG_SCHED_HAVE_PARENT)
-#define HAVE_TASK_GROUP   1		/* pthreads with parent */
-#elif !defined(CONFIG_DISABLE_ENVIRON)
-#define HAVE_TASK_GROUP   1		/* Environment variables */
-#elif !defined(CONFIG_DISABLE_SIGNALS)
-#define HAVE_TASK_GROUP   1		/* Signals */
-#elif defined(CONFIG_SCHED_ATEXIT)
-#define HAVE_TASK_GROUP   1		/* Group atexit() function */
-#elif defined(CONFIG_SCHED_ONEXIT)
-#define HAVE_TASK_GROUP   1		/* Group on_exit() function */
-#elif defined(CONFIG_SCHED_WAITPID)
-#define HAVE_TASK_GROUP   1		/* Group waitpid() function */
-#elif CONFIG_NFILE_DESCRIPTORS > 0
-#define HAVE_TASK_GROUP   1		/* File descriptors */
-#elif CONFIG_NFILE_STREAMS > 0
-#define HAVE_TASK_GROUP   1		/* Standard C buffered I/O */
-#elif CONFIG_NSOCKET_DESCRIPTORS > 0
-#define HAVE_TASK_GROUP   1		/* Sockets */
-#elif !defined(CONFIG_DISABLE_MQUEUE)
-#define HAVE_TASK_GROUP   1		/* Message queues */
-#elif defined(CONFIG_ARCH_ADDRENV)
-#define HAVE_TASK_GROUP   1		/* Address environment */
-#elif defined(CONFIG_MM_SHM)
-#define HAVE_TASK_GROUP   1		/* Shared memory */
-#endif
-#endif
-
 /* In any event, we don't need group members if support for pthreads is disabled */
 
 #ifdef CONFIG_DISABLE_PTHREAD

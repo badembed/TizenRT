@@ -225,45 +225,13 @@ static inline void os_do_appstart(void)
 {
 	int pid;
 
-#ifdef CONFIG_BOARD_INITIALIZE
-	/* Perform any last-minute, board-specific initialization, if so
-	 * configured.
-	 */
-
-	board_initialize();
-#endif
-
-#ifdef CONFIG_NET
-	/* Initialize the network system & Create network task if required */
-
-	net_initialize();
-#endif
-
 	/* Start the application initialization task.  In a flat build, this is
 	 * entrypoint is given by the definitions, CONFIG_USER_ENTRYPOINT.  In
 	 * the protected build, however, we must get the address of the
 	 * entrypoint from the header at the beginning of the user-space blob.
 	 */
 
-	svdbg("Starting application init thread\n");
-
-#ifdef CONFIG_SYSTEM_PREAPP_INIT
-#ifdef CONFIG_BUILD_PROTECTED
-	DEBUGASSERT(USERSPACE->preapp_start != NULL);
-	pid = task_create("appinit", SCHED_PRIORITY_DEFAULT, CONFIG_SYSTEM_PREAPP_STACKSIZE, USERSPACE->preapp_start, (FAR char *const *)NULL);
-#else
-	pid = task_create("appinit", SCHED_PRIORITY_DEFAULT, CONFIG_SYSTEM_PREAPP_STACKSIZE, preapp_start, (FAR char *const *)NULL);
-#endif
-#endif
-
-	svdbg("Starting application main thread\n");
-
-#ifdef CONFIG_BUILD_PROTECTED
-	DEBUGASSERT(USERSPACE->us_entrypoint != NULL);
-	pid = task_create("appmain", SCHED_PRIORITY_DEFAULT, CONFIG_USERMAIN_STACKSIZE, USERSPACE->us_entrypoint, (FAR char *const *)NULL);
-#else
-	pid = task_create("appmain", SCHED_PRIORITY_DEFAULT, CONFIG_USERMAIN_STACKSIZE, (main_t)CONFIG_USER_ENTRYPOINT, (FAR char *const *)NULL);
-#endif
+  pid = task_create("appmain", SCHED_PRIORITY_DEFAULT, CONFIG_USERMAIN_STACKSIZE, (main_t)CONFIG_USER_ENTRYPOINT, (FAR char *const *)NULL);
 	ASSERT(pid > 0);
 }
 
@@ -320,23 +288,9 @@ static int os_start_task(int argc, FAR char **argv)
 
 static inline void os_start_application(void)
 {
-#ifdef CONFIG_BOARD_INITTHREAD
-	int pid;
-
-	/* Do the board/application initialization on a separate thread of
-	 * execution.
-	 */
-
-	pid = kernel_thread("AppBringUp", CONFIG_BOARD_INITTHREAD_PRIORITY, CONFIG_BOARD_INITTHREAD_STACKSIZE, (main_t)os_start_task, (FAR char *const *)NULL);
-
-	ASSERT(pid > 0);
-
-#else
 	/* Do the board/application initialization on this thread of execution. */
 
 	os_do_appstart();
-
-#endif
 }
 
 /****************************************************************************
@@ -374,47 +328,12 @@ static inline void os_start_application(void)
 
 int os_bringup(void)
 {
-	/* Setup up the initial environment for the idle task.  At present, this
-	 * may consist of only the initial PATH variable.  The PATH variable is
-	 * (probably) not used by the IDLE task.  However, the environment
-	 * containing the PATH variable will be inherited by all of the threads
-	 * created by the IDLE task.
-	 */
-
-#if !defined(CONFIG_DISABLE_ENVIRON) && defined(CONFIG_PATH_INITIAL)
-	(void)setenv("PATH", CONFIG_PATH_INITIAL, 1);
-#endif
-
-	/* Start the page fill worker kernel thread that will resolve page faults.
-	 * This should always be the first thread started because it may have to
-	 * resolve page faults in other threads
-	 */
-
-	os_pgworker();
-
-	/* Start the worker thread that will serve as the device driver "bottom-
-	 * half" and will perform misc garbage clean-up.
-	 */
-
-	os_workqueues();
-
-#ifdef CONFIG_LOGM
-	logm_start();
-#endif
-
 	/* Once the operating system has been initialized, the system must be
 	 * started by spawning the user initialization thread of execution.  This
 	 * will be the first user-mode thread.
 	 */
 
 	os_start_application();
-
-
-	/* We an save a few bytes by discarding the IDLE thread's environment. */
-
-#if !defined(CONFIG_DISABLE_ENVIRON) && defined(CONFIG_PATH_INITIAL)
-	(void)clearenv();
-#endif
 
 	return OK;
 }

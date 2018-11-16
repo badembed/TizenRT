@@ -158,20 +158,7 @@ void up_initialize(void)
 
 	current_regs = NULL;
 
-	/* Calibrate the timing loop */
-
-	up_calibratedelay();
-
-	/* Colorize the interrupt stack */
-
-	up_color_intstack();
-
-	/* Add any extra memory fragments to the memory manager */
-
-	up_addregion();
-
 	/* Initialize the interrupt subsystem */
-
 	up_irqinitialize();
 
 	/* Initialize the power management subsystem.  This MCU-specific function
@@ -180,92 +167,10 @@ void up_initialize(void)
 	 * with the power management subsystem).
 	 */
 
-#ifdef CONFIG_PM
-	up_pminitialize();
-#endif
-
 	/* Initialize the DMA subsystem if the weak function up_dmainitialize has been
 	 * brought into the build
 	 */
 
-#ifdef CONFIG_ARCH_DMA
-#ifdef CONFIG_HAVE_WEAKFUNCTIONS
-	if (up_dmainitialize)
-#endif
-	{
-		up_dmainitialize();
-	}
-#endif
-
 	/* Initialize the system timer interrupt */
-
-#if !defined(CONFIG_SUPPRESS_INTERRUPTS) && !defined(CONFIG_SUPPRESS_TIMER_INTS) && \
-	!defined(CONFIG_SYSTEMTICK_EXTCLK)
 	up_timer_initialize();
-#endif
-
-	/* Register devices */
-
-#if CONFIG_NFILE_DESCRIPTORS > 0
-
-#if defined(CONFIG_DEV_NULL)
-	devnull_register();			/* Standard /dev/null */
-#endif
-
-#if defined(CONFIG_DEV_ZERO)
-	devzero_register();			/* Standard /dev/zero */
-#endif
-
-#endif							/* CONFIG_NFILE_DESCRIPTORS */
-
-	/* Initialize the serial device driver */
-
-#ifdef USE_SERIALDRIVER
-	up_serialinit();
-#endif
-
-	/* Initialize the console device driver (if it is other than the standard
-	 * serial driver).
-	 */
-
-#if defined(CONFIG_DEV_LOWCONSOLE)
-	lowconsole_init();
-#elif defined(CONFIG_SYSLOG_CONSOLE)
-	syslog_console_init();
-#elif defined(CONFIG_RAMLOG_CONSOLE)
-	ramlog_consoleinit();
-#endif
-
-	/* Initialize the Random Number Generator (RNG)  */
-
-#ifdef CONFIG_DEV_RANDOM
-	up_rnginitialize();
-#endif
-
-	/* Initialize the system logging device */
-
-#ifdef CONFIG_SYSLOG_CHAR
-	syslog_initialize();
-#endif
-#ifdef CONFIG_RAMLOG_SYSLOG
-	ramlog_sysloginit();
-#endif
-
-#ifdef CONFIG_NETDEV_TELNET
-	/* Initialize the Telnet session factory */
-
-	(void)telnet_initialize();
-#endif
-	/* Initialize the network */
-
-	up_netinitialize();
-
-	/* Initialize USB -- device and/or host */
-
-	up_usbinitialize();
-
-	/* Initialize the L2 cache if present and selected */
-
-	up_l2ccinitialize();
-	board_led_on(LED_IRQSENABLED);
 }
