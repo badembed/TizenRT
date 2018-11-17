@@ -260,6 +260,7 @@ char stack_runner[4096];
 char stack_t1[4096];
 char stack_t2[4096];
 sem_t *sem;
+sem_t *sem_time;
 void test_func_1(void);
 void test_func_2(void);
 void task_runner(void);
@@ -363,6 +364,7 @@ void os_start(void)
 
 	up_initialize();
   sem_init(&sem, 0, 1);
+  sem_init(&sem_time, 0, 0);
 
   int ret = task_init(&tcb_runner, "task runner", 250, stack_runner,
                       4096, task_runner, NULL);
@@ -387,7 +389,7 @@ void os_start(void)
 }
 
 void task_runner(void) {
-    int ret = task_init(&tcb_t2, "task_2", 120, stack_t2, 4096, test_func_2, NULL);
+    int ret = task_init(&tcb_t2, "task_2", 110, stack_t2, 4096, test_func_2, NULL);
     if (ret == OK) {
         (void)task_activate(&tcb_t2);
     }
@@ -398,11 +400,38 @@ void task_runner(void) {
     }
 }
 
+int t1 = 0, t2 = 0;
+
 void test_func_2(void) {
 
+    /*
     while(1) {
-        sem_wait(&sem);
+        t2++;
+        sched_yield();
+        //sem_wait(&sem);
     }
+    */
+
+    struct timespec timeout;
+    struct timespec current;
+
+    while(1) {
+        clock_gettime(CLOCK_REALTIME, &current);
+        timeout.tv_sec = current.tv_sec;
+        timeout.tv_nsec = current.tv_nsec + 1000;
+        sem_timedwait(&sem_time, &timeout);
+    }
+}
+
+void test_func_1(void) {
+
+    /*
+    while(1) {
+        t1++;
+        sched_yield();
+        //sem_post(&sem);
+    }
+    */
 
     struct timespec timeout;
     struct timespec current;
@@ -411,30 +440,6 @@ void test_func_2(void) {
         clock_gettime(CLOCK_REALTIME, &current);
         timeout.tv_sec = 2 + current.tv_sec;
         timeout.tv_nsec = current.tv_nsec;
-        int ret = sem_timedwait(&sem, &timeout);
-        if (ret == OK) {
-            sem_post(&sem);
-        }
-    }
-}
-
-void test_func_1(void) {
-
-    while(1) {
-        sem_post(&sem);
-    }
-
-    int x = 10000;
-    while(1) {
-        sem_wait(&sem);
-        sched_yield();
-
-        while(x > 0) {x--;};
-        x = 1000;
-
-        sem_post(&sem);
-        sched_yield();
-        while(x > 0) {x--;};
-        x = 1000;
+        sem_timedwait(&sem_time, &timeout);
     }
 }
