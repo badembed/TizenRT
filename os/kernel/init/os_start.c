@@ -253,9 +253,16 @@ static FAR char *g_idleargv[2];
  * Private Function Prototypes
  ****************************************************************************/
 
+struct task_tcb_s tcb_runner;
+struct task_tcb_s tcb_t1;
+struct task_tcb_s tcb_t2;
+char stack_runner[4096];
+char stack_t1[4096];
+char stack_t2[4096];
 sem_t *sem;
 void test_func_1(void);
 void test_func_2(void);
+void task_runner(void);
 
 /****************************************************************************
  * Public Functions
@@ -355,26 +362,13 @@ void os_start(void)
 	 */
 
 	up_initialize();
+  sem_init(&sem, 0, 1);
 
-  struct tcb_s tcb_t1;
-  struct tcb_s tcb_t2;
-  char stack_t1[512];
-  char stack_t2[512];
-
-  sem_init(sem, 0, 1);
-
-  //int pid  = task_create("test 1", 100, 512, test_func_1, NULL);
-  //if (pid < 0) {while(1);}
-
-  int ret = task_init(&tcb_t1, "task_1", 100, stack_t1, 512, test_func_1, NULL);
+  int ret = task_init(&tcb_runner, "task runner", 250, stack_runner,
+                      4096, task_runner, NULL);
   if (ret == OK) {
-      (void)task_activate(&tcb_t1);
+      (void)task_activate(&tcb_runner);
   }
-
-  /*
-  task_init(&tcb_t2, "task_2", 100, stack_t2, 512, test_func_2, NULL);
-  (void)task_activate(&tcb_t2);
-  */
 
 	/* The IDLE Loop **********************************************************/
 	/* When control is return to this point, the system is idle. */
@@ -392,7 +386,23 @@ void os_start(void)
 	}
 }
 
+void task_runner(void) {
+    int ret = task_init(&tcb_t2, "task_2", 120, stack_t2, 4096, test_func_2, NULL);
+    if (ret == OK) {
+        (void)task_activate(&tcb_t2);
+    }
+
+    ret = task_init(&tcb_t1, "task_1", 110, stack_t1, 4096, test_func_1, NULL);
+    if (ret == OK) {
+        (void)task_activate(&tcb_t1);
+    }
+}
+
 void test_func_2(void) {
+
+    while(1) {
+        sem_wait(&sem);
+    }
 
     struct timespec timeout;
     struct timespec current;
@@ -410,7 +420,9 @@ void test_func_2(void) {
 
 void test_func_1(void) {
 
-    while(1);
+    while(1) {
+        sem_post(&sem);
+    }
 
     int x = 10000;
     while(1) {
