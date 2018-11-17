@@ -119,21 +119,17 @@ WDOG_ID wd_create(void)
 
 	state = irqsave();
 
-	/* If we are in an interrupt handler -OR- if the number of pre-allocated
-	 * timer structures exceeds the reserve, then take the the next timer from
-	 * the head of the free list.
-	 */
+  ASSERT(g_wdnfree > CONFIG_WDOG_INTRESERVE);
 
-	if (g_wdnfree > CONFIG_WDOG_INTRESERVE || up_interrupt_context()) {
-		/* Remove the watchdog timer from the free list and decrement the
-		 * count of free timers all with interrupts disabled.
-		 */
+  /* Remove the watchdog timer from the free list and decrement the
+   * count of free timers all with interrupts disabled.
+   */
 
-		wdog = (FAR struct wdog_s *)sq_remfirst(&g_wdfreelist);
+  wdog = (FAR struct wdog_s *)sq_remfirst(&g_wdfreelist);
 
-		/* Did we get one? */
+  /* Did we get one? */
 
-		if (wdog) {
+  if (wdog) {
 			DEBUGASSERT(g_wdnfree > 0);
 			g_wdnfree--;
 
@@ -141,33 +137,11 @@ WDOG_ID wd_create(void)
 
 			wdog->next = NULL;
 			wdog->flags = 0;
-		} else {
+  } else {
 			/* If wdog is Null, g_wdnfree must be zero, else assert */
 			DEBUGASSERT(g_wdnfree == 0);
-		}
-		irqrestore(state);
-	}
-
-	/* We are in a normal tasking context AND there are not enough unreserved,
-	 * pre-allocated watchdog timers.  We need to allocate one from the kernel
-	 * heap.
-	 */
-
-	else {
-		/* We do not require that interrupts be disabled to do this. */
-
-		irqrestore(state);
-		wdog = (FAR struct wdog_s *)kmm_malloc(sizeof(struct wdog_s));
-
-		/* Did we get one? */
-
-		if (wdog) {
-			/* Yes.. Clear the forward link and set the allocated flag */
-
-			wdog->next = NULL;
-			wdog->flags = WDOGF_ALLOCED;
-		}
-	}
+  }
+  irqrestore(state);
 
 	return (WDOG_ID)wdog;
 }

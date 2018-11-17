@@ -253,6 +253,10 @@ static FAR char *g_idleargv[2];
  * Private Function Prototypes
  ****************************************************************************/
 
+sem_t *sem;
+void test_func_1(void);
+void test_func_2(void);
+
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -340,7 +344,7 @@ void os_start(void)
 	 */
 
 	sem_initialize();
-	irq_initialize();
+	//irq_initialize();
 	wd_initialize();
   clock_initialize();
 
@@ -352,11 +356,25 @@ void os_start(void)
 
 	up_initialize();
 
-	/* Bring Up the System ****************************************************/
-	/* Create initial tasks and bring-up the system */
+  struct tcb_s tcb_t1;
+  struct tcb_s tcb_t2;
+  char stack_t1[512];
+  char stack_t2[512];
 
-  while(1);
-	DEBUGVERIFY(os_bringup());
+  sem_init(sem, 0, 1);
+
+  //int pid  = task_create("test 1", 100, 512, test_func_1, NULL);
+  //if (pid < 0) {while(1);}
+
+  int ret = task_init(&tcb_t1, "task_1", 100, stack_t1, 512, test_func_1, NULL);
+  if (ret == OK) {
+      (void)task_activate(&tcb_t1);
+  }
+
+  /*
+  task_init(&tcb_t2, "task_2", 100, stack_t2, 512, test_func_2, NULL);
+  (void)task_activate(&tcb_t2);
+  */
 
 	/* The IDLE Loop **********************************************************/
 	/* When control is return to this point, the system is idle. */
@@ -372,4 +390,39 @@ void os_start(void)
 
 		up_idle();
 	}
+}
+
+void test_func_2(void) {
+
+    struct timespec timeout;
+    struct timespec current;
+
+    while(1) {
+        clock_gettime(CLOCK_REALTIME, &current);
+        timeout.tv_sec = 2 + current.tv_sec;
+        timeout.tv_nsec = current.tv_nsec;
+        int ret = sem_timedwait(&sem, &timeout);
+        if (ret == OK) {
+            sem_post(&sem);
+        }
+    }
+}
+
+void test_func_1(void) {
+
+    while(1);
+
+    int x = 10000;
+    while(1) {
+        sem_wait(&sem);
+        sched_yield();
+
+        while(x > 0) {x--;};
+        x = 1000;
+
+        sem_post(&sem);
+        sched_yield();
+        while(x > 0) {x--;};
+        x = 1000;
+    }
 }

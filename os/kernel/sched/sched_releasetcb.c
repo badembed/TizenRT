@@ -216,8 +216,7 @@ int sched_releasetcb(FAR struct tcb_s *tcb, uint8_t ttype)
 #endif
 
 		/* And, finally, release the TCB itself */
-
-		sched_kfree(tcb);
+		//sched_kfree(tcb);
 	}
 
 	return ret;

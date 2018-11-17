@@ -130,28 +130,7 @@ int wd_delete(WDOG_ID wdog)
 		wd_cancel(wdog);
 	}
 
-	/* Did this watchdog come from the pool of pre-allocated timers?  Or, was
-	 * it allocated from the heap?
-	 */
-
-	if (WDOG_ISALLOCED(wdog)) {
-		/* It was allocated from the heap.  Use sched_kfree() to release the
-		 * memory.  If the timer was released from an interrupt handler,
-		 * sched_kfree() will defer the actual deallocation of the memory
-		 * until a more appropriate time.
-		 *
-		 * We don't need interrupts disabled to do this.
-		 */
-
-		irqrestore(state);
-		sched_kfree(wdog);
-	}
-
-	/* This was a pre-allocated timer.  This function should not be called for
-	 * statically allocated timers.
-	 */
-
-	else if (!WDOG_ISSTATIC(wdog)) {
+	if (!WDOG_ISSTATIC(wdog)) {
 		/* Put the timer back on the free list and increment the count of free
 		 * timers, all with interrupts disabled.
 		 */

@@ -97,8 +97,12 @@
 
 int irq_unexpected_isr(int irq, FAR void *context, FAR void *arg)
 {
-	(void)irqsave();
-	lldbg("irq: %d\n", irq);
-	PANIC();
+    //(void)irqsave();
+	//lldbg("irq: %d\n", irq);
+	//PANIC();
+
+
+    while(1);
+
 	return OK;					/* Won't get here */
 }

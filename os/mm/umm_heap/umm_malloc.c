@@ -117,43 +117,9 @@
  *   The address of the allocated memory (NULL on failure to allocate)
  *
  ************************************************************************/
-
 FAR void *malloc(size_t size)
 {
-#ifdef CONFIG_BUILD_KERNEL
-	FAR void *brkaddr;
-	FAR void *mem;
-
-	/* Loop until we successfully allocate the memory or until an error
-	 * occurs. If we fail to allocate memory on the first pass, then call
-	 * sbrk to extend the heap by one page.  This may require several
-	 * passes if more the size of the allocation is more than one page.
-	 *
-	 * An alternative would be to increase the size of the heap by the
-	 * full requested allocation in sbrk().  Then the loop should never
-	 * execute more than twice (but more memory than we need may be
-	 * allocated).
-	 */
-
-	do {
-		mem = mm_malloc(USR_HEAP, size);
-		if (!mem) {
-			brkaddr = sbrk(size);
-			if (brkaddr == (FAR void *)-1) {
-				return NULL;
-			}
-		}
-	} while (mem == NULL);
-
-	return mem;
-#else
-#ifdef CONFIG_DEBUG_MM_HEAPINFO
-	ARCH_GET_RET_ADDRESS
-	return mm_malloc(USR_HEAP, size, retaddr);
-#else
 	return mm_malloc(USR_HEAP, size);
-#endif
-#endif
 }
 
 #endif							/* !CONFIG_BUILD_PROTECTED || !__KERNEL__ */
