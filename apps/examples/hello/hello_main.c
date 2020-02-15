@@ -68,5 +68,7 @@ int hello_main(int argc, char *argv[])
 #endif
 {
 	printf("Hello, World!!\n");
-	return 0;
+  printf("BadEmbed\n");
+  printf("VERSION: %s\n", HASH_VERSION);
+  return 0;
 }

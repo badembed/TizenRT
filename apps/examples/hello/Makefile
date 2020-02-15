@@ -73,6 +73,9 @@ MAINOBJ = $(MAINSRC:.c=$(OBJEXT))
 SRCS = $(ASRCS) $(CSRCS) $(MAINSRC)
 OBJS = $(AOBJS) $(COBJS)
 
+GIT_VERSION := "$(shell git describe --abbrev=4 --dirty --always --tags)"
+CFLAGS += -DHASH_VERSION=\"$(GIT_VERSION)\"
+
 ifneq ($(CONFIG_BUILD_KERNEL),y)
   OBJS += $(MAINOBJ)
 endif
@@ -140,6 +143,8 @@ context:
 endif
 
 .depend: Makefile $(SRCS)
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo $(CFLAGS)
 	@$(MKDEP) $(ROOTDEPPATH) "$(CC)" -- $(CFLAGS) -- $(SRCS) >Make.dep
 	@touch $@
 
